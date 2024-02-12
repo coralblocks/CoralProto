@@ -475,6 +475,7 @@ public class IDL {
 		String[] temp = idl.split("\n");
 		Queue<String> lines = new LinkedList<String>();
 		for(String line : temp) {
+			line = RegexUtils.sub(line, "s/^\\t*//");
 			if (line.trim().equals("") || line.startsWith("#") || !line.contains(":")) continue;
 			lines.add(line);
 		}
