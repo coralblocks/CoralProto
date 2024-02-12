@@ -7,7 +7,7 @@ public class ByteBufferEncoder {
 	private final StringBuilder sb;
 	
 	public ByteBufferEncoder() {
-		int maxLength = 1 + String.valueOf(Long.MIN_VALUE).length() + 16;
+		int maxLength = 1 + String.valueOf(Long.MIN_VALUE).length();
 		this.sb = new StringBuilder(maxLength);
 	}
 	
