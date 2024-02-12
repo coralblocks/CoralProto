@@ -23,15 +23,4 @@ public class ByteBufferEncoder {
 		ByteBufferUtils.appendCharSequence(buf, sb);
 	}
 	
-	public final void append(ByteBuffer buf, float number) {
-		sb.setLength(0);
-		sb.append(number);
-		ByteBufferUtils.appendCharSequence(buf, sb);
-	}
-	
-	public final void append(ByteBuffer buf, double number) {
-		sb.setLength(0);
-		sb.append(number);
-		ByteBufferUtils.appendCharSequence(buf, sb);
-	}
 }
