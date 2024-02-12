@@ -474,8 +474,19 @@ public class IDL {
 	private Queue<String> parseLines(String idl) {
 		String[] temp = idl.split("\n");
 		Queue<String> lines = new LinkedList<String>();
+		String toRemove = null;
 		for(String line : temp) {
-			line = RegexUtils.sub(line, "s/^\\t*//");
+			if (toRemove == null) {
+				String[] matches = RegexUtils.match(line, "/^(\\s*)TYPE\\s*=/");
+				if (matches != null && matches.length == 1 && matches[0].length() > 0) {
+					toRemove = matches[0];
+					int l = toRemove.length();
+					line = line.substring(l);
+				}
+			} else if (line.startsWith(toRemove)) {
+				int l = toRemove.length();
+				line = line.substring(l);
+			}
 			if (line.trim().equals("") || line.startsWith("#") || !line.contains(":")) continue;
 			lines.add(line);
 		}
