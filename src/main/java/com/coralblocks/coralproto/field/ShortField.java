@@ -94,6 +94,7 @@ public class ShortField implements ProtoField {
 	}
 	
 	public final void set(int value) {
+		if (value < Short.MIN_VALUE || value > Short.MAX_VALUE) throw new RuntimeException("Value is not a short: " + value);
 		set((short) value);
 	}
 	

@@ -208,17 +208,21 @@ public class IDL {
 		return klassName.substring(0, index);
 	}
 	
-	private final String INDENT = "    ";
+	public static final String INDENT = "    ";
 	
 	private final String idl;
 	private final StringBuilder code = new StringBuilder(2048);
 	
 	public IDL(String idl) {
+		this(idl, INDENT);
+	}
+	
+	public IDL(String idl, String indent) {
 		this.idl = idl;
-		parseTypeAndSubtype(idl);
+		parseTypeAndSubtype(idl, indent);
 		Queue<String> lines = parseLines(idl);
 		Map<String, Object> map = parseMap(lines, "");
-		configure(map, true, INDENT, null, "");
+		configure(map, true, indent, null, "");
 	}
 	
 	public String getCode() {
@@ -537,19 +541,19 @@ public class IDL {
 		return sb.toString();
 	}
 	
-	private void parseTypeAndSubtype(String idl) {
+	private void parseTypeAndSubtype(String idl, String indent) {
 		String type = find("TYPE");
 		if (type.length() != 1) throw new RuntimeException("Type is not a character: " + type);
-		code.append(INDENT + "public final static char TYPE = '").append(type).append("';\n");
+		code.append(indent + "public final static char TYPE = '").append(type).append("';\n");
 		
 		String subtype = find("SUBTYPE");
 		if (subtype.length() != 1) throw new RuntimeException("Subtype is not a character: " + subtype);
-		code.append(INDENT + "public final static char SUBTYPE = '").append(subtype).append("';\n");
+		code.append(indent + "public final static char SUBTYPE = '").append(subtype).append("';\n");
 		
 		code.append("\n");
 		
-		code.append(INDENT + "public final TypeField typeField = new TypeField(this, TYPE);\n");
-		code.append(INDENT + "public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);\n");
+		code.append(indent + "public final TypeField typeField = new TypeField(this, TYPE);\n");
+		code.append(indent + "public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);\n");
 		
 		code.append("\n");
 	}

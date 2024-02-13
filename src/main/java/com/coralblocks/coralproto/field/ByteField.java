@@ -92,6 +92,7 @@ public class ByteField implements ProtoField {
 	}
 	
 	public final void set(int value) {
+		if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE) throw new RuntimeException("Value is not a byte: " + value);
 		set((byte) value);
 	}
 	
