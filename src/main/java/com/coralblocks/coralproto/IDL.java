@@ -235,6 +235,7 @@ public class IDL {
 		while(iter.hasNext()) {
 			String key = iter.next();
 			Object type = map.get(key);
+			
 			if (type instanceof String) {
 				// field
 				String sType = (String) type;
@@ -351,7 +352,11 @@ public class IDL {
 			}
 		} else {
 			code.append(";\n");
-			groupFields.add("this." + name + " = new " + fieldType + "()");
+			if (isOptional) {
+				groupFields.add("this." + name + " = new " + fieldType + "(true)");
+			} else {
+				groupFields.add("this." + name + " = new " + fieldType + "()");
+			}
 		}
 	}
 	
@@ -366,7 +371,11 @@ public class IDL {
 			}
 		} else {
 			code.append(";\n");
-			groupFields.add("this." + name + " = new " + fieldType + "(" + size + ")");
+			if (isOptional) {
+				groupFields.add("this." + name + " = new " + fieldType + "(true, " + size + ")");
+			} else {
+				groupFields.add("this." + name + " = new " + fieldType + "(" + size + ")");
+			}
 		}
 	}
 	
@@ -381,7 +390,11 @@ public class IDL {
 			}
 		} else {
 			code.append(";\n");
-			groupFields.add("this." + name + " = new " + fieldType + "(" + all + ")");
+			if (isOptional) {
+				groupFields.add("this." + name + " = new " + fieldType + "(true, " + all + ")");
+			} else {
+				groupFields.add("this." + name + " = new " + fieldType + "(" + all + ")");				
+			}
 		}
 	}
 	
