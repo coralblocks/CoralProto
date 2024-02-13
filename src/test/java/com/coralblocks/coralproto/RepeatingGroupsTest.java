@@ -253,6 +253,62 @@ public class RepeatingGroupsTest {
 		Assert.assertEquals(2, proto.bids.legs.getNumberOfElements());
 		
 		Assert.assertEquals(2, proto.bids.getNumberOfElements());
+		
+		proto.bids.beginIteration();
+		
+		Assert.assertEquals(true, proto.bids.iterHasNext());
+			
+		proto.bids.iterNext();
+		
+		Assert.assertEquals(1212, proto.bids.levelId.get());
+		Assert.assertEquals(200, proto.bids.qty.get());
+		Assert.assertEquals(1, proto.bids.orders.get());
+		
+		proto.bids.legs.beginIteration();
+		
+		Assert.assertEquals(true, proto.bids.legs.iterHasNext());
+		
+		proto.bids.legs.iterNext();
+		
+		Assert.assertEquals(22321, proto.bids.legs.legId.get());
+		Assert.assertEquals(332, proto.bids.legs.legCode.get());
+		
+		Assert.assertEquals(true, proto.bids.legs.iterHasNext());
+		
+		proto.bids.legs.iterNext();
+		
+		Assert.assertEquals(22322, proto.bids.legs.legId.get());
+		Assert.assertEquals(false, proto.bids.legs.legCode.isPresent());
+		
+		Assert.assertEquals(false, proto.bids.legs.iterHasNext());
+		
+		Assert.assertEquals(true, proto.bids.iterHasNext());
+		
+		proto.bids.iterNext();
+		
+		Assert.assertEquals(false, proto.bids.levelId.isPresent());
+		Assert.assertEquals(400, proto.bids.qty.get());
+		Assert.assertEquals(2, proto.bids.orders.get());
+		
+		proto.bids.legs.beginIteration();
+		
+		Assert.assertEquals(true, proto.bids.legs.iterHasNext());
+		
+		proto.bids.legs.iterNext();
+		
+		Assert.assertEquals(22325, proto.bids.legs.legId.get());
+		Assert.assertEquals(false, proto.bids.legs.legCode.isPresent());
+		
+		Assert.assertEquals(true, proto.bids.legs.iterHasNext());
+		
+		proto.bids.legs.iterNext();
+		
+		Assert.assertEquals(22326, proto.bids.legs.legId.get());
+		Assert.assertEquals(false, proto.bids.legs.legCode.isPresent());
+		
+		Assert.assertEquals(false, proto.bids.legs.iterHasNext());
+		
+		Assert.assertEquals(false, proto.bids.iterHasNext());
 	}
 	
 }
