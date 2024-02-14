@@ -3,14 +3,13 @@ package com.coralblocks.coralproto.field;
 import java.nio.ByteBuffer;
 
 import com.coralblocks.coralproto.AbstractProto;
-import com.coralblocks.coralproto.util.ByteArrayUtils;
-import com.coralblocks.coralproto.util.ByteBufferUtils;
+import com.coralblocks.coralproto.util.ByteArrayCharSequence;
 
 public class CharsField implements ProtoField {
 	
 	private final boolean isOptional;
 	private boolean isPresent;
-	private final StringBuilder stringBuilder;
+	private final ByteArrayCharSequence bacs;
 	private final int size;
 	
 	public CharsField(int size) {
@@ -27,8 +26,9 @@ public class CharsField implements ProtoField {
 	
 	public CharsField(AbstractProto proto, int size, boolean isOptional) {
 		if (proto != null) proto.add(this);
-		this.stringBuilder = new StringBuilder(size);
-		for(int i = 0; i < size; i++) stringBuilder.append(' ');
+		this.bacs = new ByteArrayCharSequence(size);
+		byte[] byteArray = bacs.getByteArray();
+		for(int i = 0; i < size; i++) byteArray[i] = (byte) ' ';
 		this.isOptional = isOptional;
 		this.size = size;
 	}
@@ -69,15 +69,15 @@ public class CharsField implements ProtoField {
 		if (isOptional) this.isPresent = true;
 	}
 	
-	private final StringBuilder getAndMarkAsPresent() {
+	private final ByteArrayCharSequence getAndMarkAsPresent() {
 		if (isOptional) isPresent = true;
-		return (StringBuilder) get();
+		return (ByteArrayCharSequence) get();
 	}
 	
 	public final CharsField clear() {
-		StringBuilder stringBuilder = getAndMarkAsPresent();
-		stringBuilder.setLength(0);
-		for(int i = 0; i < size; i++) stringBuilder.append(' ');
+		ByteArrayCharSequence bacs = getAndMarkAsPresent();
+		byte[] byteArray = bacs.getByteArray();
+		for(int i = 0; i < size; i++) byteArray[i] = (byte) ' ';
 		return this;
 	}
 	
@@ -86,83 +86,72 @@ public class CharsField implements ProtoField {
 		if (len > size) {
 			throw new IllegalArgumentException("CharSequence is larger than field length: " + cs.toString() + " (" + size + ")");
 		}
-		StringBuilder stringBuilder = getAndMarkAsPresent();
-		stringBuilder.setLength(0);
-		stringBuilder.append(cs);
-		for(int i = len; i < size; i++) stringBuilder.append(' ');
+		ByteArrayCharSequence bacs = getAndMarkAsPresent();
+		byte[] byteArray = bacs.getByteArray();
+		for(int i = 0; i < len; i++) byteArray[i] = (byte) cs.charAt(i);
+		for(int i = len; i < size; i++) byteArray[i] = (byte) ' ';
 	}
 	
 	public final void set(byte[] array) {
 		int len = array.length;
 		if (len > size) {
-			throw new IllegalArgumentException("Array is larger than field length: " + ByteArrayUtils.parseString(array) + " (" + size + ")");
+			throw new IllegalArgumentException("Array is larger than field length: " + len);
 		}
-		StringBuilder stringBuilder = getAndMarkAsPresent();
-		stringBuilder.setLength(0);
-		for(byte b : array) {
-			stringBuilder.append((char) b);
-		}
-		for(int i = len; i < size; i++) stringBuilder.append(' ');
+		ByteArrayCharSequence bacs = getAndMarkAsPresent();
+		byte[] byteArray = bacs.getByteArray();
+		System.arraycopy(array, 0, byteArray, 0, len);
+		for(int i = len; i < size; i++)  byteArray[i] = (byte) ' ';
 	}
 	
 	public final void set(char[] array) {
 		int len = array.length;
 		if (len > size) {
-			throw new IllegalArgumentException("Array is larger than field length: " + new String(array) + " (" + size + ")");
+			throw new IllegalArgumentException("Array is larger than field length: " + len);
 		}
-		StringBuilder stringBuilder = getAndMarkAsPresent();
-		stringBuilder.setLength(0);
-		for(char c : array) {
-			stringBuilder.append(c);
-		}
-		for(int i = len; i < size; i++) stringBuilder.append(' ');
+		ByteArrayCharSequence bacs = getAndMarkAsPresent();
+		byte[] byteArray = bacs.getByteArray();
+		System.arraycopy(array, 0, byteArray, 0, len);
+		for(int i = len; i < size; i++)  byteArray[i] = (byte) ' ';
 	}
 	
 	public final CharSequence get() {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot get an optional field that is not present!");
-		return stringBuilder;
+		return bacs;
+	}
+	
+	public final byte[] getByteArray() {
+		return ((ByteArrayCharSequence) get()).getByteArray();
 	}
 	
 	@Override
 	public final void readFrom(ByteBuffer src) {
 		if (isOptional) this.isPresent = true;
-		stringBuilder.setLength(0);
-		for(int i = 0; i < size; i++) {
-			stringBuilder.append((char) src.get());
-		}
+		byte[] byteArray = bacs.getByteArray();
+		src.get(byteArray);
 	}
 	
 	@Override
 	public final void writeTo(ByteBuffer buf) {
-		if (stringBuilder.length() != size) {
-			throw new IllegalStateException("StringBuilder has bad length: " + stringBuilder.length());
-		}
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		ByteBufferUtils.appendCharSequence(buf, stringBuilder);
+		byte[] byteArray = bacs.getByteArray();
+		buf.put(byteArray);
 	}
 	
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
-		if (stringBuilder.length() != size) {
-			throw new IllegalStateException("StringBuilder has bad length: " + stringBuilder.length());
-		}
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		ByteBufferUtils.appendCharSequence(buf, stringBuilder);
+		byte[] byteArray = bacs.getByteArray();
+		buf.put(byteArray);
 	}
 	
 	@Override
 	public String toString() {
-		if (stringBuilder.length() != size) {
-			throw new IllegalStateException("StringBuilder has bad length: " + stringBuilder.length());
-		}
-		int rem = stringBuilder.length();
-		int paddle = size - rem;
+		byte[] byteArray = bacs.getByteArray();
 		if (isOptional) {
 			if (isPresent) {
 				StringBuilder sb = new StringBuilder(size + 2);
 				sb.append('[');
-				sb.append(stringBuilder);
-				for(int i = 0; i < paddle; i++) sb.append(' ');
+				for(int i = 0; i < byteArray.length; i++) sb.append((char) byteArray[i]);
 				sb.append(']');
 				return sb.toString();
 			} else {
@@ -171,8 +160,7 @@ public class CharsField implements ProtoField {
 		} else {
 			StringBuilder sb = new StringBuilder(size + 2);
 			sb.append('[');
-			sb.append(stringBuilder);
-			for(int i = 0; i < paddle; i++) sb.append(' ');
+			for(int i = 0; i < byteArray.length; i++) sb.append((char) byteArray[i]);
 			sb.append(']');
 			return sb.toString();
 		}
