@@ -22,9 +22,9 @@ public class CharsAndBytesTest {
 				TYPE = C
 				SUBTYPE = B
 				
-				myChars: chars(128) 
+				myChars: chars(8) 
 				myVarChars: varchars(1024)
-				myBytes: bytes(128) 
+				myBytes: bytes(8) 
 				myVarBytes: varbytes(1024)				
 				
 		""";
@@ -46,11 +46,11 @@ public class CharsAndBytesTest {
         public final TypeField typeField = new TypeField(this, TYPE);
         public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);
 
-        public final CharsField myChars = new CharsField(this, 128);
+        public final CharsField myChars = new CharsField(this, 8);
 
         public final VarCharsField myVarChars = new VarCharsField(this, 1024);
 
-        public final BytesField myBytes = new BytesField(this, 128);
+        public final BytesField myBytes = new BytesField(this, 8);
 
         public final VarBytesField myVarBytes = new VarBytesField(this, 1024);
 
@@ -59,7 +59,7 @@ public class CharsAndBytesTest {
 	}
 	
 	@Test
-	public void testCharsAndVarsFields() {
+	public void testFixedCharsAndBytes() {
 		
 		CharsAndBytesProtoMessage proto = new CharsAndBytesProtoMessage();
 		
