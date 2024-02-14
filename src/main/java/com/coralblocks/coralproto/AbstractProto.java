@@ -158,18 +158,6 @@ public abstract class AbstractProto implements Proto {
 		return b == 'Y';
 	}
 	
-	protected final long readUnsignedIntAsLong(ByteBuffer buf) {
-		return ((long) buf.getInt()) & 0xffffffffL;
-	}
-	
-	protected final int readUnsignedShortAsInt(ByteBuffer buf) {
-		return ((int) buf.getShort()) & 0xffff;
-	}
-	
-	protected final short readUnsignedByteAsShort(ByteBuffer buf) {
-		return (short) (((short) buf.get()) & ((short) 0xff));
-	}
-	
 	protected final ByteBuffer read(ByteBuffer buf, ByteBuffer dst) {
 		dst.clear();
 		dst.put(buf);
@@ -307,56 +295,8 @@ public abstract class AbstractProto implements Proto {
 		buf.put((byte) ' ');
 	}
 	
-	protected final void writeAsciiByteAsCharacter(ByteBuffer buf, byte value) {
-		buf.put(value);
-	}
-	
-	protected final void writeAsciiByteArrayAsCharacters(ByteBuffer buf, byte[] array) {
-		writeAsciiByteArrayAsCharacters(buf, array, 0, array.length);
-	}
-	
-	protected final void writeAsciiByteArrayAsCharacters(ByteBuffer buf, byte[] array, int len) {
-		writeAsciiByteArrayAsCharacters(buf, array, 0, len);
-	}
-	
-	protected final void writeAsciiBytes(ByteBuffer buf, byte[] array) {
-		writeAsciiByteArrayAsCharacters(buf, array, 0, array.length);
-	}
-	
 	protected final void writeAscii(ByteBuffer buf, byte[] array) {
-		writeAsciiBytes(buf, array);
-	}
-	
-	protected final void writeAsciiBytes(ByteBuffer buf, byte[] array, int len) {
-		writeAsciiByteArrayAsCharacters(buf, array, 0, len);
-	}
-	
-	protected final void writeAscii(ByteBuffer buf, byte[] array, int len) {
-		writeAsciiBytes(buf, array, len);
-	}
-	
-	protected final void writeAsciiTrimmed(ByteBuffer buf, byte[] array) {
-		writeAsciiTrimmedBytes(buf, array);
-	}
-	
-	protected final void writeAsciiTrimmedBytes(ByteBuffer buf, byte[] array) {
-		
-		int start = 0;
-		int end = array.length;
-		while (start < end && array[start] <= ' ') {
-			start++;
-		}
-		while (end > start && array[end - 1] <= ' ') {
-			end--;
-		}
-		
-		if (start >= end) return;
-		
-		writeAsciiByteArrayAsCharacters(buf, array, start, end - start);
-	}
-	
-	protected final void writeAsciiByteArrayAsCharacters(ByteBuffer buf, byte[] array, int offset, int len) {
-		for(int i = offset; i < offset + len; i++) {
+		for(int i = 0; i < array.length; i++) {
 			byte b = array[i];
 			if (CharUtils.isPrintable((char) b)) {
 				buf.put(b);
@@ -366,15 +306,7 @@ public abstract class AbstractProto implements Proto {
 		}
 	}
 	
-	protected final void writeAsciiBytes(ByteBuffer buf, ByteBuffer bb) {
-		writeAsciiByteBufferAsCharacters(buf, bb);
-	}
-	
 	protected final void writeAscii(ByteBuffer buf, ByteBuffer bb) {
-		writeAsciiBytes(buf, bb);
-	}
-	
-	protected final void writeAsciiByteBufferAsCharacters(ByteBuffer buf, ByteBuffer bb) {
 		int pos = bb.position();
 		int lim = bb.limit();
 		while(bb.hasRemaining()) {
@@ -394,18 +326,6 @@ public abstract class AbstractProto implements Proto {
 	
 	protected final void writeAsciiSeparator(ByteBuffer buf) {
 		buf.put(SEP);
-	}
-	
-	protected final void writeLongAsUnsignedInt(ByteBuffer buf, long value) {
-		buf.putInt((int) value);
-	}
-	
-	protected final void writeIntAsUnsignedShort(ByteBuffer buf, int value) {
-		buf.putShort((short) value);
-	}
-	
-	protected final void writeShortAsUnsignedByte(ByteBuffer buf, short value) {
-		buf.put((byte) value);
 	}
 	
 	protected final <E extends Enum<?> & CharEnum> void write(ByteBuffer buf, E e) {
