@@ -26,7 +26,7 @@ public class BytesField implements ProtoField {
 	
 	public BytesField(AbstractProto proto, int size, boolean isOptional) {
 		if (proto != null) proto.add(this);
-		this.byteBuffer = ByteBuffer.allocate(size);
+		this.byteBuffer = ByteBuffer.allocateDirect(size);
 		this.isOptional = isOptional;
 	}
 	
@@ -97,13 +97,16 @@ public class BytesField implements ProtoField {
 	
 	@Override
 	public final void readFrom(ByteBuffer src) {
+		if (src.remaining() < byteBuffer.capacity()) {
+			throw new IllegalArgumentException("ByteBuffer is too small: " + src.remaining());
+		}
 		if (isOptional) this.isPresent = true;
 		byteBuffer.clear();
-		int len = byteBuffer.capacity();
-		for(int i = 0; i < len; i++) {
-			byteBuffer.put(src.get());
-		}
+		int savedLim = src.limit();
+		src.limit(src.position() + byteBuffer.capacity());
+		byteBuffer.put(src);
 		byteBuffer.flip();
+		src.limit(savedLim);
 	}
 	
 	@Override
