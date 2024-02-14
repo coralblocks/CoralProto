@@ -13,7 +13,6 @@ import com.coralblocks.coralproto.util.ByteBufferUtils;
 import com.coralblocks.coralproto.util.CharMap;
 import com.coralblocks.coralproto.util.CharUtils;
 import com.coralblocks.coralproto.util.GrowableByteBuffer;
-import com.coralblocks.coralproto.util.MaxLengthStringBuilder;
 
 public abstract class AbstractProto implements Proto {
 	
@@ -179,16 +178,6 @@ public abstract class AbstractProto implements Proto {
 		return dst;
 	}
 	
-	protected final MaxLengthStringBuilder read(ByteBuffer buf, MaxLengthStringBuilder dst) {
-		dst.setLength(0);
-		int len = dst.getMaxLength();
-		for(int i = 0; i < len; i++) {
-			byte b = buf.get();
-			dst.append((char) b);
-		}
-		return dst;
-	}
-	
 	protected final byte[] read(ByteBuffer buf, byte[] dst) {
 		buf.get(dst);
 		return dst;
@@ -271,35 +260,11 @@ public abstract class AbstractProto implements Proto {
 		buf.put(value ? (byte) 'Y' : (byte) 'N');
 	}
 	
-	protected final void writeChars(ByteBuffer buf, MaxLengthStringBuilder sb) {
-		int maxLength = sb.getMaxLength();
-		int len = sb.length();
-		for(int i = 0; i < maxLength; i++) {
-			if (i < len) {
-				buf.put((byte) sb.charAt(i));
-			} else {
-				buf.put((byte) ' ');
-			}
-		}
-	}
-	
 	protected final void write(ByteBuffer buf, StringBuilder sb) {
 		int len = sb.length();
 		buf.putInt(len);
 		for(int i = 0; i < len; i++) {
 			buf.put((byte) sb.charAt(i));
-		}
-	}
-	
-	protected final void write(ByteBuffer buf, MaxLengthStringBuilder sb) {
-		int maxLength = sb.getMaxLength();
-		int len = sb.length();
-		for(int i = 0; i < maxLength; i++) {
-			if (i < len) {
-				buf.put((byte) sb.charAt(i));
-			} else {
-				buf.put((byte) ' ');
-			}
 		}
 	}
 	
