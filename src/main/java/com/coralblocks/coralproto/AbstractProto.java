@@ -12,7 +12,6 @@ import com.coralblocks.coralproto.field.ProtoField;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
 import com.coralblocks.coralproto.util.CharMap;
 import com.coralblocks.coralproto.util.CharUtils;
-import com.coralblocks.coralproto.util.GrowableByteBuffer;
 
 public abstract class AbstractProto implements Proto {
 	
@@ -183,15 +182,6 @@ public abstract class AbstractProto implements Proto {
 		return dst;
 	}
 	
-	protected GrowableByteBuffer read(ByteBuffer buf, GrowableByteBuffer dst) {
-		int len = buf.getInt();
-		for(int i = 0; i < len; i++) {
-			dst.put(buf.get());
-		}
-		dst.flip();
-		return dst;
-	}
-	
 	protected final byte[] read(ByteBuffer buf, byte[] dst, int len) {
 		buf.get(dst, 0, len);
 		return dst;
@@ -277,17 +267,6 @@ public abstract class AbstractProto implements Proto {
 	
 	protected final void write(ByteBuffer buf, byte[] bytes) {
 		buf.put(bytes);
-	}
-	
-	protected final void write(ByteBuffer buf, GrowableByteBuffer bytes) {
-		int pos = bytes.position();
-		int lim = bytes.limit();
-		int len = bytes.remaining();
-		buf.putInt(len);
-		for(int i = 0; i < len; i++) {
-			buf.put(bytes.get());
-		}
-		bytes.limit(lim).position(pos);
 	}
 	
 	protected final void write(ByteBuffer buf, byte[] bytes, int len) {
@@ -385,25 +364,6 @@ public abstract class AbstractProto implements Proto {
 				buf.put((byte) '?');
 			}
 		}
-	}
-	
-	protected final void writeAsciiGrowableByteBufferAsCharacters(ByteBuffer buf, GrowableByteBuffer bytes) {
-		int pos = bytes.position();
-		int lim = bytes.limit();
-		int len = bytes.remaining();
-		for(int i = 0; i < len; i++) {
-			byte b = bytes.get();
-			if (CharUtils.isPrintable((char) b)) {
-				buf.put(b);
-			} else {
-				buf.put((byte) '?');
-			}
-		}
-		bytes.limit(lim).position(pos);
-	}
-	
-	protected final void writeAscii(ByteBuffer buf, GrowableByteBuffer bytes) {
-		writeAsciiGrowableByteBufferAsCharacters(buf, bytes);
 	}
 	
 	protected final void writeAsciiBytes(ByteBuffer buf, ByteBuffer bb) {
