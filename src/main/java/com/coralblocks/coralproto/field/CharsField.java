@@ -28,6 +28,7 @@ public class CharsField implements ProtoField {
 	public CharsField(AbstractProto proto, int size, boolean isOptional) {
 		if (proto != null) proto.add(this);
 		this.stringBuilder = new StringBuilder(size);
+		for(int i = 0; i < size; i++) stringBuilder.append(' ');
 		this.isOptional = isOptional;
 		this.size = size;
 	}
@@ -68,28 +69,32 @@ public class CharsField implements ProtoField {
 		if (isOptional) this.isPresent = true;
 	}
 	
-	public final StringBuilder getAndMarkAsPresent() {
+	private final StringBuilder getAndMarkAsPresent() {
 		if (isOptional) isPresent = true;
-		return get();
+		return (StringBuilder) get();
 	}
 	
 	public final CharsField clear() {
 		StringBuilder stringBuilder = getAndMarkAsPresent();
 		stringBuilder.setLength(0);
+		for(int i = 0; i < size; i++) stringBuilder.append(' ');
 		return this;
 	}
 	
 	public final void set(CharSequence cs) {
-		if (cs.length() > size) {
+		int len = cs.length();
+		if (len > size) {
 			throw new IllegalArgumentException("CharSequence is larger than field length: " + cs.toString() + " (" + size + ")");
 		}
 		StringBuilder stringBuilder = getAndMarkAsPresent();
 		stringBuilder.setLength(0);
 		stringBuilder.append(cs);
+		for(int i = len; i < size; i++) stringBuilder.append(' ');
 	}
 	
 	public final void set(byte[] array) {
-		if (array.length > size) {
+		int len = array.length;
+		if (len > size) {
 			throw new IllegalArgumentException("Array is larger than field length: " + ByteArrayUtils.parseString(array) + " (" + size + ")");
 		}
 		StringBuilder stringBuilder = getAndMarkAsPresent();
@@ -97,10 +102,12 @@ public class CharsField implements ProtoField {
 		for(byte b : array) {
 			stringBuilder.append((char) b);
 		}
+		for(int i = len; i < size; i++) stringBuilder.append(' ');
 	}
 	
 	public final void set(char[] array) {
-		if (array.length > size) {
+		int len = array.length;
+		if (len > size) {
 			throw new IllegalArgumentException("Array is larger than field length: " + new String(array) + " (" + size + ")");
 		}
 		StringBuilder stringBuilder = getAndMarkAsPresent();
@@ -108,9 +115,10 @@ public class CharsField implements ProtoField {
 		for(char c : array) {
 			stringBuilder.append(c);
 		}
+		for(int i = len; i < size; i++) stringBuilder.append(' ');
 	}
 	
-	public final StringBuilder get() {
+	public final CharSequence get() {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot get an optional field that is not present!");
 		return stringBuilder;
 	}
@@ -126,32 +134,26 @@ public class CharsField implements ProtoField {
 	
 	@Override
 	public final void writeTo(ByteBuffer buf) {
-		if (stringBuilder.length() > size) {
-			throw new IllegalArgumentException("StringBuilder is larger than field length: " + stringBuilder.toString() + " (" + size + ")");
+		if (stringBuilder.length() != size) {
+			throw new IllegalStateException("StringBuilder has bad length: " + stringBuilder.length());
 		}
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		int rem = stringBuilder.length();
-		int paddle = size - rem;
 		ByteBufferUtils.appendCharSequence(buf, stringBuilder);
-		for(int i = 0; i < paddle; i++) buf.put((byte) ' ');
 	}
 	
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
-		if (stringBuilder.length() > size) {
-			throw new IllegalArgumentException("StringBuilder is larger than field length: " + stringBuilder.toString() + " (" + size + ")");
+		if (stringBuilder.length() != size) {
+			throw new IllegalStateException("StringBuilder has bad length: " + stringBuilder.length());
 		}
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		int len = stringBuilder.length();
-		int paddle = size - len;
 		ByteBufferUtils.appendCharSequence(buf, stringBuilder);
-		for(int i = 0; i < paddle; i++) buf.put((byte) ' ');
 	}
 	
 	@Override
 	public String toString() {
-		if (stringBuilder.length() > size) {
-			throw new IllegalArgumentException("StringBuilder is larger than max length: " + stringBuilder.toString() + " (" + size + ")");
+		if (stringBuilder.length() != size) {
+			throw new IllegalStateException("StringBuilder has bad length: " + stringBuilder.length());
 		}
 		int rem = stringBuilder.length();
 		int paddle = size - rem;

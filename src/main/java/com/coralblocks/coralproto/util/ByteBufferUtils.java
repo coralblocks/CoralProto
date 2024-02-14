@@ -28,7 +28,7 @@ public class ByteBufferUtils {
 	}
 	
 	public final static String parseString(ByteBuffer src) {
-		StringBuilder sb = new StringBuilder(256);
+		StringBuilder sb = new StringBuilder(src.remaining());
 		parseString(src, sb);
 		return sb.toString();
 	}

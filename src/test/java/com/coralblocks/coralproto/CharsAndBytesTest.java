@@ -61,6 +61,30 @@ public class CharsAndBytesTest {
 	@Test
 	public void testCharsAndVarsFields() {
 		
-		Assert.assertTrue(true);
+		CharsAndBytesProtoMessage proto = new CharsAndBytesProtoMessage();
+		
+		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, proto.getType());
+		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, proto.getSubtype());
+		
+		Assert.assertEquals(false, proto.myChars.isOptional());
+		Assert.assertEquals(true, proto.myChars.isPresent());
+		
+		StringBuilder sb = new StringBuilder(proto.myChars.size());
+		for(int i = 0; i < proto.myChars.size(); i++) sb.append(" ");
+		Assert.assertEquals(sb.toString(), proto.myChars.get().toString());
+		
+		final String s = "BLAH";
+
+		proto.myChars.set("BLAH");
+		sb.setLength(0);
+		sb.append(s);
+		for(int i = 0; i < proto.myChars.size() - s.length(); i++) sb.append(" ");
+		Assert.assertEquals(sb.toString(), proto.myChars.get().toString());
+		
+		proto.myChars.clear();
+		sb.setLength(0);
+		for(int i = 0; i < proto.myChars.size(); i++) sb.append(" ");
+		Assert.assertEquals(sb.toString(), proto.myChars.get().toString());
+		
 	}
 }
