@@ -7,10 +7,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.coralblocks.coralproto.bytes.FixedBytes;
-import com.coralblocks.coralproto.bytes.VarBytes;
-import com.coralblocks.coralproto.chars.FixedChars;
-import com.coralblocks.coralproto.chars.VarChars;
 import com.coralblocks.coralproto.enums.CharEnum;
 import com.coralblocks.coralproto.field.ProtoField;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
@@ -183,58 +179,9 @@ public abstract class AbstractProto implements Proto {
 		return dst;
 	}
 	
-	protected final FixedChars read(ByteBuffer buf, FixedChars fixedChars) {
-		read(buf, fixedChars.getMaxLengthStringBuilder());
-		return fixedChars;
-	}
-	
-	protected final FixedBytes read(ByteBuffer buf, FixedBytes fixedBytes) {
-		ByteBuffer bb = fixedBytes.getByteBuffer();
-		bb.clear();
-		int saveLim = buf.limit();
-		buf.limit(buf.position() + bb.capacity());
-		bb.put(buf);
-		bb.flip();
-		buf.limit(saveLim);
-		return fixedBytes;
-	}
-	
-	protected final VarBytes read(ByteBuffer buf, VarBytes varBytes) {
-		ByteBuffer bb = varBytes.getByteBuffer();
-		int size = buf.getInt();
-		bb.clear();
-		int saveLim = buf.limit();
-		buf.limit(buf.position() + size);
-		bb.put(buf);
-		bb.flip();
-		buf.limit(saveLim);
-		return varBytes;
-	}
-	
 	protected final MaxLengthStringBuilder read(ByteBuffer buf, MaxLengthStringBuilder dst) {
 		dst.setLength(0);
 		int len = dst.getMaxLength();
-		for(int i = 0; i < len; i++) {
-			byte b = buf.get();
-			dst.append((char) b);
-		}
-		return dst;
-	}
-	
-	protected final VarChars read(ByteBuffer buf, VarChars varChars) {
-		StringBuilder dst = varChars.getStringBuilder();
-		dst.setLength(0);
-		int len = buf.getInt();
-		for(int i = 0; i < len; i++) {
-			byte b = buf.get();
-			dst.append((char) b);
-		}
-		return varChars;
-	}
-	
-	protected final StringBuilder read(ByteBuffer buf, StringBuilder dst) {
-		dst.setLength(0);
-		int len = buf.getInt();
 		for(int i = 0; i < len; i++) {
 			byte b = buf.get();
 			dst.append((char) b);
@@ -294,36 +241,6 @@ public abstract class AbstractProto implements Proto {
 		ByteBufferUtils.appendCharSequence(buf, s);
 	}
 	
-	protected final void writeAscii(ByteBuffer buf, VarChars varChars) {
-		ByteBufferUtils.appendCharSequence(buf, varChars.getStringBuilder());
-	}
-
-	protected final void writeAscii(ByteBuffer buf, FixedChars fixedChars) {
-		MaxLengthStringBuilder sb = fixedChars.getMaxLengthStringBuilder();
-		int size = sb.getMaxLength();
-		int padding = size - sb.length();
-		ByteBufferUtils.appendCharSequence(buf, sb);
-		for(int i = 0; i < padding; i++) buf.put((byte) ' ');
-	}
-	
-	protected final void writeAscii(ByteBuffer buf, FixedBytes fixedBytes) {
-		ByteBuffer bb = fixedBytes.getByteBuffer();
-		int pos = bb.position();
-		int lim = bb.limit();
-		int padding = bb.capacity() - bb.remaining();
-		writeAsciiByteBufferAsCharacters(buf, bb);
-		for(int i = 0; i < padding; i++) buf.put((byte) ' ');
-		bb.limit(lim).position(pos);
-	}
-	
-	protected final void writeAscii(ByteBuffer buf, VarBytes varBytes) {
-		ByteBuffer bb = varBytes.getByteBuffer();
-		int pos = bb.position();
-		int lim = bb.limit();
-		writeAsciiByteBufferAsCharacters(buf, bb);
-		bb.limit(lim).position(pos);
-	}
-	
 	protected final void writeAscii(ByteBuffer buf, CharSequence s) {
 		ByteBufferUtils.appendCharSequence(buf, s);
 	}
@@ -354,25 +271,6 @@ public abstract class AbstractProto implements Proto {
 		buf.put(value ? (byte) 'Y' : (byte) 'N');
 	}
 	
-	protected final void write(ByteBuffer buf, FixedBytes fixedBytes) {
-		ByteBuffer bb = fixedBytes.getByteBuffer();
-		int pos = bb.position();
-		int lim = bb.limit();
-		int padding = bb.capacity() - bb.limit();
-		buf.put(bb);
-		for(int i = 0; i < padding; i++) buf.put((byte) ' ');
-		bb.limit(lim).position(pos);
-	}
-	
-	protected final void write(ByteBuffer buf, VarBytes varBytes) {
-		ByteBuffer bb = varBytes.getByteBuffer();
-		int pos = bb.position();
-		int lim = bb.limit();
-		buf.putInt(bb.remaining());
-		buf.put(bb);
-		bb.limit(lim).position(pos);
-	}
-	
 	protected final void writeChars(ByteBuffer buf, MaxLengthStringBuilder sb) {
 		int maxLength = sb.getMaxLength();
 		int len = sb.length();
@@ -382,28 +280,6 @@ public abstract class AbstractProto implements Proto {
 			} else {
 				buf.put((byte) ' ');
 			}
-		}
-	}
-	
-	protected final void write(ByteBuffer buf, FixedChars fixedChars) {
-		MaxLengthStringBuilder sb = fixedChars.getMaxLengthStringBuilder();
-		int maxLength = sb.getMaxLength();
-		int len = sb.length();
-		for(int i = 0; i < maxLength; i++) {
-			if (i < len) {
-				buf.put((byte) sb.charAt(i));
-			} else {
-				buf.put((byte) ' ');
-			}
-		}
-	}
-	
-	protected final void write(ByteBuffer buf, VarChars varChars) {
-		StringBuilder sb = varChars.getStringBuilder();
-		int len = sb.length();
-		buf.putInt(len);
-		for(int i = 0; i < len; i++) {
-			buf.put((byte) sb.charAt(i));
 		}
 	}
 	
