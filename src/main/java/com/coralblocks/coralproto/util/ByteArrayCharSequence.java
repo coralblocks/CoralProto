@@ -11,6 +11,7 @@ public class ByteArrayCharSequence implements CharSequence {
     }
     
     public void setSize(int size) {
+    	if (size > byteArray.length) throw new ArrayIndexOutOfBoundsException();
     	this.actualSize = size;
     }
     
