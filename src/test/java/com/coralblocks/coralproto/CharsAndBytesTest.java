@@ -176,4 +176,40 @@ public class CharsAndBytesTest {
 		Assert.assertEquals(sb.toString(), ByteBufferUtils.parseString(proto.myBytes.get()));
 		
 	}
+	
+	@Test
+	public void testVarBytesField() {
+		
+		CharsAndBytesProtoMessage proto = new CharsAndBytesProtoMessage();
+		
+		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, proto.getType());
+		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, proto.getSubtype());
+		
+		Assert.assertEquals(false, proto.myVarBytes.isOptional());
+		Assert.assertEquals(true, proto.myVarBytes.isPresent());
+		
+		StringBuilder sb = new StringBuilder(proto.myVarBytes.size());
+		
+		String s = "BLAH";
+
+		proto.myVarBytes.set(s.getBytes());
+		sb.setLength(0);
+		sb.append(s);
+		Assert.assertEquals(sb.toString(), ByteBufferUtils.parseString(proto.myVarBytes.get()));
+		
+		s = "BLAHFOOO";
+
+		proto.myVarBytes.set(s.getBytes(), 4, 4);
+		sb.setLength(0);
+		sb.append(s, 4, 8);
+		Assert.assertEquals(sb.toString(), ByteBufferUtils.parseString(proto.myVarBytes.get()));
+		
+		s = "FOO1";
+		
+		proto.myVarBytes.set(ByteBuffer.wrap(s.getBytes()));
+		sb.setLength(0);
+		sb.append(s);
+		Assert.assertEquals(sb.toString(), ByteBufferUtils.parseString(proto.myVarBytes.get()));
+		
+	}
 }

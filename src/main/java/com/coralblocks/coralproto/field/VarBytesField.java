@@ -11,8 +11,7 @@ public class VarBytesField implements ProtoField {
 	private final boolean isOptional;
 	private boolean isPresent;
 	private final ByteBuffer byteBuffer;
-	private boolean wasRead = false;
-	private int savedLim = -1;
+	private int size;
 	
 	public VarBytesField(int maxLength) {	
 		this(null, maxLength);
@@ -30,6 +29,7 @@ public class VarBytesField implements ProtoField {
 		if (proto != null) proto.add(this);
 		this.byteBuffer = ByteBuffer.allocate(maxLength);
 		this.isOptional = isOptional;
+		this.size = 0;
 	}
 	
 	public final int getMaxLength() {
@@ -44,9 +44,9 @@ public class VarBytesField implements ProtoField {
 	@Override
 	public final int size() {
 		if (isOptional) {
-			return isPresent ? 1 + 4 + byteBuffer.remaining() : 1;
+			return isPresent ? 1 + 4 + size : 1;
 		} else {
-			return 4 + byteBuffer.remaining();
+			return 4 + size;
 		}
 	}
 
@@ -69,11 +69,11 @@ public class VarBytesField implements ProtoField {
 	
 	public final ByteBuffer get() {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot get an optional field that is not present!");
-		if (wasRead) byteBuffer.limit(savedLim).position(0);
+		byteBuffer.limit(size).position(0);
 		return byteBuffer;
 	}
 	
-	public final ByteBuffer getAndMarkAsPresent() {
+	private final ByteBuffer getAndMarkAsPresent() {
 		if (isOptional) isPresent = true;
 		return get();
 	}
@@ -83,6 +83,7 @@ public class VarBytesField implements ProtoField {
 		bb.clear();
 		bb.put(array, offset, len);
 		bb.flip();
+		this.size = len;
 	}
 	
 	public final void set(byte[] array) {
@@ -90,6 +91,7 @@ public class VarBytesField implements ProtoField {
 		bb.clear();
 		bb.put(array);
 		bb.flip();
+		this.size = array.length;
 	}
 	
 	public final void set(ByteBuffer buf) {
@@ -97,6 +99,7 @@ public class VarBytesField implements ProtoField {
 		bb.clear();
 		bb.put(buf);
 		bb.flip();
+		this.size = bb.remaining();
 	}
 	
 	@Override
@@ -109,31 +112,26 @@ public class VarBytesField implements ProtoField {
 		if (isOptional) this.isPresent = true;
 		byteBuffer.clear();
 		int len = src.getInt();
-		for(int i = 0; i < len; i++) {
-			byteBuffer.put(src.get());
-		}
+		int savedLim = src.limit();
+		src.limit(src.position() + len);
+		byteBuffer.put(src);
 		byteBuffer.flip();
-		wasRead = true;
-		savedLim = byteBuffer.limit();
+		src.limit(savedLim);
+		this.size = byteBuffer.remaining();
 	}
 	
 	@Override
 	public final void writeTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		int pos = byteBuffer.position();
-		int rem = byteBuffer.remaining();
-		buf.putInt(rem);
-		buf.put(byteBuffer);
-		byteBuffer.position(pos);
+		buf.putInt(size);
+		buf.put(get());
 	}
 	
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		if (wasRead) byteBuffer.limit(savedLim).position(0);
-		int pos = byteBuffer.position();
-		int len = byteBuffer.remaining();
-		for(int i = 0; i < len; i++) {
+		ByteBuffer byteBuffer = get();
+		for(int i = 0; i < byteBuffer.remaining(); i++) {
 			byte b = byteBuffer.get();
 			if (CharUtils.isPrintable((char) b)) {
 				buf.put((byte) b);
@@ -141,7 +139,6 @@ public class VarBytesField implements ProtoField {
 				buf.put((byte) '?');
 			}
 		}
-		byteBuffer.position(pos);
 	}
 	
 	@Override
@@ -149,20 +146,16 @@ public class VarBytesField implements ProtoField {
 		if (isOptional) {
 			if (isPresent) {
 				ByteBuffer byteBuffer = get();
-				int pos = byteBuffer.position();
 				StringBuilder sb = new StringBuilder(byteBuffer.remaining());
 				sb.append(ByteBufferUtils.parseString(byteBuffer));
-				byteBuffer.position(pos);
 				return sb.toString();
 			} else {
 				return "BLANK";
 			}
 		} else {
 			ByteBuffer byteBuffer = get();
-			int pos = byteBuffer.position();
 			StringBuilder sb = new StringBuilder(byteBuffer.remaining());
 			sb.append(ByteBufferUtils.parseString(byteBuffer));
-			byteBuffer.position(pos);
 			return sb.toString();
 		}
 	}
