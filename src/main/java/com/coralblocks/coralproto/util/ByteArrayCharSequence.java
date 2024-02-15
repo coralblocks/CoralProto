@@ -3,9 +3,15 @@ package com.coralblocks.coralproto.util;
 public class ByteArrayCharSequence implements CharSequence {
 
     private final byte[] byteArray;
+    private int actualSize;
 
-    public ByteArrayCharSequence(int size) {
-        this.byteArray = new byte[size];
+    public ByteArrayCharSequence(int maxSize) {
+        this.byteArray = new byte[maxSize];
+        this.actualSize = maxSize;
+    }
+    
+    public void setSize(int size) {
+    	this.actualSize = size;
     }
     
     public byte[] getByteArray() {
@@ -14,11 +20,12 @@ public class ByteArrayCharSequence implements CharSequence {
     
     @Override
     public int length() {
-        return byteArray.length;
+        return actualSize;
     }
 
     @Override
     public char charAt(int index) {
+    	if (index >= actualSize) throw new ArrayIndexOutOfBoundsException();
         return (char) byteArray[index];
     }
 
@@ -29,20 +36,6 @@ public class ByteArrayCharSequence implements CharSequence {
 
     @Override
     public String toString() {
-        return new String(byteArray);
-    }
-    
-    @Override
-    public int hashCode() {
-    	return byteArray.hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-    	if (o instanceof ByteArrayCharSequence) {
-    		ByteArrayCharSequence bacs = (ByteArrayCharSequence) o;
-    		return bacs.byteArray.equals(this.byteArray);
-    	}
-    	return false;
+        return new String(byteArray, 0, actualSize);
     }
 }

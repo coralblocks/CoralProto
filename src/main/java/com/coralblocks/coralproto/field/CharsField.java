@@ -110,7 +110,7 @@ public class CharsField implements ProtoField {
 		}
 		ByteArrayCharSequence bacs = getAndMarkAsPresent();
 		byte[] byteArray = bacs.getByteArray();
-		System.arraycopy(array, 0, byteArray, 0, len);
+		for(int i = 0; i < len; i++) byteArray[i] = (byte) array[i];
 		for(int i = len; i < size; i++)  byteArray[i] = (byte) ' ';
 	}
 	

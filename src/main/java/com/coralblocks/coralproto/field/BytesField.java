@@ -27,6 +27,8 @@ public class BytesField implements ProtoField {
 	public BytesField(AbstractProto proto, int size, boolean isOptional) {
 		if (proto != null) proto.add(this);
 		this.byteBuffer = ByteBuffer.allocateDirect(size);
+		for(int i = 0; i < size; i++) this.byteBuffer.put((byte) 0);
+		this.byteBuffer.flip();
 		this.isOptional = isOptional;
 	}
 	

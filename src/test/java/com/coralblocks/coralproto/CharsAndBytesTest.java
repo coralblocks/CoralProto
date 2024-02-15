@@ -1,6 +1,7 @@
 package com.coralblocks.coralproto;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import com.coralblocks.coralproto.field.SubtypeField;
 import com.coralblocks.coralproto.field.TypeField;
 import com.coralblocks.coralproto.field.VarBytesField;
 import com.coralblocks.coralproto.field.VarCharsField;
+import com.coralblocks.coralproto.util.ByteBufferUtils;
 
 
 public class CharsAndBytesTest {
@@ -59,7 +61,7 @@ public class CharsAndBytesTest {
 	}
 	
 	@Test
-	public void testFixedCharsAndBytes() {
+	public void testCharsField() {
 		
 		CharsAndBytesProtoMessage proto = new CharsAndBytesProtoMessage();
 		
@@ -73,9 +75,9 @@ public class CharsAndBytesTest {
 		for(int i = 0; i < proto.myChars.size(); i++) sb.append(" ");
 		Assert.assertEquals(sb.toString(), proto.myChars.get().toString());
 		
-		final String s = "BLAH";
+		String s = "BLAH";
 
-		proto.myChars.set("BLAH");
+		proto.myChars.set(s);
 		sb.setLength(0);
 		sb.append(s);
 		for(int i = 0; i < proto.myChars.size() - s.length(); i++) sb.append(" ");
@@ -85,6 +87,93 @@ public class CharsAndBytesTest {
 		sb.setLength(0);
 		for(int i = 0; i < proto.myChars.size(); i++) sb.append(" ");
 		Assert.assertEquals(sb.toString(), proto.myChars.get().toString());
+		
+		s = "FOO1";
+		
+		proto.myChars.set(s.getBytes());
+		sb.setLength(0);
+		sb.append(s);
+		for(int i = 0; i < proto.myChars.size() - s.length(); i++) sb.append(" ");
+		Assert.assertEquals(sb.toString(), proto.myChars.get().toString());
+		
+		s = "FOO2";
+		
+		proto.myChars.set(s.toCharArray());
+		sb.setLength(0);
+		sb.append(s);
+		for(int i = 0; i < proto.myChars.size() - s.length(); i++) sb.append(" ");
+		Assert.assertEquals(sb.toString(), proto.myChars.get().toString());
+		
+	}
+	
+	@Test
+	public void testVarCharsField() {
+		
+		CharsAndBytesProtoMessage proto = new CharsAndBytesProtoMessage();
+		
+		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, proto.getType());
+		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, proto.getSubtype());
+		
+		Assert.assertEquals(false, proto.myVarChars.isOptional());
+		Assert.assertEquals(true, proto.myVarChars.isPresent());
+
+		StringBuilder sb = new StringBuilder();
+		
+		String s = "BLAH";
+		
+		proto.myVarChars.set(s);
+		sb.setLength(0);
+		sb.append(s);
+		Assert.assertEquals(sb.toString(), proto.myVarChars.get().toString());
+		
+		proto.myVarChars.clear();
+		sb.setLength(0);
+		Assert.assertEquals(sb.toString(), proto.myVarChars.get().toString());
+		
+		s = "FOO1";
+		
+		proto.myVarChars.set(s.getBytes());
+		sb.setLength(0);
+		sb.append(s);
+		Assert.assertEquals(sb.toString(), proto.myVarChars.get().toString());
+		
+		s = "FOO2";
+		
+		proto.myVarChars.set(s.toCharArray());
+		sb.setLength(0);
+		sb.append(s);
+		Assert.assertEquals(sb.toString(), proto.myVarChars.get().toString());
+		
+	}
+	
+	@Test
+	public void testBytesField() {
+		
+		CharsAndBytesProtoMessage proto = new CharsAndBytesProtoMessage();
+		
+		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, proto.getType());
+		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, proto.getSubtype());
+		
+		Assert.assertEquals(false, proto.myBytes.isOptional());
+		Assert.assertEquals(true, proto.myBytes.isPresent());
+		
+		StringBuilder sb = new StringBuilder(proto.myBytes.size());
+		
+		String s = "BLAHBLAH";
+
+		proto.myBytes.set(s.getBytes());
+		sb.setLength(0);
+		sb.append(s);
+		for(int i = 0; i < proto.myBytes.size() - s.length(); i++) sb.append(" ");
+		Assert.assertEquals(sb.toString(), ByteBufferUtils.parseString(proto.myBytes.get()));
+		
+		s = "FOO1FOO1";
+		
+		proto.myBytes.set(ByteBuffer.wrap(s.getBytes()));
+		sb.setLength(0);
+		sb.append(s);
+		for(int i = 0; i < proto.myBytes.size() - s.length(); i++) sb.append(" ");
+		Assert.assertEquals(sb.toString(), ByteBufferUtils.parseString(proto.myBytes.get()));
 		
 	}
 }
