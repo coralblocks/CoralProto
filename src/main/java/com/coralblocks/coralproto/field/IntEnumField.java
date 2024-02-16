@@ -78,12 +78,14 @@ public class IntEnumField<E extends IntEnum> implements ProtoField {
 	@Override
 	public final void writeTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
+		if (value == null) throw new IllegalStateException("Cannot write a null value!");
 		buf.putInt(value.getInt());
 	}
 	
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
+		if (value == null) throw new IllegalStateException("Cannot write a null value!");
 		String s = value.toString();
 		ByteBufferUtils.appendCharSequence(buf, s);
 	}
@@ -95,6 +97,7 @@ public class IntEnumField<E extends IntEnum> implements ProtoField {
 	
 	public final void set(E value) {
 		if (isOptional) this.isPresent = true;
+		if (value == null) throw new IllegalArgumentException("Cannot set a null value!");
 		this.value = value;
 	}
 	

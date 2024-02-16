@@ -405,7 +405,12 @@ public class IDL {
 			code.append(indent).append("public ");
 		}
 		boolean isOptional = type.endsWith("!");
-		if (type.startsWith("long")) {
+		
+		if (type.startsWith("charEnum") || type.startsWith("intEnum") || type.startsWith("shortEnum") || type.startsWith("twoChar")) {
+			String all = getEnumAll(type);
+			String t = getEnumType(type);
+			addEnumField(name, addThis, isOptional, groupFields, t, all);
+		} else if (type.startsWith("long")) {
 			addField(name, addThis, isOptional, groupFields, "LongField");
 		} else if (type.startsWith("int")) {
 			addField(name, addThis, isOptional, groupFields, "IntField");
@@ -429,10 +434,6 @@ public class IDL {
 		} else if (type.startsWith("varchars")) {
 			String size = getSize(type);
 			addField(name, addThis, isOptional, groupFields, "VarCharsField", size);
-		} else if (type.startsWith("enum")) {
-			String all = getEnumAll(type);
-			String t = getEnumType(type);
-			addEnumField(name, addThis, isOptional, groupFields, t, all);
 		} else {
 			throw new IllegalStateException("Bad type: " + type);
 		}
@@ -463,7 +464,7 @@ public class IDL {
 	}
 	
 	private String getEnumAll(String type) {
-		String[] matches = RegexUtils.match(type, "/enum\\(([^\\)]+)\\)/");
+		String[] matches = RegexUtils.match(type, "/Enum\\(([^\\)]+)\\)/");
 		if (matches == null || matches.length != 1) throw new IllegalStateException("Cannot parse all: " + type);
 		String s = "import " + matches[0] + ";";
 		if (!imports.contains(s)) imports.add(s);
@@ -476,15 +477,25 @@ public class IDL {
 	}
 	
 	private String getEnumType(String type) {
-		String[] matches = RegexUtils.match(type, "/enum\\(([^\\)]+)\\)/");
+		String[] matches = RegexUtils.match(type, "/Enum\\(([^\\)]+)\\)/");
 		if (matches == null || matches.length != 1) throw new IllegalStateException("Cannot parse all: " + type);
 		String s = "import " + matches[0] + ";";
 		if (!imports.contains(s)) imports.add(s);
 		String[] t = matches[0].split("\\.");
+		String prefix = null;
+		if (type.startsWith("char")) {
+			prefix = "Char";
+		} else if (type.startsWith("int")) {
+			prefix = "Int";
+		} else if (type.startsWith("short")) {
+			prefix = "Short";
+		} else if (type.startsWith("twoChar")) {
+			prefix = "TwoChar";
+		}
 		if (t.length > 1) {
-			return "CharEnumField<" + t[t.length - 1] + ">";
+			return prefix + "EnumField<" + t[t.length - 1] + ">";
 		} else {
-			return "CharEnumField<" + matches[0] + ">";
+			return prefix + "EnumField<" + matches[0] + ">";
 		}
 	}
 	
