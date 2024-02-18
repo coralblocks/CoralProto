@@ -3,13 +3,13 @@ package com.coralblocks.coralproto.field;
 import java.nio.ByteBuffer;
 
 import com.coralblocks.coralproto.AbstractProto;
-import com.coralblocks.coralproto.util.ByteArrayCharSequence;
+import com.coralblocks.coralproto.util.ByteBufferCharSequence;
 
 public class CharsField implements ProtoField {
 	
 	private final boolean isOptional;
 	private boolean isPresent;
-	private final ByteArrayCharSequence bacs;
+	private final ByteBufferCharSequence bbcs;
 	private final int size;
 	
 	public CharsField(int size) {
@@ -26,9 +26,9 @@ public class CharsField implements ProtoField {
 	
 	public CharsField(AbstractProto proto, int size, boolean isOptional) {
 		if (proto != null) proto.add(this);
-		this.bacs = new ByteArrayCharSequence(size);
-		byte[] byteArray = bacs.getByteArray();
-		for(int i = 0; i < size; i++) byteArray[i] = (byte) ' ';
+		this.bbcs = new ByteBufferCharSequence(size);
+		ByteBuffer byteBuffer = bbcs.getByteBuffer();
+		for(int i = 0; i < size; i++) byteBuffer.put((byte) ' ');
 		this.isOptional = isOptional;
 		this.size = size;
 	}
@@ -69,15 +69,15 @@ public class CharsField implements ProtoField {
 		if (isOptional) this.isPresent = true;
 	}
 	
-	private final ByteArrayCharSequence getAndMarkAsPresent() {
+	private final ByteBufferCharSequence getAndMarkAsPresent() {
 		if (isOptional) isPresent = true;
-		return (ByteArrayCharSequence) get();
+		return (ByteBufferCharSequence) get();
 	}
 	
 	public final CharsField clear() {
-		ByteArrayCharSequence bacs = getAndMarkAsPresent();
-		byte[] byteArray = bacs.getByteArray();
-		for(int i = 0; i < size; i++) byteArray[i] = (byte) ' ';
+		ByteBufferCharSequence bacs = getAndMarkAsPresent();
+		ByteBuffer byteBuffer = bacs.getByteBuffer();
+		for(int i = 0; i < size; i++) byteBuffer.put((byte) ' ');
 		return this;
 	}
 	
@@ -86,10 +86,10 @@ public class CharsField implements ProtoField {
 		if (len > size) {
 			throw new IllegalArgumentException("CharSequence is larger than field length: " + cs.toString() + " (" + size + ")");
 		}
-		ByteArrayCharSequence bacs = getAndMarkAsPresent();
-		byte[] byteArray = bacs.getByteArray();
-		for(int i = 0; i < len; i++) byteArray[i] = (byte) cs.charAt(i);
-		for(int i = len; i < size; i++) byteArray[i] = (byte) ' ';
+		ByteBufferCharSequence bacs = getAndMarkAsPresent();
+		ByteBuffer byteBuffer = bacs.getByteBuffer();
+		for(int i = 0; i < len; i++) byteBuffer.put((byte) cs.charAt(i));
+		for(int i = len; i < size; i++) byteBuffer.put((byte) ' ');
 	}
 	
 	public final void set(byte[] array) {
@@ -97,10 +97,10 @@ public class CharsField implements ProtoField {
 		if (len > size) {
 			throw new IllegalArgumentException("Array is larger than field length: " + len);
 		}
-		ByteArrayCharSequence bacs = getAndMarkAsPresent();
-		byte[] byteArray = bacs.getByteArray();
-		System.arraycopy(array, 0, byteArray, 0, len);
-		for(int i = len; i < size; i++)  byteArray[i] = (byte) ' ';
+		ByteBufferCharSequence bacs = getAndMarkAsPresent();
+		ByteBuffer byteBuffer = bacs.getByteBuffer();
+		byteBuffer.put(array);
+		for(int i = len; i < size; i++) byteBuffer.put((byte) ' ');
 	}
 	
 	public final void set(char[] array) {
@@ -108,50 +108,52 @@ public class CharsField implements ProtoField {
 		if (len > size) {
 			throw new IllegalArgumentException("Array is larger than field length: " + len);
 		}
-		ByteArrayCharSequence bacs = getAndMarkAsPresent();
-		byte[] byteArray = bacs.getByteArray();
-		for(int i = 0; i < len; i++) byteArray[i] = (byte) array[i];
-		for(int i = len; i < size; i++)  byteArray[i] = (byte) ' ';
+		ByteBufferCharSequence bacs = getAndMarkAsPresent();
+		ByteBuffer byteBuffer = bacs.getByteBuffer();
+		for(int i = 0; i < len; i++) byteBuffer.put((byte) array[i]);
+		for(int i = len; i < size; i++)  byteBuffer.put((byte) ' ');
 	}
 	
 	public final CharSequence get() {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot get an optional field that is not present!");
-		return bacs;
+		return bbcs;
 	}
 	
-	public final byte[] getByteArray() {
-		return ((ByteArrayCharSequence) get()).getByteArray();
+	public final ByteBuffer getByteBuffer() {
+		return ((ByteBufferCharSequence) get()).getByteBuffer();
 	}
 	
 	@Override
 	public final void readFrom(ByteBuffer src) {
 		if (isOptional) this.isPresent = true;
-		byte[] byteArray = bacs.getByteArray();
-		src.get(byteArray);
+		ByteBuffer byteBuffer = bbcs.getByteBuffer();
+		int savedLim = src.limit();
+		src.limit(src.position() + byteBuffer.capacity());
+		byteBuffer.put(src);
+		src.limit(savedLim);
 	}
 	
 	@Override
 	public final void writeTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		byte[] byteArray = bacs.getByteArray();
-		buf.put(byteArray);
+		ByteBuffer byteBuffer = bbcs.getByteBuffer();
+		buf.put(byteBuffer);
 	}
 	
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		byte[] byteArray = bacs.getByteArray();
-		buf.put(byteArray);
+		ByteBuffer byteBuffer = bbcs.getByteBuffer();
+		buf.put(byteBuffer);
 	}
 	
 	@Override
 	public String toString() {
-		byte[] byteArray = bacs.getByteArray();
 		if (isOptional) {
 			if (isPresent) {
 				StringBuilder sb = new StringBuilder(size + 2);
 				sb.append('[');
-				for(int i = 0; i < byteArray.length; i++) sb.append((char) byteArray[i]);
+				sb.append(bbcs);
 				sb.append(']');
 				return sb.toString();
 			} else {
@@ -160,7 +162,7 @@ public class CharsField implements ProtoField {
 		} else {
 			StringBuilder sb = new StringBuilder(size + 2);
 			sb.append('[');
-			for(int i = 0; i < byteArray.length; i++) sb.append((char) byteArray[i]);
+			sb.append(bbcs);
 			sb.append(']');
 			return sb.toString();
 		}
