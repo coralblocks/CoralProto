@@ -27,9 +27,8 @@ public interface Proto {
 	 * Reads the contents of this proto message NOT including the type and subtype.
 	 * 
 	 * @param buf where to read this message from
-	 * @throws ProtoException
 	 */
-	public void read(ByteBuffer buf) throws ProtoException;
+	public void read(ByteBuffer buf);
 	
 	/**
 	 * Writes the contents of this proto message INCLUDING the type and subtype.

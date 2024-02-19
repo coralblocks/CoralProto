@@ -1,6 +1,7 @@
 package com.coralblocks.coralproto;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import com.coralblocks.coralproto.field.LongField;
 import com.coralblocks.coralproto.field.ShortField;
 import com.coralblocks.coralproto.field.SubtypeField;
 import com.coralblocks.coralproto.field.TypeField;
+import com.coralblocks.coralproto.util.ByteBufferUtils;
 
 
 public class FieldsTest {
@@ -109,6 +111,56 @@ public class FieldsTest {
 		Assert.assertEquals(0, proto.myShort.get());
 		proto.myShort.set(233);
 		Assert.assertEquals(233, proto.myShort.get());
+		
+	}
+	
+	@Test
+	public void testSendReceive() {
+		
+		ByteBuffer bb = ByteBuffer.allocate(1024);
+		
+		AllFieldsProtoMessage proto = new AllFieldsProtoMessage();
+		
+		proto.myBoolean.set(true);
+		proto.myByte.set(33);
+		proto.myChar.set('S');
+		proto.myInt.set(1111);
+		proto.myLong.set(222222L);
+		proto.myShort.set(3300);
+		
+		proto.write(bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals(AllFieldsProtoMessage.TYPE, bb.get());
+		Assert.assertEquals(AllFieldsProtoMessage.SUBTYPE, bb.get());
+		
+		AllFieldsProtoMessage received = new AllFieldsProtoMessage();
+		
+		received.read(bb);
+		
+		Assert.assertEquals(proto.myBoolean.get(), received.myBoolean.get());
+		Assert.assertEquals(proto.myByte.get(), received.myByte.get());
+		Assert.assertEquals(proto.myChar.get(), received.myChar.get());
+		Assert.assertEquals(proto.myInt.get(), received.myInt.get());
+		Assert.assertEquals(proto.myLong.get(), received.myLong.get());
+		Assert.assertEquals(proto.myShort.get(), received.myShort.get());
+		
+		bb.clear();
+		
+		received.writeAscii(true, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("AF|Y|33|S|1111|222222|3300", ByteBufferUtils.parseString(bb));
+		
+		bb.clear();
+		
+		received.writeAscii(false, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("AF (AllFieldsProtoMessage)|Y|33|S|1111|222222|3300", ByteBufferUtils.parseString(bb));
 		
 	}
 }

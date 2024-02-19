@@ -54,7 +54,7 @@ public abstract class AbstractProto implements Proto {
 	}
 	
 	@Override
-    public void read(ByteBuffer buf) throws ProtoException {
+    public void read(ByteBuffer buf) {
 		int size = protoFields.size();
 		for(int i = 0; i < size; i++) {
 			read(buf, protoFields.get(i));

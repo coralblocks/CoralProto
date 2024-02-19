@@ -3,9 +3,11 @@ package com.coralblocks.coralproto.field;
 import java.nio.ByteBuffer;
 
 import com.coralblocks.coralproto.AbstractProto;
+import com.coralblocks.coralproto.util.ByteBufferEncoder;
 
 public class ByteField implements ProtoField {
 	
+	private final ByteBufferEncoder bbEncoder = new ByteBufferEncoder();
 	private final boolean isOptional;
 	private boolean isPresent;
 	private byte value;
@@ -78,7 +80,7 @@ public class ByteField implements ProtoField {
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		buf.put(value);
+		bbEncoder.append(buf, value);
 	}
 	
 	public final byte get() {
