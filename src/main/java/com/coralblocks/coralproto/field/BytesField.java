@@ -63,11 +63,6 @@ public class BytesField implements ProtoField {
 		this.isPresent = false;
 	}
 	
-	@Override
-	public final void markAsPresent() {
-		if (isOptional) this.isPresent = true;
-	}
-	
 	private final ByteBuffer getAndMarkAsPresent() {
 		if (isOptional) isPresent = true;
 		return get();

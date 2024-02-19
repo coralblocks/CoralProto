@@ -64,11 +64,6 @@ public class ShortEnumField<E extends ShortEnum> implements ProtoField {
 	}
 	
 	@Override
-	public final void markAsPresent() {
-		if (isOptional) this.isPresent = true;
-	}
-	
-	@Override
 	public final void readFrom(ByteBuffer buf) {
 		if (isOptional) this.isPresent = true;
 		short s = buf.getShort();

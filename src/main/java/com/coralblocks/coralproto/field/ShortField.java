@@ -61,11 +61,6 @@ public class ShortField implements ProtoField {
 	}
 	
 	@Override
-	public final void markAsPresent() {
-		if (isOptional) this.isPresent = true;
-	}
-	
-	@Override
 	public final void readFrom(ByteBuffer buf) {
 		if (isOptional) this.isPresent = true;
 		this.value = buf.getShort();

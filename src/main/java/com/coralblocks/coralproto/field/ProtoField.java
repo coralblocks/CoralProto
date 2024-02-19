@@ -12,8 +12,6 @@ public interface ProtoField {
 	
 	public void markAsNotPresent();
 	
-	public void markAsPresent();
-	
 	public void readFrom(ByteBuffer buf);
 	
 	public void writeTo(ByteBuffer buf);

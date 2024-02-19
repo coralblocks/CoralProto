@@ -75,11 +75,6 @@ public class GroupField implements ProtoField {
 		this.isPresent = false;
 	}
 	
-	@Override
-	public final void markAsPresent() {
-		if (isOptional) this.isPresent = true;
-	}
-	
 	public final ProtoField[] internalArray() {
 		return protoFields;
 	}

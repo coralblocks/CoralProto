@@ -65,11 +65,6 @@ public class TwoCharEnumField<E extends TwoCharEnum> implements ProtoField {
 	}
 	
 	@Override
-	public final void markAsPresent() {
-		if (isOptional) this.isPresent = true;
-	}
-	
-	@Override
 	public final void readFrom(ByteBuffer buf) {
 		if (isOptional) this.isPresent = true;
 		byte b1 = buf.get();

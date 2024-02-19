@@ -103,11 +103,6 @@ public class RepeatingGroupField implements ProtoField {
 	}
 	
 	@Override
-	public final void markAsPresent() {
-		// NOOP
-	}
-
-	@Override
 	public void readFrom(ByteBuffer buf) {
 		clear();
 		short n = buf.getShort();
