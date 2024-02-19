@@ -124,8 +124,8 @@ public class VarCharsField implements ProtoField {
 		enforceMaxLength(len);
 		int savedLim = src.limit();
 		src.limit(src.position() + len);
-		bbcs.getByteBuffer().put(src);
 		bbcs.setSize(len);
+		bbcs.getByteBuffer().put(src);
 		src.limit(savedLim);
 	}
 	
