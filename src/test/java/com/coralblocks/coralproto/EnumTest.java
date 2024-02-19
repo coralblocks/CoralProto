@@ -1,6 +1,7 @@
 package com.coralblocks.coralproto;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import com.coralblocks.coralproto.field.ShortEnumField;
 import com.coralblocks.coralproto.field.SubtypeField;
 import com.coralblocks.coralproto.field.TwoCharEnumField;
 import com.coralblocks.coralproto.field.TypeField;
+import com.coralblocks.coralproto.util.ByteBufferUtils;
 import com.coralblocks.coralproto.util.CharMap;
 import com.coralblocks.coralproto.util.CharUtils;
 import com.coralblocks.coralproto.util.IntMap;
@@ -238,5 +240,50 @@ public class EnumTest {
 		
 		proto.myTwoCharEnum.set(CancelReason.LIQUIDITY);
 		Assert.assertEquals(CancelReason.LIQUIDITY, proto.myTwoCharEnum.get());
+	}
+	
+	@Test
+	public void testSendAndReceive() {
+		
+		ByteBuffer bb = ByteBuffer.allocate(1024);
+		
+		EnumProtoMessage proto = new EnumProtoMessage();
+		
+		proto.myCharEnum.set(Side.SELL);
+		proto.myShortEnum.set(RejectReason.BAD_PRICE);
+		proto.myIntEnum.set(ReduceRejectReason.SUPERFLUOUS);
+		proto.myTwoCharEnum.set(CancelReason.MISSED);
+		
+		proto.write(bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals(EnumProtoMessage.TYPE, bb.get());
+		Assert.assertEquals(EnumProtoMessage.SUBTYPE, bb.get());
+		
+		EnumProtoMessage received = new EnumProtoMessage();
+		
+		received.read(bb);
+		
+		Assert.assertEquals(Side.SELL, received.myCharEnum.get());
+		Assert.assertEquals(RejectReason.BAD_PRICE, received.myShortEnum.get());
+		Assert.assertEquals(ReduceRejectReason.SUPERFLUOUS, received.myIntEnum.get());
+		Assert.assertEquals(CancelReason.MISSED, received.myTwoCharEnum.get());
+		
+		bb.clear();
+		
+		received.writeAscii(true, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("ET|SELL|BAD_PRICE|SUPERFLUOUS|MISSED", ByteBufferUtils.parseString(bb));
+		
+		bb.clear();
+		
+		received.writeAscii(false, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("ET (EnumProtoMessage)|SELL|BAD_PRICE|SUPERFLUOUS|MISSED", ByteBufferUtils.parseString(bb));
 	}
 }
