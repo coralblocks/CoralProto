@@ -1,6 +1,7 @@
 package com.coralblocks.coralproto;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import com.coralblocks.coralproto.field.LongField;
 import com.coralblocks.coralproto.field.ShortField;
 import com.coralblocks.coralproto.field.SubtypeField;
 import com.coralblocks.coralproto.field.TypeField;
+import com.coralblocks.coralproto.util.ByteBufferUtils;
 
 
 public class OptionalFieldsTest {
@@ -110,5 +112,104 @@ public class OptionalFieldsTest {
 		Assert.assertEquals(true, proto.myShort.isPresent());
 		Assert.assertEquals(614, proto.myShort.get());
 		
+	}
+	
+	@Test
+	public void testSendReceive() {
+		
+		ByteBuffer bb = ByteBuffer.allocate(1024);
+		
+		OptionalFieldsProtoMessage proto = new OptionalFieldsProtoMessage();
+		
+		proto.myBoolean.set(true);
+		proto.myByte.set(33);
+		proto.myChar.set('S');
+		proto.myInt.set(1111);
+		proto.myLong.set(222222L);
+		proto.myShort.set(3300);
+		
+		proto.write(bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals(OptionalFieldsProtoMessage.TYPE, bb.get());
+		Assert.assertEquals(OptionalFieldsProtoMessage.SUBTYPE, bb.get());
+		
+		OptionalFieldsProtoMessage received = new OptionalFieldsProtoMessage();
+		
+		received.read(bb);
+		
+		Assert.assertEquals(proto.myBoolean.get(), received.myBoolean.get());
+		Assert.assertEquals(proto.myByte.get(), received.myByte.get());
+		Assert.assertEquals(proto.myChar.get(), received.myChar.get());
+		Assert.assertEquals(proto.myInt.get(), received.myInt.get());
+		Assert.assertEquals(proto.myLong.get(), received.myLong.get());
+		Assert.assertEquals(proto.myShort.get(), received.myShort.get());
+		
+		bb.clear();
+		
+		received.writeAscii(true, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("OF|Y|33|S|1111|222222|3300", ByteBufferUtils.parseString(bb));
+		
+		bb.clear();
+		
+		received.writeAscii(false, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("OF (OptionalFieldsProtoMessage)|Y|33|S|1111|222222|3300", ByteBufferUtils.parseString(bb));
+		
+	}
+	
+	@Test
+	public void testSendReceiveWithOptional() {
+		
+		ByteBuffer bb = ByteBuffer.allocate(1024);
+		
+		OptionalFieldsProtoMessage proto = new OptionalFieldsProtoMessage();
+		
+		proto.myBoolean.markAsNotPresent();
+		proto.myByte.set(33);
+		proto.myChar.markAsNotPresent();
+		proto.myInt.markAsNotPresent();
+		proto.myLong.set(222222L);
+		proto.myShort.set(3300);
+		
+		proto.write(bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals(OptionalFieldsProtoMessage.TYPE, bb.get());
+		Assert.assertEquals(OptionalFieldsProtoMessage.SUBTYPE, bb.get());
+		
+		OptionalFieldsProtoMessage received = new OptionalFieldsProtoMessage();
+		
+		received.read(bb);
+		
+		Assert.assertEquals(false, received.myBoolean.isPresent());
+		Assert.assertEquals(proto.myByte.get(), received.myByte.get());
+		Assert.assertEquals(false, received.myChar.isPresent());
+		Assert.assertEquals(false, received.myInt.isPresent());
+		Assert.assertEquals(proto.myLong.get(), received.myLong.get());
+		Assert.assertEquals(proto.myShort.get(), received.myShort.get());
+		
+		bb.clear();
+		
+		received.writeAscii(true, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("OF|BLANK|33|BLANK|BLANK|222222|3300", ByteBufferUtils.parseString(bb));
+		
+		bb.clear();
+		
+		received.writeAscii(false, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("OF (OptionalFieldsProtoMessage)|BLANK|33|BLANK|BLANK|222222|3300", ByteBufferUtils.parseString(bb));
 	}
 }
