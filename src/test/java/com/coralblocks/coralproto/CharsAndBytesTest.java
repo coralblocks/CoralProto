@@ -212,4 +212,49 @@ public class CharsAndBytesTest {
 		Assert.assertEquals(sb.toString(), ByteBufferUtils.parseString(proto.myVarBytes.get()));
 		
 	}
+	
+	@Test
+	public void testSendAndReceive() {
+		
+		CharsAndBytesProtoMessage proto = new CharsAndBytesProtoMessage();
+		
+		proto.myChars.set("ABCD1234");
+		proto.myVarChars.set("0123456789ABC");
+		proto.myBytes.set("ZZZZXXXX".getBytes());
+		proto.myVarBytes.set("ABCDEFGHIJKLMNOPQRSTUVXZ".getBytes());
+		
+		ByteBuffer bb = ByteBuffer.allocate(1024);
+		
+		proto.write(bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, bb.get());
+		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, bb.get());
+		
+		CharsAndBytesProtoMessage received = new CharsAndBytesProtoMessage();
+		
+		received.read(bb);
+		
+		Assert.assertEquals("ABCD1234", proto.myChars.get().toString());
+		Assert.assertEquals("0123456789ABC", proto.myVarChars.get().toString());
+		Assert.assertEquals("ZZZZXXXX", ByteBufferUtils.parseString(proto.myBytes.get()));
+		Assert.assertEquals("ABCDEFGHIJKLMNOPQRSTUVXZ", ByteBufferUtils.parseString(proto.myVarBytes.get()));
+		
+		bb.clear();
+		
+		received.writeAscii(true, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("CB|ABCD1234|0123456789ABC|ZZZZXXXX|ABCDEFGHIJKLMNOPQRSTUVXZ", ByteBufferUtils.parseString(bb));
+		
+		bb.clear();
+		
+		received.writeAscii(false, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("CB (CharsAndBytesProtoMessage)|ABCD1234|0123456789ABC|ZZZZXXXX|ABCDEFGHIJKLMNOPQRSTUVXZ", ByteBufferUtils.parseString(bb));
+	}
 }

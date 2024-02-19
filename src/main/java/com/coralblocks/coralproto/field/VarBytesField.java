@@ -112,7 +112,7 @@ public class VarBytesField implements ProtoField {
 		byteBuffer.put(src);
 		byteBuffer.flip();
 		src.limit(savedLim);
-		this.size = byteBuffer.remaining();
+		this.size = len;
 	}
 	
 	@Override
@@ -126,7 +126,8 @@ public class VarBytesField implements ProtoField {
 	public final void writeAsciiTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
 		ByteBuffer byteBuffer = get();
-		for(int i = 0; i < byteBuffer.remaining(); i++) {
+		int len = byteBuffer.remaining();
+		for(int i = 0; i < len; i++) {
 			byte b = byteBuffer.get();
 			if (CharUtils.isPrintable((char) b)) {
 				buf.put((byte) b);
