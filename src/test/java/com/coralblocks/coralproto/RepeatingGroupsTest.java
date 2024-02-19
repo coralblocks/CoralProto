@@ -1,6 +1,7 @@
 package com.coralblocks.coralproto;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import com.coralblocks.coralproto.field.ProtoField;
 import com.coralblocks.coralproto.field.RepeatingGroupField;
 import com.coralblocks.coralproto.field.SubtypeField;
 import com.coralblocks.coralproto.field.TypeField;
+import com.coralblocks.coralproto.util.ByteBufferUtils;
 
 
 public class RepeatingGroupsTest {
@@ -309,6 +311,139 @@ public class RepeatingGroupsTest {
 		Assert.assertEquals(false, proto.bids.legs.iterHasNext());
 		
 		Assert.assertEquals(false, proto.bids.iterHasNext());
+	}
+	
+	@Test
+	public void testSendAndReceive() {
+		
+		ByteBuffer bb = ByteBuffer.allocate(1024);
+		
+		RepeatingGroupProtoMessage proto = new RepeatingGroupProtoMessage();
+		
+		proto.myBoolean.set(true);
+		proto.myLong.set(6123424243345L);
+
+		proto.bids.clear();
+
+		proto.bids.nextElement();
+		proto.bids.levelId.set(1212);
+		proto.bids.qty.set(200);
+
+		proto.bids.legs.clear();
+
+		proto.bids.legs.nextElement();
+		proto.bids.legs.legId.set(22321);
+		proto.bids.legs.legCode.set(332);
+
+		proto.bids.legs.nextElement();
+		proto.bids.legs.legId.set(22322);
+		proto.bids.legs.legCode.markAsNotPresent();
+		
+		proto.bids.orders.set(3);
+		
+		proto.bids.nextElement();
+		proto.bids.levelId.markAsNotPresent();
+		proto.bids.qty.set(400);
+		
+		proto.bids.legs.clear();
+
+		proto.bids.legs.nextElement();
+		proto.bids.legs.legId.set(22325);
+		proto.bids.legs.legCode.markAsNotPresent();
+		
+		proto.bids.legs.nextElement();
+		proto.bids.legs.legId.set(22326);
+		proto.bids.legs.legCode.markAsNotPresent();
+		
+		proto.bids.orders.set(2);
+		
+		proto.write(bb);
+		
+		bb.flip();
+		
+		RepeatingGroupProtoMessage received = new RepeatingGroupProtoMessage();
+		
+		Assert.assertEquals(RepeatingGroupProtoMessage.TYPE, bb.get());
+		Assert.assertEquals(RepeatingGroupProtoMessage.SUBTYPE, bb.get());
+		
+		received.read(bb);
+		
+		Assert.assertEquals(true, received.myBoolean.get());
+		Assert.assertEquals(6123424243345L, received.myLong.get());
+		
+		received.bids.beginIteration();
+		
+		Assert.assertEquals(true, received.bids.iterHasNext());
+		
+		received.bids.iterNext();
+		
+		Assert.assertEquals(1212, received.bids.levelId.get());
+		Assert.assertEquals(200, received.bids.qty.get());
+		
+		received.bids.legs.beginIteration();
+		
+		Assert.assertEquals(true, received.bids.legs.iterHasNext());
+		
+		received.bids.legs.iterNext();
+		
+		Assert.assertEquals(22321, received.bids.legs.legId.get());
+		Assert.assertEquals(332, received.bids.legs.legCode.get());
+		
+		Assert.assertEquals(true, received.bids.legs.iterHasNext());
+		
+		received.bids.legs.iterNext();
+		
+		Assert.assertEquals(22322, received.bids.legs.legId.get());
+		Assert.assertEquals(false, received.bids.legs.legCode.isPresent());
+		
+		Assert.assertEquals(false, received.bids.legs.iterHasNext());
+
+		Assert.assertEquals(3, received.bids.orders.get());
+		
+		Assert.assertEquals(true, received.bids.iterHasNext());
+		
+		received.bids.iterNext();
+		
+		Assert.assertEquals(false, received.bids.levelId.isPresent());
+		Assert.assertEquals(400, received.bids.qty.get());
+		
+		received.bids.legs.beginIteration();
+		
+		Assert.assertEquals(true, received.bids.legs.iterHasNext());
+		
+		received.bids.legs.iterNext();
+		
+		Assert.assertEquals(22325, received.bids.legs.legId.get());
+		Assert.assertEquals(false, received.bids.legs.legCode.isPresent());
+		
+		Assert.assertEquals(true, received.bids.legs.iterHasNext());
+		
+		received.bids.legs.iterNext();
+		
+		Assert.assertEquals(22326, received.bids.legs.legId.get());
+		Assert.assertEquals(false, received.bids.legs.legCode.isPresent());
+		
+		Assert.assertEquals(false, received.bids.legs.iterHasNext());
+		
+		Assert.assertEquals(2, received.bids.orders.get());
+		
+		Assert.assertEquals(false, received.bids.iterHasNext());
+		
+		bb.clear();
+		
+		received.writeAscii(true, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("AF|Y|6123424243345|2=[1212,200,2=[22321,332;22322,BLANK],3;BLANK,400,2=[22325,BLANK;22326,BLANK],2]", ByteBufferUtils.parseString(bb));
+
+		bb.clear();
+		
+		received.writeAscii(false, bb);
+		
+		bb.flip();
+		
+		Assert.assertEquals("AF (RepeatingGroupProtoMessage)|Y|6123424243345|2=[1212,200,2=[22321,332;22322,BLANK],3;BLANK,400,2=[22325,BLANK;22326,BLANK],2]", ByteBufferUtils.parseString(bb));
 	}
 	
 }
