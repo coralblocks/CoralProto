@@ -5,7 +5,7 @@ A fast, binary and garbage-free serialization framework with a simple schema def
 - Simple schema definition language with message type and subtype
 - Fast parsing (or direct access without parsing)
 - Strictly binary (big-endian)
-- Ascii support for logging/debugging
+- Ascii encoding for logging/debugging
 - Garbage Free (no GC overhead)
 - Primary Types (boolean, char, byte, short, int and long) (no double or float on purpose => use long instead)
 - Fixed Byte and Char Arrays
