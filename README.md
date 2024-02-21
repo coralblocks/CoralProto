@@ -7,10 +7,10 @@ A fast, binary and garbage-free serialization framework with a simple schema def
 - Strictly binary (big-endian)
 - Ascii encoding for logging/debugging
 - Garbage Free (no GC overhead)
-- Primary Types (boolean, char, byte, short, int and long) (no double or float on purpose => use long instead)
+- Primary Types (boolean, char, byte, short, int, long, float and double)
 - Fixed Byte and Char Arrays
-- Enum Fields (CharEnum, ShortEnum, IntEnum and TwoCharEnum)
 - Variable Byte and Char Arrays (VarChars and VarBytes)
+- Enum Fields (CharEnum, ShortEnum, IntEnum and TwoCharEnum)
 - Fields can be made optional
 - Repeating Groups with nesting support (repeating groups inside repeating groups)
 - Schema evolution by appending new (optional or non-optional) fields
