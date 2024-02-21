@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.IDL;
+import com.coralblocks.coralproto.field.BooleanField;
 import com.coralblocks.coralproto.field.CharsField;
 import com.coralblocks.coralproto.field.DoubleField;
 import com.coralblocks.coralproto.field.GroupField;
@@ -26,23 +27,15 @@ public class PriceChangeMessage extends AbstractProto {
 		  symbolDesc: varchars(128)
 		  mqReqId: long!
 		  
-		  bids:
+		  orders:
+		      side: boolean
 		      levelId: long!
 		      priceLevel: double
 		      qty: int
 		      legs:
 		        legId: int
 		        legDesc: chars(8)!
-		      orders: int
-		  
-		  asks:
-		      levelId: long!
-		      priceLevel: double
-		      qty: int
-		      legs:
-		        legId: int
-		        legDesc: chars(8)!
-		      orders: int
+		      orderId: long
 		  
 		  lastTradeQty: long!
 		  lastTradePrice: double!
@@ -72,7 +65,9 @@ public class PriceChangeMessage extends AbstractProto {
 
         public final LongField mqReqId = new LongField(this, true);
 
-        public static class BidsRepeatingGroup extends RepeatingGroupField {
+        public static class OrdersRepeatingGroup extends RepeatingGroupField {
+
+            public BooleanField side;
 
             public LongField levelId;
 
@@ -114,31 +109,32 @@ public class PriceChangeMessage extends AbstractProto {
 
                 @Override
                 protected final RepeatingGroupField newInstance(ProtoField[] protoFields) {
-                    return new BidsRepeatingGroup.LegsRepeatingGroup(null, protoFields);
+                    return new OrdersRepeatingGroup.LegsRepeatingGroup(null, protoFields);
                 } 
 
             }
 
-            BidsRepeatingGroup.LegsRepeatingGroup legs;
+            OrdersRepeatingGroup.LegsRepeatingGroup legs;
 
-            public IntField orders;
+            public LongField orderId;
 
-            public BidsRepeatingGroup(AbstractProto proto) {
-                this(proto, new LongField(true), new DoubleField(), new IntField(), new BidsRepeatingGroup.LegsRepeatingGroup(null), new IntField());
+            public OrdersRepeatingGroup(AbstractProto proto) {
+                this(proto, new BooleanField(), new LongField(true), new DoubleField(), new IntField(), new OrdersRepeatingGroup.LegsRepeatingGroup(null), new LongField());
             }
 
-            public BidsRepeatingGroup(AbstractProto proto, ProtoField ... protoFields) {
+            public OrdersRepeatingGroup(AbstractProto proto, ProtoField ... protoFields) {
                 super(proto, protoFields);
             }
 
             @Override
             public GroupField nextElement() {
                 GroupField groupField = super.nextElement();
-                this.levelId = (LongField) groupField.internalArray()[0];
-                this.priceLevel = (DoubleField) groupField.internalArray()[1];
-                this.qty = (IntField) groupField.internalArray()[2];
-                this.legs = (BidsRepeatingGroup.LegsRepeatingGroup) groupField.internalArray()[3];
-                this.orders = (IntField) groupField.internalArray()[4];
+                this.side = (BooleanField) groupField.internalArray()[0];
+                this.levelId = (LongField) groupField.internalArray()[1];
+                this.priceLevel = (DoubleField) groupField.internalArray()[2];
+                this.qty = (IntField) groupField.internalArray()[3];
+                this.legs = (OrdersRepeatingGroup.LegsRepeatingGroup) groupField.internalArray()[4];
+                this.orderId = (LongField) groupField.internalArray()[5];
                 return groupField;
             } 
 
@@ -146,115 +142,24 @@ public class PriceChangeMessage extends AbstractProto {
             public GroupField iterNext() {
                 GroupField groupField = super.iterNext();
                 if (groupField != null) {
-                    this.levelId = (LongField) groupField.internalArray()[0];
-                    this.priceLevel = (DoubleField) groupField.internalArray()[1];
-                    this.qty = (IntField) groupField.internalArray()[2];
-                    this.legs = (BidsRepeatingGroup.LegsRepeatingGroup) groupField.internalArray()[3];
-                    this.orders = (IntField) groupField.internalArray()[4];
+                    this.side = (BooleanField) groupField.internalArray()[0];
+                    this.levelId = (LongField) groupField.internalArray()[1];
+                    this.priceLevel = (DoubleField) groupField.internalArray()[2];
+                    this.qty = (IntField) groupField.internalArray()[3];
+                    this.legs = (OrdersRepeatingGroup.LegsRepeatingGroup) groupField.internalArray()[4];
+                    this.orderId = (LongField) groupField.internalArray()[5];
                 }
                 return groupField;
             } 
 
             @Override
             protected final RepeatingGroupField newInstance(ProtoField[] protoFields) {
-                return new BidsRepeatingGroup(null, protoFields);
+                return new OrdersRepeatingGroup(null, protoFields);
             } 
 
         }
 
-        BidsRepeatingGroup bids = new BidsRepeatingGroup(this);
-
-        public static class AsksRepeatingGroup extends RepeatingGroupField {
-
-            public LongField levelId;
-
-            public DoubleField priceLevel;
-
-            public IntField qty;
-
-            public static class LegsRepeatingGroup extends RepeatingGroupField {
-
-                public IntField legId;
-
-                public CharsField legDesc;
-
-                public LegsRepeatingGroup(AbstractProto proto) {
-                    this(proto, new IntField(), new CharsField(8, true));
-                }
-
-                public LegsRepeatingGroup(AbstractProto proto, ProtoField ... protoFields) {
-                    super(proto, protoFields);
-                }
-
-                @Override
-                public GroupField nextElement() {
-                    GroupField groupField = super.nextElement();
-                    this.legId = (IntField) groupField.internalArray()[0];
-                    this.legDesc = (CharsField) groupField.internalArray()[1];
-                    return groupField;
-                } 
-
-                @Override
-                public GroupField iterNext() {
-                    GroupField groupField = super.iterNext();
-                    if (groupField != null) {
-                        this.legId = (IntField) groupField.internalArray()[0];
-                        this.legDesc = (CharsField) groupField.internalArray()[1];
-                    }
-                    return groupField;
-                } 
-
-                @Override
-                protected final RepeatingGroupField newInstance(ProtoField[] protoFields) {
-                    return new AsksRepeatingGroup.LegsRepeatingGroup(null, protoFields);
-                } 
-
-            }
-
-            AsksRepeatingGroup.LegsRepeatingGroup legs;
-
-            public IntField orders;
-
-            public AsksRepeatingGroup(AbstractProto proto) {
-                this(proto, new LongField(true), new DoubleField(), new IntField(), new AsksRepeatingGroup.LegsRepeatingGroup(null), new IntField());
-            }
-
-            public AsksRepeatingGroup(AbstractProto proto, ProtoField ... protoFields) {
-                super(proto, protoFields);
-            }
-
-            @Override
-            public GroupField nextElement() {
-                GroupField groupField = super.nextElement();
-                this.levelId = (LongField) groupField.internalArray()[0];
-                this.priceLevel = (DoubleField) groupField.internalArray()[1];
-                this.qty = (IntField) groupField.internalArray()[2];
-                this.legs = (AsksRepeatingGroup.LegsRepeatingGroup) groupField.internalArray()[3];
-                this.orders = (IntField) groupField.internalArray()[4];
-                return groupField;
-            } 
-
-            @Override
-            public GroupField iterNext() {
-                GroupField groupField = super.iterNext();
-                if (groupField != null) {
-                    this.levelId = (LongField) groupField.internalArray()[0];
-                    this.priceLevel = (DoubleField) groupField.internalArray()[1];
-                    this.qty = (IntField) groupField.internalArray()[2];
-                    this.legs = (AsksRepeatingGroup.LegsRepeatingGroup) groupField.internalArray()[3];
-                    this.orders = (IntField) groupField.internalArray()[4];
-                }
-                return groupField;
-            } 
-
-            @Override
-            protected final RepeatingGroupField newInstance(ProtoField[] protoFields) {
-                return new AsksRepeatingGroup(null, protoFields);
-            } 
-
-        }
-
-        AsksRepeatingGroup asks = new AsksRepeatingGroup(this);
+        OrdersRepeatingGroup orders = new OrdersRepeatingGroup(this);
 
         public final LongField lastTradeQty = new LongField(this, true);
 
