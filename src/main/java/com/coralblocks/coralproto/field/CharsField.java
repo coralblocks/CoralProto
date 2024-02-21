@@ -27,10 +27,15 @@ public class CharsField implements ProtoField {
 	public CharsField(AbstractProto proto, int size, boolean isOptional) {
 		if (proto != null) proto.add(this);
 		this.bbcs = new ByteBufferCharSequence(size);
-		ByteBuffer byteBuffer = bbcs.getByteBuffer();
-		for(int i = 0; i < size; i++) byteBuffer.put((byte) ' ');
 		this.isOptional = isOptional;
 		this.size = size;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		ByteBuffer byteBuffer = this.bbcs.getByteBuffer();
+		for(int i = 0; i < byteBuffer.capacity(); i++) byteBuffer.put((byte) ' ');
 	}
 	
 	@Override

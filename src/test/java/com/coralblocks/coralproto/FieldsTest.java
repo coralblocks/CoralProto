@@ -90,7 +90,7 @@ public class FieldsTest {
 		
 		Assert.assertEquals(false, proto.myChar.isOptional());
 		Assert.assertEquals(true, proto.myChar.isPresent());
-		Assert.assertEquals(0, proto.myChar.get());
+		Assert.assertEquals(' ', proto.myChar.get());
 		proto.myChar.set('S');
 		Assert.assertEquals('S', proto.myChar.get());
 		

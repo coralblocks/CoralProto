@@ -19,4 +19,6 @@ public interface ProtoField {
 	public void writeAsciiTo(ByteBuffer buf);
 	
 	public ProtoField newInstance();
+	
+	public void reset();
 }

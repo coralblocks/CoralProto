@@ -30,6 +30,12 @@ public class ShortEnumField<E extends ShortEnum> implements ProtoField {
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
 		this.intMap = intMap;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		this.value = null;
 	}
 	
 	@Override

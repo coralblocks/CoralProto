@@ -28,6 +28,12 @@ public class GroupField implements ProtoField {
 		this.isOptional = isOptional;
 		if (fields == null || fields.length < 2) throw new IllegalArgumentException(GroupField.class.getSimpleName() + " must have at least 2 fields!");
 		this.protoFields = fields;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		for(int i = 0; i < protoFields.length; i++) protoFields[i].reset();
 	}
 	
 	@Override

@@ -29,6 +29,11 @@ public class VarBytesField implements ProtoField {
 		if (proto != null) proto.add(this);
 		this.byteBuffer = ByteBuffer.allocate(maxLength);
 		this.isOptional = isOptional;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
 		this.size = 0;
 	}
 	

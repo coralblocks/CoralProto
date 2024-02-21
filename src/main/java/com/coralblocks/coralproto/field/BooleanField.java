@@ -25,6 +25,12 @@ public class BooleanField implements ProtoField {
 	public BooleanField(AbstractProto proto, boolean isOptional) {
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		this.value = false;
 	}
 	
 	@Override

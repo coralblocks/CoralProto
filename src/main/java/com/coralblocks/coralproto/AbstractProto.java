@@ -100,7 +100,11 @@ public abstract class AbstractProto implements Proto {
 				protoField.markAsNotPresent();
 			}
 		} else {
-			protoField.readFrom(buf);
+			if (buf.hasRemaining()) {
+				protoField.readFrom(buf);
+			} else {
+				protoField.reset();
+			}
 		}
 	}
 	

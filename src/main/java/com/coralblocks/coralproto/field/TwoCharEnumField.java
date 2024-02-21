@@ -31,6 +31,12 @@ public class TwoCharEnumField<E extends TwoCharEnum> implements ProtoField {
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
 		this.intMap = intMap;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		this.value = null;
 	}
 	
 	@Override

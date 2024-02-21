@@ -29,8 +29,13 @@ public class VarCharsField implements ProtoField {
 		if (proto != null) proto.add(this);
 		this.maxLength = maxLength;
 		this.bbcs = new ByteBufferCharSequence(maxLength);
-		this.bbcs.setSize(0);
 		this.isOptional = isOptional;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		this.bbcs.setSize(0);		
 	}
 	
 	@Override

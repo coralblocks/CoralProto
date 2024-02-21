@@ -27,6 +27,12 @@ public class ShortField implements ProtoField {
 	public ShortField(AbstractProto proto, boolean isOptional) {
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		this.value = 0;
 	}
 	
 	@Override

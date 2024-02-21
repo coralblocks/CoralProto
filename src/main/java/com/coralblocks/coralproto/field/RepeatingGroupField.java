@@ -34,6 +34,16 @@ public class RepeatingGroupField implements ProtoField {
 		};
 		this.groupFieldPool = new LinkedObjectPool<GroupField>(2, builder);
 		this.groupFieldPool.release(groupField);
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		Iterator<GroupField> iter = groupFields.iterator();
+		while(iter.hasNext()) {
+			groupFieldPool.release(iter.next());
+		}
+		groupFields.clear();
 	}
 	
 	public int getNumberOfElements() {

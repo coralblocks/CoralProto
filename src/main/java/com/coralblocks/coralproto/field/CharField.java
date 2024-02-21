@@ -25,6 +25,12 @@ public class CharField implements ProtoField {
 	public CharField(AbstractProto proto, boolean isOptional) {
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		this.value = ' ';
 	}
 	
 	@Override

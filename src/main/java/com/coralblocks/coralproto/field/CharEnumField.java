@@ -30,6 +30,12 @@ public class CharEnumField<E extends CharEnum> implements ProtoField {
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
 		this.charMap = charMap;
+		reset();
+	}
+	
+	@Override
+	public void reset() {
+		this.value = null;
 	}
 	
 	@Override
