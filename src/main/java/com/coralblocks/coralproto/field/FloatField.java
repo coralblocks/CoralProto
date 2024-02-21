@@ -23,26 +23,26 @@ public class FloatField implements ProtoField {
 	}
 	
 	public FloatField(AbstractProto proto) {
-		this(proto, false, FloatUtils.DEFAULT_PRECISION);
+		this(proto, FloatUtils.DEFAULT_PRECISION, false);
 	}
 	
 	public FloatField(AbstractProto proto, int precision) {
-		this(proto, false, precision);
+		this(proto, precision, false);
 	}
 	
 	public FloatField(boolean isOptional) {
-		this(null, isOptional, FloatUtils.DEFAULT_PRECISION);
+		this(null, FloatUtils.DEFAULT_PRECISION, isOptional);
 	}
 	
-	public FloatField(boolean isOptional, int precision) {
-		this(null, isOptional, precision);
+	public FloatField(int precision, boolean isOptional) {
+		this(null, precision, isOptional);
 	}
 	
 	public FloatField(AbstractProto proto, boolean isOptional) {
-		this(proto, isOptional, FloatUtils.DEFAULT_PRECISION);
+		this(proto, FloatUtils.DEFAULT_PRECISION, isOptional);
 	}
 	
-	public FloatField(AbstractProto proto, boolean isOptional, int precision) {
+	public FloatField(AbstractProto proto, int precision, boolean isOptional) {
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
 		this.precision = precision;
@@ -54,9 +54,13 @@ public class FloatField implements ProtoField {
 		this.value = 0;
 	}
 	
+	public int getPrecision() {
+		return precision;
+	}
+	
 	@Override
 	public ProtoField newInstance() {
-		return new FloatField(null, this.isOptional, this.precision);
+		return new FloatField(null, this.precision, this.isOptional);
 	}
 
 	@Override

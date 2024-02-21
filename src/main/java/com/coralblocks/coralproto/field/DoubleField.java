@@ -23,26 +23,26 @@ public class DoubleField implements ProtoField {
 	}
 	
 	public DoubleField(AbstractProto proto) {
-		this(proto, false, DoubleUtils.DEFAULT_PRECISION);
+		this(proto, DoubleUtils.DEFAULT_PRECISION, false);
 	}
 	
 	public DoubleField(AbstractProto proto, int precision) {
-		this(proto, false, precision);
+		this(proto, precision, false);
 	}
 	
 	public DoubleField(boolean isOptional) {
-		this(null, isOptional, DoubleUtils.DEFAULT_PRECISION);
+		this(null, DoubleUtils.DEFAULT_PRECISION, isOptional);
 	}
 	
-	public DoubleField(boolean isOptional, int precision) {
-		this(null, isOptional, precision);
+	public DoubleField(int precision, boolean isOptional) {
+		this(null, precision, isOptional);
 	}
 	
 	public DoubleField(AbstractProto proto, boolean isOptional) {
-		this(proto, isOptional, DoubleUtils.DEFAULT_PRECISION);
+		this(proto, DoubleUtils.DEFAULT_PRECISION, isOptional);
 	}
 	
-	public DoubleField(AbstractProto proto, boolean isOptional, int precision) {
+	public DoubleField(AbstractProto proto, int precision, boolean isOptional) {
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
 		this.precision = precision;
@@ -54,9 +54,13 @@ public class DoubleField implements ProtoField {
 		this.value = 0;
 	}
 	
+	public int getPrecision() {
+		return precision;
+	}
+	
 	@Override
 	public ProtoField newInstance() {
-		return new DoubleField(null, this.isOptional, this.precision);
+		return new DoubleField(null, this.precision, this.isOptional);
 	}
 
 	@Override

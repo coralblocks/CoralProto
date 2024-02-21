@@ -410,6 +410,14 @@ public class IDL {
 			String all = getEnumAll(type);
 			String t = getEnumType(type);
 			addEnumField(name, addThis, isOptional, groupFields, t, all);
+		} else if (type.startsWith("double")) {
+			String size = getSize(type, true);
+			if (size != null) addField(name, addThis, isOptional, groupFields, "DoubleField", size);
+			else addField(name, addThis, isOptional, groupFields, "DoubleField");
+		} else if (type.startsWith("float")) {
+			String size = getSize(type, true);
+			if (size != null) addField(name, addThis, isOptional, groupFields, "FloatField", size);
+			else addField(name, addThis, isOptional, groupFields, "FloatField");
 		} else if (type.startsWith("long")) {
 			addField(name, addThis, isOptional, groupFields, "LongField");
 		} else if (type.startsWith("int")) {
@@ -423,16 +431,16 @@ public class IDL {
 		} else if (type.startsWith("char") && !type.startsWith("chars")) {
 			addField(name, addThis, isOptional, groupFields, "CharField");
 		} else if (type.startsWith("bytes")) {
-			String size = getSize(type);
+			String size = getSize(type, false);
 			addField(name, addThis, isOptional, groupFields, "BytesField", size);
 		} else if (type.startsWith("varbytes")) {
-			String size = getSize(type);
+			String size = getSize(type, false);
 			addField(name, addThis, isOptional, groupFields, "VarBytesField", size);
 		} else if (type.startsWith("chars")) {
-			String size = getSize(type);
+			String size = getSize(type, false);
 			addField(name, addThis, isOptional, groupFields, "CharsField", size);
 		} else if (type.startsWith("varchars")) {
-			String size = getSize(type);
+			String size = getSize(type, false);
 			addField(name, addThis, isOptional, groupFields, "VarCharsField", size);
 		} else {
 			throw new IllegalStateException("Bad type: " + type);
@@ -449,9 +457,12 @@ public class IDL {
 		}
 	}
 	
-	private String getSize(String type) {
+	private String getSize(String type, boolean optional) {
 		String[] matches = RegexUtils.match(type, "/\\(([^\\\\)]+)\\)/");
-		if (matches == null || matches.length != 1) throw new IllegalStateException("Cannot parse type: " + type);
+		if (matches == null || matches.length != 1) {
+			if (optional) return null;
+			throw new IllegalStateException("Cannot parse type: " + type);
+		}
 		if (isNumber(matches[0])) return matches[0];
 		int index = matches[0].lastIndexOf('.');
 		String klass = matches[0].substring(0, index);
