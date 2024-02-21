@@ -17,33 +17,25 @@ A fast, binary and garbage-free serialization framework with a simple schema def
 
 ## Schema Definition Language
 ```plain
-  TYPE = P
-  SUBTYPE = C
-  
-  symbolId: long
-  symbolDesc: varchars(128)
-  mqReqId: long!
-  
-  bids:
-      levelId: long!
-      priceLevel: double
-      qty: int
-      legs:
-        legId: int
-        legDesc: chars(8)!
-      orders: int
-  
-  asks:
-      levelId: long!
-      priceLevel: double
-      qty: int
-      legs:
-        legId: int
-        legDesc: chars(8)!
-      orders: int
-  
-  lastTradeQty: long!
-  lastTradePrice: double!
+    TYPE = P
+    SUBTYPE = C
+    
+    symbolId: long
+    symbolDesc: varchars(128)
+    mqReqId: long!
+    
+    orders:
+        side: boolean
+        levelId: long!
+        priceLevel: double
+        qty: int
+        legs:
+          legId: int
+          legDesc: chars(8)!
+        orderId: long
+    
+    lastTradeQty: long!
+    lastTradePrice: double!
 ```
 - TYPE and SUBTYPE are mandatory
 - An exclamation mark at the end of a field indicates that the field is optional
