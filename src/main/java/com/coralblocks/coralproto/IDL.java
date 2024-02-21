@@ -372,7 +372,7 @@ public class IDL {
 		} else {
 			code.append(";\n");
 			if (isOptional) {
-				groupFields.add("this." + name + " = new " + fieldType + "(true, " + size + ")");
+				groupFields.add("this." + name + " = new " + fieldType + "(" + size + ", true)");
 			} else {
 				groupFields.add("this." + name + " = new " + fieldType + "(" + size + ")");
 			}
