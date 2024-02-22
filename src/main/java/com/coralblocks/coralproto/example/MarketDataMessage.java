@@ -85,7 +85,7 @@ public class MarketDataMessage extends AbstractProto {
             public VarCharsField legDesc;
 
             public LegsRepeatingGroup(AbstractProto proto) {
-                this(proto, new IntField(), new VarCharsField(128));
+                this(proto, new IntField(), new VarCharsField(128, true));
             }
 
             public LegsRepeatingGroup(AbstractProto proto, ProtoField ... protoFields) {
@@ -117,12 +117,12 @@ public class MarketDataMessage extends AbstractProto {
 
         }
 
-        BidsRepeatingGroup.LegsRepeatingGroup legs;
+        public BidsRepeatingGroup.LegsRepeatingGroup legs;
 
         public IntField orders;
 
         public BidsRepeatingGroup(AbstractProto proto) {
-            this(proto, new LongField(), new LongField(), new IntField(), new BidsRepeatingGroup.LegsRepeatingGroup(null), new IntField());
+            this(proto, new LongField(true), new LongField(), new IntField(), new BidsRepeatingGroup.LegsRepeatingGroup(null), new IntField());
         }
 
         public BidsRepeatingGroup(AbstractProto proto, ProtoField ... protoFields) {
@@ -160,7 +160,7 @@ public class MarketDataMessage extends AbstractProto {
 
     }
 
-    BidsRepeatingGroup bids = new BidsRepeatingGroup(this);
+    public final BidsRepeatingGroup bids = new BidsRepeatingGroup(this);
 
     public static class AsksRepeatingGroup extends RepeatingGroupField {
 
@@ -177,7 +177,7 @@ public class MarketDataMessage extends AbstractProto {
             public VarCharsField legDesc;
 
             public LegsRepeatingGroup(AbstractProto proto) {
-                this(proto, new IntField(), new VarCharsField(128));
+                this(proto, new IntField(), new VarCharsField(128, true));
             }
 
             public LegsRepeatingGroup(AbstractProto proto, ProtoField ... protoFields) {
@@ -209,12 +209,12 @@ public class MarketDataMessage extends AbstractProto {
 
         }
 
-        AsksRepeatingGroup.LegsRepeatingGroup legs;
+        public AsksRepeatingGroup.LegsRepeatingGroup legs;
 
         public IntField orders;
 
         public AsksRepeatingGroup(AbstractProto proto) {
-            this(proto, new LongField(), new LongField(), new IntField(), new AsksRepeatingGroup.LegsRepeatingGroup(null), new IntField());
+            this(proto, new LongField(true), new LongField(), new IntField(), new AsksRepeatingGroup.LegsRepeatingGroup(null), new IntField());
         }
 
         public AsksRepeatingGroup(AbstractProto proto, ProtoField ... protoFields) {
@@ -252,7 +252,7 @@ public class MarketDataMessage extends AbstractProto {
 
     }
 
-    AsksRepeatingGroup asks = new AsksRepeatingGroup(this);
+    public final AsksRepeatingGroup asks = new AsksRepeatingGroup(this);
 
     public final LongField lastTradeQty = new LongField(this, true);
 

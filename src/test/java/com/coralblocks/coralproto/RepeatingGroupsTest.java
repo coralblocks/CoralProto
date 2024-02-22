@@ -105,7 +105,7 @@ public class RepeatingGroupsTest {
 
             }
 
-            BidsRepeatingGroup.LegsRepeatingGroup legs;
+            public BidsRepeatingGroup.LegsRepeatingGroup legs;
 
             public IntField orders;
 
@@ -146,7 +146,7 @@ public class RepeatingGroupsTest {
 
         }
 
-        BidsRepeatingGroup bids = new BidsRepeatingGroup(this);
+        public final BidsRepeatingGroup bids = new BidsRepeatingGroup(this);
 
 
 		// END_AUTO_GENERATED_CODE
