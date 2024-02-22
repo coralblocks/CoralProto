@@ -126,12 +126,12 @@ public class FloatDoubleTest {
 		
 		received.read(bb);
 		
-		Assert.assertTrue(1.1234f == proto.myFloat1.get());
-		Assert.assertTrue(1.12f == proto.myFloat2.get());
-		Assert.assertTrue(false == proto.myFloat3.isPresent());
-		Assert.assertTrue(1.12345678 == proto.myDouble1.get());
-		Assert.assertTrue(1.123456 == proto.myDouble2.get());
-		Assert.assertTrue(1.12345 == proto.myDouble3.get());
+		Assert.assertTrue(1.1234f == received.myFloat1.get());
+		Assert.assertTrue(1.12f == received.myFloat2.get());
+		Assert.assertTrue(false == received.myFloat3.isPresent());
+		Assert.assertTrue(1.12345678 == received.myDouble1.get());
+		Assert.assertTrue(1.123456 == received.myDouble2.get());
+		Assert.assertTrue(1.12345 == received.myDouble3.get());
 		
 		bb.clear();
 		
