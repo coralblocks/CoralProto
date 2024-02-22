@@ -44,4 +44,4 @@ A fast, binary and garbage-free serialization framework with a simple schema def
 - The number between parenthesis for varchars (and varbytes) is the maximum allowed size/length
 - The number between parenthesis for chars (and bytes) is the fixed size/length
 
-**NOTE:** For convenience, you can place the schema specification inside the Java class so that when you execute its main method the class source code is updated. You can see an example [here](https://github.com/coralblocks/CoralProto/blob/main/src/main/java/com/coralblocks/coralproto/example/PriceChangeMessage.java).
+**NOTE:** For convenience, you can place the schema specification inside the Java class so that when you execute its main method the class is updated with the generated source code of the message. You can see an example [here](https://github.com/coralblocks/CoralProto/blob/main/src/main/java/com/coralblocks/coralproto/example/PriceChangeMessage.java).
