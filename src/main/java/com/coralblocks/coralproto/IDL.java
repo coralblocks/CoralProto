@@ -329,10 +329,10 @@ public class IDL {
 				code.append(indent);
 				
 				if (addInstance) {
-					code.append(className + " " + key);
+					code.append("public final " + className + " " + key);
 					code.append(" = new " + className + "(this);\n");
 				} else {
-					code.append(compoundClassName + " " + key);
+					code.append("public " + compoundClassName + " " + key);
 					code.append(";\n");
 					groupFields.add("this." + key + " = new " + compoundClassName + "(null)");
 				}
