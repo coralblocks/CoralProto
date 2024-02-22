@@ -17,6 +17,7 @@ A fast, binary and garbage-free serialization framework with a simple schema def
 
 ## Schema Definition Language
 ```plain
+    CLASSNAME = com.coralblocks.coralproto.example.PriceChangeMessage
     TYPE = P
     SUBTYPE = C
     
