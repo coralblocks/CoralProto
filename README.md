@@ -98,6 +98,9 @@ proto.lastTradePrice.set(200.55);
 
 ## Reading the Message Fields
 ```java
+Assert.assertEquals(PriceChangeMessage.TYPE, proto.getType());
+Assert.assertEquals(PriceChangeMessage.SUBTYPE, proto.getSubtype());
+
 Assert.assertEquals(1111L, proto.symbolId.get());
 Assert.assertEquals("IBM", proto.symbolDesc.get().toString());
 Assert.assertEquals(false, proto.mqReqId.isPresent());
