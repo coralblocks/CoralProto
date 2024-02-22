@@ -114,7 +114,7 @@ public class PriceChangeMessage extends AbstractProto {
 
             }
 
-            OrdersRepeatingGroup.LegsRepeatingGroup legs;
+            public OrdersRepeatingGroup.LegsRepeatingGroup legs;
 
             public LongField orderId;
 
@@ -159,7 +159,7 @@ public class PriceChangeMessage extends AbstractProto {
 
         }
 
-        OrdersRepeatingGroup orders = new OrdersRepeatingGroup(this);
+        public final OrdersRepeatingGroup orders = new OrdersRepeatingGroup(this);
 
         public final LongField lastTradeQty = new LongField(this, true);
 
