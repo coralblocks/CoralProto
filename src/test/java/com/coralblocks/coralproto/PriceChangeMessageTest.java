@@ -71,6 +71,9 @@ public class PriceChangeMessageTest {
 		
 		proto.read(bb);
 		
+		Assert.assertEquals(PriceChangeMessage.TYPE, proto.getType());
+		Assert.assertEquals(PriceChangeMessage.SUBTYPE, proto.getSubtype());
+		
 		Assert.assertEquals(1111L, proto.symbolId.get());
 		Assert.assertEquals("IBM", proto.symbolDesc.get().toString());
 		Assert.assertEquals(false, proto.mqReqId.isPresent());
