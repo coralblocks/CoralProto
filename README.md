@@ -338,7 +338,7 @@ p1.read(bb);
 Assert.assertEquals(2L, p1.symbolId.get());
 Assert.assertEquals("IBM", p1.symbolDesc.get().toString());
 ```
-**NOTE:** We are changing the message name from `ProtoMessage1` to `ProtoMessage1A` just to be able to test. When you evolve a message you will want to keep the same name.
+**NOTE:** We are changing the message name from `ProtoMessage1` to `ProtoMessage1A` just to be able to test inside the same class. When you evolve a message you will want to keep the same message name.
 
 ## Generating Source Code
 To generate the Java source code of your messages from the schema definition files, you should do:
