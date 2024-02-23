@@ -151,7 +151,7 @@ public class IDL {
 	public static void main(String[] args) throws IOException {
 		
 		if (args.length < 1) {
-			System.out.println("format: java com.coralblocks.coralsequencer.protocol.IDL <FOLDER_NAME> <DRY_RUN> <EXTENSION>");
+			System.out.println("format: java com.coralblocks.coralproto.IDL <FOLDER_NAME> <DRY_RUN> <EXTENSION>");
 			return;
 		}
 		
