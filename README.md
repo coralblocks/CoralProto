@@ -339,3 +339,18 @@ Assert.assertEquals(2L, p1.symbolId.get());
 Assert.assertEquals("IBM", p1.symbolDesc.get().toString());
 ```
 **NOTE:** We are changing the message name from `ProtoMessage1` to `ProtoMessage1A` just to be able to test. When you evolve a message you will want to keep the same name.
+
+## Generating Source Code
+To generate the Java source code of your messages from the schema definition files, you should do:
+```plain
+$ java com.coralblocks.coralproto.IDL <FOLDER_NAME> <DRY_RUN> <EXTENSION>
+```
+- The `FOLDER_NAME` argument is the folder where the test files containing the scheme definition of your messages are located. Each message should have its own file.
+  
+- The `DRY_RUN` argument is to test without replacing any source code. It defaults to false.
+  
+- The `EXTENSION` argument is the extension of the text files with the schema definition. It defaults to `.idl`.
+  
+The source code of the messages will be generated inside the same folder.
+
+**NOTE:** When the source code is generated you will most probably need to use `ORGANIZE IMPORTS` (usually CTRL + O) of your IDE to add the correct import statements for the code to compile.
