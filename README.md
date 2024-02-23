@@ -218,3 +218,38 @@ if (type == ProtoMessage1.TYPE && subtype == ProtoMessage1.SUBTYPE) {
     throw new RuntimeException("Got a proto that I don't know how to handle: " + proto);
 }
 ```
+
+## Using Enum Fields
+You should provide enumerations that implement [CharEnum](https://github.com/coralblocks/CoralProto/blob/main/src/main/java/com/coralblocks/coralproto/enums/CharEnum.java), [ShortEnum](https://github.com/coralblocks/CoralProto/blob/main/src/main/java/com/coralblocks/coralproto/enums/ShortEnum.java), [IntEnum](https://github.com/coralblocks/CoralProto/blob/main/src/main/java/com/coralblocks/coralproto/enums/IntEnum.java) or [TwoCharEnum](https://github.com/coralblocks/CoralProto/blob/main/src/main/java/com/coralblocks/coralproto/enums/TwoCharEnum.java). Below an example:
+```java
+public static enum Side implements CharEnum { 
+
+    BUY 			('B'), 
+    SELL			('S');
+
+    private final char b;
+    public final static CharMap<Side> ALL = new CharMap<Side>();
+    
+    static {
+        for(Side s : Side.values()) {
+            if (ALL.put(s.getChar(), s) != null) {
+                throw new IllegalStateException("Cannot have two sides with the same character: " + s);
+            }
+        }
+    }
+    
+    private Side(char b) {
+        this.b = b;
+    }
+    
+    @Override
+    public final char getChar() {
+        return b;
+    }
+}
+```
+And to define in your schema you simply do:
+```plain
+    side:     charEnum(Side) 
+```
+The provided char will be transmitted through the wire.
