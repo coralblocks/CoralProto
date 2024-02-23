@@ -32,6 +32,17 @@ public class BytesField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof BytesField) {
+			BytesField bf = (BytesField) o;
+			bf.byteBuffer.limit(bf.byteBuffer.capacity()).limit(0);
+			this.byteBuffer.limit(this.byteBuffer.capacity()).limit(0);
+			return this.byteBuffer.equals(bf.byteBuffer);
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.byteBuffer.clear();
 		for(int i = 0; i < byteBuffer.capacity(); i++) this.byteBuffer.put((byte) 0);

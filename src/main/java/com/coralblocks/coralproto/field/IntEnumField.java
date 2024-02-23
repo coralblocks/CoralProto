@@ -34,6 +34,15 @@ public class IntEnumField<E extends IntEnum> implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof IntEnumField) {
+			IntEnumField<?> bf = (IntEnumField<?>) o;
+			return bf.value == this.value;
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.value = null;
 	}

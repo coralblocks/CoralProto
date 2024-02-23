@@ -64,12 +64,18 @@ public class PriceChangeMessageTest {
 		proto.write(bb);
 		bb.flip();
 		
+		PriceChangeMessage oldProto = proto; // save for testing the equals method below
+		
 		proto = new PriceChangeMessage();
 		
 		Assert.assertEquals(PriceChangeMessage.TYPE, bb.get());
 		Assert.assertEquals(PriceChangeMessage.SUBTYPE, bb.get());
 		
 		proto.read(bb);
+		
+		Assert.assertTrue(oldProto.equals(proto));
+		oldProto.orders.clear();
+		Assert.assertFalse(oldProto.equals(proto));
 		
 		Assert.assertEquals(PriceChangeMessage.TYPE, proto.getType());
 		Assert.assertEquals(PriceChangeMessage.SUBTYPE, proto.getSubtype());

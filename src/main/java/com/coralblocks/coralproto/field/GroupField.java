@@ -32,6 +32,20 @@ public class GroupField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof GroupField) {
+			GroupField gf = (GroupField) o;
+			if (gf.protoFields.length == this.protoFields.length) {
+				for(int i = 0; i < this.protoFields.length; i++) {
+					if (!gf.protoFields[i].equals(this.protoFields[i])) return false;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		for(int i = 0; i < protoFields.length; i++) protoFields[i].reset();
 	}

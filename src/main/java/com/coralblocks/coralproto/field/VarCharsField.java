@@ -34,6 +34,15 @@ public class VarCharsField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof VarCharsField) {
+			VarCharsField vcf = (VarCharsField) o;
+			return vcf.bbcs.equals(this.bbcs);
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.bbcs.setSize(0);		
 	}

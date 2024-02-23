@@ -28,7 +28,7 @@ public abstract class AbstractProto implements Proto {
 	}
 	
 	public final void add(ProtoField protoField) {
-		if (!protoFields.contains(protoField)) protoFields.add(protoField);
+		protoFields.add(protoField);
 	}
 	
 	@Override
@@ -41,6 +41,21 @@ public abstract class AbstractProto implements Proto {
 	public char getSubtype() {
 		if (subtypeField == 0) throw new IllegalStateException("Subtype field was not defined!");
 		return subtypeField;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof AbstractProto) {
+			AbstractProto ap = (AbstractProto) o;
+			if (ap.getType() != this.getType()) return false;
+			if (ap.getSubtype() != this.getSubtype()) return false;
+			if (ap.protoFields.size() != this.protoFields.size()) return false;
+			for(int i = 0; i < this.protoFields.size(); i++) {
+				if (!ap.protoFields.get(i).equals(this.protoFields.get(i))) return false;
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	@Override

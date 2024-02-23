@@ -35,6 +35,15 @@ public class TwoCharEnumField<E extends TwoCharEnum> implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof TwoCharEnumField) {
+			TwoCharEnumField<?> bf = (TwoCharEnumField<?>) o;
+			return bf.value == this.value;
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.value = null;
 	}

@@ -29,6 +29,15 @@ public class CharField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof CharField) {
+			CharField cf = (CharField) o;
+			return cf.value == this.value;
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.value = ' ';
 	}

@@ -29,6 +29,15 @@ public class BooleanField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof BooleanField) {
+			BooleanField bf = (BooleanField) o;
+			return bf.value == this.value;
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.value = false;
 	}

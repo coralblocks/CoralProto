@@ -31,6 +31,15 @@ public class IntField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof IntField) {
+			IntField cf = (IntField) o;
+			return cf.value == this.value;
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.value = 0;
 	}

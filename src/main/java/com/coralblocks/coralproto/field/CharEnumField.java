@@ -34,6 +34,15 @@ public class CharEnumField<E extends CharEnum> implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof CharEnumField) {
+			CharEnumField<?> bf = (CharEnumField<?>) o;
+			return bf.value == this.value;
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.value = null;
 	}

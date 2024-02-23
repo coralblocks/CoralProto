@@ -14,4 +14,13 @@ public class SubtypeField {
 	public char getSubtype() {
 		return subtype;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof SubtypeField) {
+			SubtypeField sf = (SubtypeField) o;
+			return sf.subtype == this.subtype;
+		}
+		return false;
+	}
 }

@@ -33,6 +33,17 @@ public class VarBytesField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof VarBytesField) {
+			VarBytesField vbf = (VarBytesField) o;
+			vbf.byteBuffer.limit(vbf.size).position(0);
+			this.byteBuffer.limit(this.size).position(0);
+			return vbf.byteBuffer.equals(this.byteBuffer);
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.size = 0;
 	}

@@ -33,6 +33,15 @@ public class CharsField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof CharsField) {
+			CharsField cf = (CharsField) o;
+			return cf.bbcs.equals(this.bbcs);
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		ByteBuffer byteBuffer = this.bbcs.getByteBuffer();
 		for(int i = 0; i < byteBuffer.capacity(); i++) byteBuffer.put((byte) ' ');

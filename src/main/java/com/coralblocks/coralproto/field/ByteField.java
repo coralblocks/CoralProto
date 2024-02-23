@@ -31,6 +31,15 @@ public class ByteField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof ByteField) {
+			ByteField bf = (ByteField) o;
+			return bf.value == this.value;
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.value = 0;
 	}

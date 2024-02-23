@@ -31,6 +31,15 @@ public class LongField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof LongField) {
+			LongField cf = (LongField) o;
+			return cf.value == this.value;
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.value = 0;
 	}

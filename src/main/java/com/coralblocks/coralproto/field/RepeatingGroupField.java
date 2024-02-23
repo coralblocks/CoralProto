@@ -38,6 +38,22 @@ public class RepeatingGroupField implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof RepeatingGroupField) {
+			RepeatingGroupField rgf = (RepeatingGroupField) o;
+			if (rgf.groupFields.size() == this.groupFields.size()) {
+				Iterator<GroupField> iter1 = this.groupFields.iterator();
+				Iterator<GroupField> iter2 = rgf.groupFields.iterator();
+				while(iter1.hasNext() && iter2.hasNext()) {
+					if (!iter1.next().equals(iter2.next())) return false;
+				}
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		Iterator<GroupField> iter = groupFields.iterator();
 		while(iter.hasNext()) {

@@ -23,6 +23,15 @@ public class ByteBufferCharSequence implements CharSequence {
     }
     
     @Override
+    public boolean equals(Object o) {
+    	if (o instanceof ByteBufferCharSequence) {
+    		ByteBufferCharSequence bbcs = (ByteBufferCharSequence) o;
+    		if (bbcs.getByteBuffer().equals(this.getByteBuffer())) return true;
+    	}
+    	return false;
+    }
+    
+    @Override
     public int length() {
         return actualSize;
     }

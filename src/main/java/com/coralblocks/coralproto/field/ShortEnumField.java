@@ -34,6 +34,15 @@ public class ShortEnumField<E extends ShortEnum> implements ProtoField {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o instanceof ShortEnumField) {
+			ShortEnumField<?> bf = (ShortEnumField<?>) o;
+			return bf.value == this.value;
+		}
+		return false;
+	}
+	
+	@Override
 	public void reset() {
 		this.value = null;
 	}
