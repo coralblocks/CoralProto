@@ -224,8 +224,8 @@ You should provide enumerations that implement [CharEnum](https://github.com/cor
 ```java
 public static enum Side implements CharEnum { 
 
-    BUY 			('B'), 
-    SELL			('S');
+    BUY('B'), 
+    SELL('S');
 
     private final char b;
     public final static CharMap<Side> ALL = new CharMap<Side>();
