@@ -354,3 +354,19 @@ $ java com.coralblocks.coralproto.IDL <FOLDER_NAME> <DRY_RUN> <EXTENSION>
 The source code of the messages will be generated inside the same folder.
 
 **NOTE:** When the source code is generated you will most probably need to use `ORGANIZE IMPORTS` (usually CTRL + O) of your IDE to add the correct import statements for the code to compile.
+
+## Logging in Ascii
+You can print/log your message in ascii. See below:
+```java
+bb.clear();
+proto.writeAscii(true, bb); // short version (without the message name, just type and subtype)
+bb.flip();
+
+Assert.assertEquals("AF|Y|33|S|1111|222222|3300", ByteBufferUtils.parseString(bb));
+
+bb.clear();
+received.writeAscii(false, bb); // long version (with the message name, type and subtype)
+bb.flip();
+
+Assert.assertEquals("AF (AllFieldsProtoMessage)|Y|33|S|1111|222222|3300", ByteBufferUtils.parseString(bb));
+```
