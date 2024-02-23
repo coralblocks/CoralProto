@@ -167,3 +167,54 @@ Assert.assertEquals(100, proto.lastTradeQty.get());
 Assert.assertTrue(200.55 == proto.lastTradePrice.get());
 ```
 **NOTE:** The full automated test for the PriceChangeMessage can be seen [here](https://github.com/coralblocks/CoralProto/blob/main/src/test/java/com/coralblocks/coralproto/PriceChangeMessageTest.java).
+
+## Writting to and Reading from a ByteBuffer
+```java
+PriceChangeMessage proto = new PriceChangeMessage();
+
+proto.symbolId.set(1111L);
+
+ByteBuffer bb = ByteBuffer.allocate(1024);
+proto.write(bb);
+bb.flip();
+
+PriceChangeMessage received = new PriceChangeMessage();
+
+received.read(bb);
+
+Assert.assertTrue(received.equals(proto));
+Assert.assertEquals(proto.orders.symbolId.get(), received.orders.symbolId.get());
+```
+
+## Using a ProtoParser
+```java
+public static class MyProtoParser extends ProtoParser {
+
+    @Override
+    protected Proto[] defineProtoMessages() {
+        return new Proto[] {
+                new ProtoMessage1(),
+                new ProtoMessage2()
+        };
+    }
+}
+
+ProtoParser protoParser = new MyProtoParser();
+
+Proto proto = protoParser.parse(byteBuffer);
+
+if (proto == null) throw new RuntimeException("Cannot parse ByteBuffer to Proto!");
+
+char type = proto.getType();
+char subtype = proto.getSubtype();
+
+if (type == ProtoMessage1.TYPE && subtype == ProtoMessage1.SUBTYPE) {
+    ProtoMessage1 protoMessage1 = (ProtoMessage1) proto;
+    // access the ProtoMessage1 fields and be happy...
+} else if (type == ProtoMessage2.TYPE && subtype == ProtoMessage2.SUBTYPE) {
+    ProtoMessage2 protoMessage2 = (ProtoMessage2) proto;
+    // access the ProtoMessage2 fields and be happy...
+} else {
+    throw new RuntimeException("Got a proto that I don't know how to handle: " + proto);
+}
+```
