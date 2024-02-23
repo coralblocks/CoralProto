@@ -252,4 +252,18 @@ And to define in your schema you simply do:
 ```plain
     side:     charEnum(Side) 
 ```
-The provided char will be transmitted through the wire.
+The corresponding char of the enum will be transmitted through the wire.
+
+## Float and Double Fields
+- Floats are transmitted through the wire as integers (4-byte big-endian). The default precision is 4 decimals.
+- Doubles are transmitted through the wire as longs (8-byte big integer). The default precision is 8 decimals.
+
+If you need more or less decimal precision, you can pass the number of decimals when defining the field in the schema:
+```plain
+    myFloat1: float 
+    myFloat2: float(3)
+    myFloat3: float(5)
+    myDouble1: double 
+    myDouble2: double(7)
+    myDouble3: double(9)	
+```
