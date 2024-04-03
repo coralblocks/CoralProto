@@ -91,8 +91,8 @@ public abstract class AbstractProto implements Proto {
 	@Override
     public void write(ByteBuffer buf) {
 
-		write(buf, getType());
-		write(buf, getSubtype());
+		buf.put((byte) getType());
+		buf.put((byte) getSubtype());
 		
 		int size = protoFields.size();
 		for(int i = 0; i < size; i++) {
@@ -103,8 +103,18 @@ public abstract class AbstractProto implements Proto {
 	@Override
     public void writeAscii(boolean shortVersion, ByteBuffer buf) {
 		
-		writeAscii(buf, getType());
-		writeAscii(buf, getSubtype());
+		if (CharUtils.isPrintable(getType())) {
+			buf.put((byte) getType());
+		} else {
+			buf.put((byte) '?');
+		}
+		
+		if (CharUtils.isPrintable(getSubtype())) {
+			buf.put((byte) getSubtype());
+		} else {
+			buf.put((byte) '?');
+		}
+		
 		if (!shortVersion) {
 			writeAscii(buf, " (");
 			writeAscii(buf, getClass().getSimpleName());
@@ -162,18 +172,6 @@ public abstract class AbstractProto implements Proto {
 	
 	private final void writeAscii(ByteBuffer buf, String s) {
 		ByteBufferUtils.appendCharSequence(buf, s);
-	}
-	
-	private final void write(ByteBuffer buf, char value) {
-		buf.put((byte) value);
-	}
-	
-	private final void writeAscii(ByteBuffer buf, char value) {
-		if (CharUtils.isPrintable(value)) {
-			buf.put((byte) value);
-		} else {
-			buf.put((byte) '?');
-		}
 	}
 	
 	private final void writeAsciiSeparator(ByteBuffer buf) {
