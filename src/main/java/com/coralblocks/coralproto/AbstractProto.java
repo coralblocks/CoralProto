@@ -19,7 +19,12 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.coralblocks.coralproto.field.Bytes;
+import com.coralblocks.coralproto.field.Chars;
 import com.coralblocks.coralproto.field.ProtoField;
+import com.coralblocks.coralproto.field.VarBytes;
+import com.coralblocks.coralproto.field.VarChars;
+import com.coralblocks.coralproto.util.ByteBufferEncoder;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
 import com.coralblocks.coralproto.util.CharUtils;
 
@@ -30,6 +35,7 @@ public abstract class AbstractProto implements Proto {
 	private final List<ProtoField> protoFields = new ArrayList<ProtoField>(16);
 	private char typeField = 0;
 	private char subtypeField = 0;
+	private final ByteBufferEncoder bbEncoder = new ByteBufferEncoder();
 	
 	public final void setType(char type) {
 		this.typeField = type;
@@ -174,7 +180,7 @@ public abstract class AbstractProto implements Proto {
 		ByteBufferUtils.appendCharSequence(buf, s);
 	}
 	
-	private final void writeAsciiSeparator(ByteBuffer buf) {
+	protected final void writeAsciiSeparator(ByteBuffer buf) {
 		buf.put(SEPARATOR);
 	}
 	
@@ -200,6 +206,143 @@ public abstract class AbstractProto implements Proto {
 				sb.append(f.toString());
 			}
 			sb.append("}");
+		}
+	}
+	
+	// DIRECT APPROACH: (a bit faster)
+	
+	protected final long read(ByteBuffer buf, long value) {
+		return buf.getLong();
+	}
+	
+	protected final int read(ByteBuffer buf, int value) {
+		return buf.getInt();
+	}
+	
+	protected final short read(ByteBuffer buf, short value) {
+		return buf.getShort();
+	}
+	
+	protected final char read(ByteBuffer buf, char value) {
+		return (char) buf.get();
+	}
+	
+	protected final byte read(ByteBuffer buf, byte value) {
+		return buf.get();
+	}
+	
+	protected final boolean read(ByteBuffer buf, boolean value) {
+		byte b = buf.get();
+		return b == 'Y';
+	}
+	
+	protected final Bytes read(ByteBuffer buf, Bytes bytes) {
+		bytes.readFrom(buf);
+		return bytes;
+	}
+	
+	protected final Chars read(ByteBuffer buf, Chars chars) {
+		chars.readFrom(buf);
+		return chars;
+	}
+	
+	protected final VarBytes read(ByteBuffer buf, VarBytes varBytes) {
+		varBytes.readFrom(buf);
+		return varBytes;
+	}
+	
+	protected final VarChars read(ByteBuffer buf, VarChars varChars) {
+		varChars.readFrom(buf);
+		return varChars;
+	}
+	
+	protected final void write(ByteBuffer buf, boolean value) {
+		buf.put(value ? (byte) 'Y' : (byte) 'N');
+	}
+	
+	protected final void write(ByteBuffer buf, long value) {
+		buf.putLong(value);
+	}
+	
+	protected final void write(ByteBuffer buf, int value) {
+		buf.putInt(value);
+	}
+	
+	protected final void write(ByteBuffer buf, short value) {
+		buf.putShort(value);
+	}
+	
+	protected final void write(ByteBuffer buf, byte value) {
+		buf.put(value);
+	}
+	
+	protected final void write(ByteBuffer buf, char value) {
+		buf.put((byte) value);
+	}
+	
+	protected final void write(ByteBuffer buf, Bytes bytes) {
+		bytes.writeTo(buf);
+	}
+	
+	protected final void write(ByteBuffer buf, Chars chars) {
+		chars.writeTo(buf);
+	}
+	
+	protected final void write(ByteBuffer buf, VarBytes varBytes) {
+		varBytes.writeTo(buf);
+	}
+	
+	protected final void write(ByteBuffer buf, VarChars varChars) {
+		varChars.writeTo(buf);
+	}
+
+	protected final void writeAscii(ByteBuffer buf, boolean value) {
+		buf.put(value ? (byte) 'Y' : (byte) 'N');
+	}
+	
+	protected final void writeAscii(ByteBuffer buf, long value) {
+		bbEncoder.append(buf, value);
+	}
+	
+	protected final void writeAscii(ByteBuffer buf, int value) {
+		bbEncoder.append(buf, value);
+	}
+	
+	protected final void writeAscii(ByteBuffer buf, short value) {
+		bbEncoder.append(buf, value);
+	}
+	
+	protected final void writeAscii(ByteBuffer buf, byte value) {
+		bbEncoder.append(buf, value);
+	}
+	
+	protected final void writeAscii(ByteBuffer buf, char value) {
+		bbEncoder.append(buf, value);
+	}
+	
+	protected final void writeAscii(ByteBuffer buf, Bytes bytes) {
+		bytes.writeAsciiTo(buf);
+	}
+	
+	protected final void writeAscii(ByteBuffer buf, Chars chars) {
+		chars.writeAsciiTo(buf);
+	}
+	
+	protected final void writeAscii(ByteBuffer buf, VarBytes varBytes) {
+		varBytes.writeAsciiTo(buf);
+	}
+	
+	protected final void writeAscii(ByteBuffer buf, VarChars varChars) {
+		varChars.writeAsciiTo(buf);
+	}
+	
+	protected final void writeAsciiTypeSubtypeName(boolean shortVersion, ByteBuffer buf) {
+		writeAscii(buf, getType());
+		writeAscii(buf, getSubtype());
+		if (!shortVersion) {
+			writeAscii(buf, " (");
+			writeAscii(buf, this.getClass().getSimpleName());
+			writeAscii(buf, ")");
 		}
 	}
 }
