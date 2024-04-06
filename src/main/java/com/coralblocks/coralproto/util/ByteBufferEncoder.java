@@ -26,6 +26,14 @@ public class ByteBufferEncoder {
 		this.sb = new StringBuilder(maxLength);
 	}
 	
+	public final void append(ByteBuffer buf, char c) {
+		buf.put((byte) c);
+	}
+	
+	public final void append(ByteBuffer buf, byte number) {
+		append(buf, (int) number);
+	}
+	
 	public final void append(ByteBuffer buf, int number) {
 		sb.setLength(0);
 		sb.append(number);
