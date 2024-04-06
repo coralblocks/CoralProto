@@ -48,4 +48,20 @@ public class ByteBufferUtils {
 		return sb.toString();
 	}
 	
+	public final static void println(final ByteBuffer buf) {
+		final int pos = buf.position();
+		System.out.write('[');
+		while(buf.hasRemaining()) {
+			byte b = buf.get();
+			if (CharUtils.isPrintable((char) b)) {
+				System.out.write(b);
+			} else {
+				System.out.write((byte) '?');
+			}
+		}
+		System.out.write(']');
+		System.out.write('\n');
+		buf.position(pos);
+	}
+	
 }
