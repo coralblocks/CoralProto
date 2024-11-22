@@ -11,9 +11,9 @@
   </properties>
 
   <scm>
-    <connection>scm:git:https://github.com/coralblocks/CoralProto</connection>
-    <developerConnection>scm:git:https://github.com/coralblocks/CoralProto</developerConnection>
-    <url>https://github.com/coralblocks/CoralProto</url>
+    <connection>scm:git:https://coralblocks@github.com/coralblocks/CoralProto</connection>
+    <developerConnection>scm:git:https://coralblocks@github.com/coralblocks/CoralProto</developerConnection>
+    <url>https://coralblocks@github.com/coralblocks/CoralProto</url>
     <tag>HEAD</tag>
   </scm>
 
