@@ -1,8 +1,8 @@
 # CoralProto
-A fast, binary and garbage-free serialization framework with a simple, compact and succinct non-XML schema definition language.
+A fast, binary and garbage-free serialization framework with a simple, compact and succinct non-XML schema definition language, with support for optional fields, repeating groups, nested repeating groups, enums, schema evolution and more.
 
 ## Features
-- Simple schema definition language with message type and subtype
+- Simple, compact and succinct schema definition language with message type and subtype
 - Fast parsing (or direct access without parsing)
 - Strictly binary (big-endian)
 - Ascii encoding for logging/debugging
