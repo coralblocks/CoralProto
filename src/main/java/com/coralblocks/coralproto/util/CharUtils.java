@@ -21,13 +21,13 @@ public class CharUtils {
 		
 	}
 	
-	public final static boolean isPrintable(char c) {
+	public static final boolean isPrintable(char c) {
 		byte b = (byte) c;
 		if (b >= 32 && b <= 126) return true;
 		return false;
 	}
 	
-	public final static short toShort(CharSequence s) {
+	public static final short toShort(CharSequence s) {
 		
 		int len = s.length();
 		
@@ -37,7 +37,7 @@ public class CharUtils {
 				);
 	}
 	
-	public final static short toShort(byte b1, byte b2) {
+	public static final short toShort(byte b1, byte b2) {
 		
 		return  (short) ( ( (b1 & 0xFF) << 0L ) +  ( (b2 & 0xFF) << 8L ) );
 	}

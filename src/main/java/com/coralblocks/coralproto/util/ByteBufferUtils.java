@@ -23,14 +23,14 @@ public class ByteBufferUtils {
 		
 	}
 	
-	public final static void appendCharSequence(ByteBuffer buf, CharSequence s) {
+	public static final void appendCharSequence(ByteBuffer buf, CharSequence s) {
 		int len = s.length();
 		for (int i = 0; i < len; i++) {
 			buf.put((byte) s.charAt(i));
 		}
 	}
 	
-	public final static void parseString(ByteBuffer src, StringBuilder sb) {
+	public static final void parseString(ByteBuffer src, StringBuilder sb) {
 		int len = src.remaining();
 		for (int i = 0; i < len; i++) {
 			char c = (char) src.get();
@@ -42,13 +42,13 @@ public class ByteBufferUtils {
 		}
 	}
 	
-	public final static String parseString(ByteBuffer src) {
+	public static final String parseString(ByteBuffer src) {
 		StringBuilder sb = new StringBuilder(src.remaining());
 		parseString(src, sb);
 		return sb.toString();
 	}
 	
-	public final static void println(final ByteBuffer buf) {
+	public static final void println(final ByteBuffer buf) {
 		final int pos = buf.position();
 		System.out.write('[');
 		while(buf.hasRemaining()) {

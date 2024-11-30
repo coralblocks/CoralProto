@@ -73,8 +73,8 @@ public class MarketDataMessage extends AbstractProto {
 	
 	// BEGIN_AUTO_GENERATED_CODE
 
-    public final static char TYPE = 'P';
-    public final static char SUBTYPE = 'M';
+    public static final char TYPE = 'P';
+    public static final char SUBTYPE = 'M';
 
     public final TypeField typeField = new TypeField(this, TYPE);
     public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);

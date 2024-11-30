@@ -594,11 +594,11 @@ public class IDL {
 	private void parseTypeAndSubtype(String idl, String indent) {
 		String type = find("TYPE");
 		if (type.length() != 1) throw new RuntimeException("Type is not a character: " + type);
-		code.append(indent + "public final static char TYPE = '").append(type).append("';\n");
+		code.append(indent + "public static final char TYPE = '").append(type).append("';\n");
 		
 		String subtype = find("SUBTYPE");
 		if (subtype.length() != 1) throw new RuntimeException("Subtype is not a character: " + subtype);
-		code.append(indent + "public final static char SUBTYPE = '").append(subtype).append("';\n");
+		code.append(indent + "public static final char SUBTYPE = '").append(subtype).append("';\n");
 		
 		code.append("\n");
 		
