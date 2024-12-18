@@ -18,12 +18,12 @@ package com.coralblocks.coralproto.field;
 import java.nio.ByteBuffer;
 import java.util.Iterator;
 
+import com.coralblocks.coralpool.LinkedObjectPool;
+import com.coralblocks.coralpool.ObjectPool;
+import com.coralblocks.coralpool.util.Builder;
 import com.coralblocks.coralproto.AbstractProto;
-import com.coralblocks.coralproto.util.Builder;
 import com.coralblocks.coralproto.util.ByteBufferEncoder;
 import com.coralblocks.coralproto.util.LinkedObjectList;
-import com.coralblocks.coralproto.util.LinkedObjectPool;
-import com.coralblocks.coralproto.util.ObjectPool;
 
 public class RepeatingGroupField implements ProtoField {
 	
