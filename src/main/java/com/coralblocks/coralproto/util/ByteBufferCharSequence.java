@@ -28,7 +28,9 @@ public class ByteBufferCharSequence implements CharSequence {
     }
     
     public void setSize(int size) {
-    	if (size > byteBuffer.capacity()) throw new ArrayIndexOutOfBoundsException();
+    	if (size > byteBuffer.capacity()) {
+    		throw new IllegalArgumentException("size bigger than buffer capacity: " + size + " (capacity=" + byteBuffer.capacity() + ")");
+    	}
     	this.actualSize = size;
     }
     
@@ -53,7 +55,9 @@ public class ByteBufferCharSequence implements CharSequence {
 
     @Override
     public char charAt(int index) {
-    	if (index >= actualSize) throw new ArrayIndexOutOfBoundsException();
+    	if (index >= actualSize) {
+    		throw new IllegalArgumentException("index greater or equal than length: " + index + " (length=" + actualSize + ")");
+    	}
     	byteBuffer.limit(actualSize).position(0);
         return (char) byteBuffer.get(index);
     }
