@@ -19,8 +19,8 @@ import java.nio.ByteBuffer;
 import java.util.Iterator;
 
 import com.coralblocks.coralpool.LinkedObjectPool;
+import com.coralblocks.coralpool.ObjectBuilder;
 import com.coralblocks.coralpool.ObjectPool;
-import com.coralblocks.coralpool.util.Builder;
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.util.ByteBufferEncoder;
 import com.coralblocks.coralproto.util.LinkedObjectList;
@@ -41,7 +41,7 @@ public class RepeatingGroupField implements ProtoField {
 		if (proto != null) proto.add(this);
 		this.protoFields = protoFields;
 		final GroupField groupField = new GroupField(protoFields);
-		Builder<GroupField> builder = new Builder<GroupField>() {
+		ObjectBuilder<GroupField> builder = new ObjectBuilder<GroupField>() {
 			@Override
 			public GroupField newInstance() {
 				return (GroupField) groupField.newInstance();
