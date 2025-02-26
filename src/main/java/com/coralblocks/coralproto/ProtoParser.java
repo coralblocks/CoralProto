@@ -17,8 +17,8 @@ package com.coralblocks.coralproto;
 
 import java.nio.ByteBuffer;
 
+import com.coralblocks.coralds.map.IntMap;
 import com.coralblocks.coralproto.util.CharUtils;
-import com.coralblocks.coralproto.util.IntMap;
 
 public abstract class ProtoParser {
 	

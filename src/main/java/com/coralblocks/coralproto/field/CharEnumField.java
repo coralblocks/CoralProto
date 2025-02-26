@@ -17,10 +17,10 @@ package com.coralblocks.coralproto.field;
 
 import java.nio.ByteBuffer;
 
+import com.coralblocks.coralds.map.CharMap;
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.enums.CharEnum;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
-import com.coralblocks.coralproto.util.CharMap;
 
 public class CharEnumField<E extends CharEnum> implements ProtoField {
 	

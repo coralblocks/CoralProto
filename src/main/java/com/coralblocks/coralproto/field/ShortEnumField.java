@@ -17,10 +17,10 @@ package com.coralblocks.coralproto.field;
 
 import java.nio.ByteBuffer;
 
+import com.coralblocks.coralds.map.IntMap;
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.enums.ShortEnum;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
-import com.coralblocks.coralproto.util.IntMap;
 
 public class ShortEnumField<E extends ShortEnum> implements ProtoField {
 	

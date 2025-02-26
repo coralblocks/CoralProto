@@ -21,6 +21,8 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.coralblocks.coralds.map.CharMap;
+import com.coralblocks.coralds.map.IntMap;
 import com.coralblocks.coralproto.enums.CharEnum;
 import com.coralblocks.coralproto.enums.IntEnum;
 import com.coralblocks.coralproto.enums.ShortEnum;
@@ -32,9 +34,7 @@ import com.coralblocks.coralproto.field.SubtypeField;
 import com.coralblocks.coralproto.field.TwoCharEnumField;
 import com.coralblocks.coralproto.field.TypeField;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
-import com.coralblocks.coralproto.util.CharMap;
 import com.coralblocks.coralproto.util.CharUtils;
-import com.coralblocks.coralproto.util.IntMap;
 
 
 public class EnumTest {
