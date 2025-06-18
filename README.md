@@ -325,7 +325,7 @@ that will continue to evolve in unpredictable ways:
     price: double
 ```
 
-By doing that you will have multiple separate versions of the same message type (type='P' and subypte='A'), each represented by its own message class (`ProtoMessage`, `ProtoMessage_1` and `ProtoMessage_2`). This allows your to represent the same message type through multiple different schemas. Clients that do not understand the new schema will ignore it until they are updated to parse the new version (i.e. the new message class). The `Proto` interface has the method `getVersion()` that returns the version number of the message. Note that when the version number is not defined in the schema, it is assumed to be zero.
+By doing that you will have multiple separate versions of the same message type (type = `'P'` and subypte = `'A'`), each represented by its own message class (`ProtoMessage`, `ProtoMessage_1` and `ProtoMessage_2`). This allows your to represent the same message type through multiple different schemas. Clients that do not understand the new schema will ignore it until they are updated to parse the new version (i.e. the new message class). The `Proto` interface has the method `getVersion()` that returns the version number of the message. Note that when the version number is not defined in the schema, it is assumed to be zero.
 
 ## Generating Source Code
 To generate the Java source code of your messages from the schema definition files, you should do:
