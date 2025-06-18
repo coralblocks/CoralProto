@@ -205,13 +205,10 @@ Proto proto = protoParser.parse(byteBuffer);
 
 if (proto == null) throw new RuntimeException("Cannot parse ByteBuffer to Proto!");
 
-char type = proto.getType();
-char subtype = proto.getSubtype();
-
-if (type == ProtoMessage1.TYPE && subtype == ProtoMessage1.SUBTYPE) {
+if (proto instanceof ProtoMessage1) {
     ProtoMessage1 protoMessage1 = (ProtoMessage1) proto;
     // access the ProtoMessage1 fields and be happy...
-} else if (type == ProtoMessage2.TYPE && subtype == ProtoMessage2.SUBTYPE) {
+} else if (proto instanceof ProtoMessage2) {
     ProtoMessage2 protoMessage2 = (ProtoMessage2) proto;
     // access the ProtoMessage2 fields and be happy...
 } else {
