@@ -287,7 +287,33 @@ by appending a new field:
     extraField: int
 ```
 By doing that you can send an old version (without the field) to the new version and you can send a new version (with the field) to the old version. It is important to understand that you
-can do that without having to create a new message class, in other words, the message class and the message type will remain the same.
+can do that without having to create a new message class, in other words, the message class will remain the same.
+
+## Evolving the Schema (major thorugh bumping the version)
+You can evolve the schema without breaking compatibility by creating a new and independent version of an existing message type. For example, you can evolve:
+```plain
+    CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage
+    TYPE = P
+    SUBTYPE = A
+    
+    symbolId: long
+    symbolDesc: varchars(128)!
+```
+to a different one without any constraints:
+```plain
+    CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage_1
+    TYPE = P
+    SUBTYPE = A
+    VERSION = 1
+
+    clientId: int
+    symbol: varchars(64)
+    symbolId: long
+    symbolDesc: varchars(256)! 
+```
+By doing that you will have multiple separate versions of the same message type, each represented by its own message class (`ProtoMessage` and `ProtoMessage_1`). The `Proto` interface has
+the method `getVersion()` that returns the version number of the message. This allows your to represent the same message type through multiple different schemas. Clients that do not understand the
+new schema will ignore it until they are updated to parse the new version (i.e. the new message class). Note that when the version number is not defined in the schema, it is assumed to be zero.
 
 ## Generating Source Code
 To generate the Java source code of your messages from the schema definition files, you should do:
