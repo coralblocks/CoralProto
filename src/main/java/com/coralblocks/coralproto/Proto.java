@@ -19,8 +19,18 @@ import java.nio.ByteBuffer;
 
 public interface Proto {
 	
+	/**
+	 * Returns the type of this proto message
+	 * 
+	 * @return the type of this proto message
+	 */
 	public char getType();
 	
+	/**
+	 * Returns the subtype of this proto message
+	 * 
+	 * @return the subtype of this proto message
+	 */
 	public char getSubtype();
 	
 	/**
