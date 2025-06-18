@@ -50,9 +50,11 @@ public class DirectAccessTest {
 		
 		char type = (char) bb.get();
 		char subtype = (char) bb.get();
+		short version = bb.getShort();
 		
 		Assert.assertEquals(type, spm.getType());
 		Assert.assertEquals(subtype, spm.getSubtype());
+		Assert.assertEquals(version, spm.getVersion());
 		
 		SampleProtoMessage spmDst = new SampleProtoMessage();
 		

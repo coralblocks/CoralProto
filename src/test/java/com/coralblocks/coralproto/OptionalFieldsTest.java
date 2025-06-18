@@ -61,8 +61,8 @@ public class OptionalFieldsTest {
 		
 		// BEGIN_AUTO_GENERATED_CODE
 
-        public final static char TYPE = 'O';
-        public final static char SUBTYPE = 'F';
+        public static final char TYPE = 'O';
+        public static final char SUBTYPE = 'F';
 
         public final TypeField typeField = new TypeField(this, TYPE);
         public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);
@@ -90,6 +90,7 @@ public class OptionalFieldsTest {
 		
 		Assert.assertEquals(OptionalFieldsProtoMessage.TYPE, proto.getType());
 		Assert.assertEquals(OptionalFieldsProtoMessage.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 
 		Assert.assertEquals(true, proto.myBoolean.isOptional());
 		Assert.assertEquals(false, proto.myBoolean.isPresent());
@@ -149,6 +150,7 @@ public class OptionalFieldsTest {
 		
 		Assert.assertEquals(OptionalFieldsProtoMessage.TYPE, bb.get());
 		Assert.assertEquals(OptionalFieldsProtoMessage.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort());
 		
 		OptionalFieldsProtoMessage received = new OptionalFieldsProtoMessage();
 		
@@ -199,6 +201,7 @@ public class OptionalFieldsTest {
 		
 		Assert.assertEquals(OptionalFieldsProtoMessage.TYPE, bb.get());
 		Assert.assertEquals(OptionalFieldsProtoMessage.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort());
 		
 		OptionalFieldsProtoMessage received = new OptionalFieldsProtoMessage();
 		

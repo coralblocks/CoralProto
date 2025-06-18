@@ -191,14 +191,14 @@ public class IDL {
 			System.out.println("Found file: " + f.getName());
 			String absPath = f.getAbsolutePath();
 			String data = IOUtils.readFile(absPath);
-			String klassName = find(data, "CLASSNAME");
+			String klassName = find(data, "CLASSNAME", true);
 			String folder = getFolder(absPath, extension);
-			String simple = getSimpleClassName(klassName);
-			String full = folder + simple + ".java.tmp";
+			String simpleClassName = getSimpleClassName(klassName);
+			String full = folder + simpleClassName + ".java.tmp";
 			System.out.println("Generating code: " + full);
 			list.add(full);
 			IDL idl = new IDL(data);
-			writeJavaClass(full, idl.getCode(), getPackageName(klassName), simple, dryRun);
+			writeJavaClass(full, idl.getCode(), getPackageName(klassName), simpleClassName, dryRun);
 		}
 	}
 	
@@ -234,7 +234,7 @@ public class IDL {
 	
 	public IDL(String idl, String indent) {
 		this.idl = idl;
-		parseTypeAndSubtype(idl, indent);
+		parseTypeSubtypeAndVersion(idl, indent);
 		Queue<String> lines = parseLines(idl);
 		Map<String, Object> map = parseMap(lines, "");
 		configure(map, true, indent, null, "");
@@ -591,34 +591,54 @@ public class IDL {
 		return sb.toString();
 	}
 	
-	private void parseTypeAndSubtype(String idl, String indent) {
-		String type = find("TYPE");
+	private void parseTypeSubtypeAndVersion(String idl, String indent) {
+		String type = find("TYPE", true);
 		if (type.length() != 1) throw new RuntimeException("Type is not a character: " + type);
 		code.append(indent + "public static final char TYPE = '").append(type).append("';\n");
 		
-		String subtype = find("SUBTYPE");
+		String subtype = find("SUBTYPE", true);
 		if (subtype.length() != 1) throw new RuntimeException("Subtype is not a character: " + subtype);
 		code.append(indent + "public static final char SUBTYPE = '").append(subtype).append("';\n");
+		
+		String versionString = find("VERSION", false);
+		short version = 0;
+		if (versionString != null) {
+			try {
+				version = Short.parseShort(versionString);
+			} catch(NumberFormatException e) {
+				throw new RuntimeException("Version is not a short: " + versionString);
+			}
+		}
+		if (version > 0) {
+			code.append(indent + "public static final short VERSION = ").append(version).append(";\n");
+		}
 		
 		code.append("\n");
 		
 		code.append(indent + "public final TypeField typeField = new TypeField(this, TYPE);\n");
 		code.append(indent + "public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);\n");
+		if (version > 0) {
+			code.append(indent + "public final VersionField versionField = new VersionField(this, VERSION);\n");
+		}
 		
 		code.append("\n");
 	}
 	
-	private String find(String field) {
-		return find(idl, field);
+	private String find(String field, boolean isRequired) {
+		return find(idl, field, isRequired);
 	}
 	
-	private static String find(String idl, String field) {
+	private static String find(String idl, String field, boolean isRequired) {
 		String[] temp = idl.split("\n");
 		for(String line: temp) {
 			line = line.trim();
 			String[] matches = RegexUtils.match(line, "/^" + field + "\\s*=\\s*([^\\n]+)$/");
 			if (matches != null && matches.length == 1) return matches[0];
 		}
-		throw new RuntimeException("Required IDL field not found: " + field);
+		if (isRequired) {
+			throw new RuntimeException("Required IDL field not found: " + field);
+		} else {
+			return null;
+		}
 	}
 }

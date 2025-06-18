@@ -29,10 +29,11 @@ public abstract class ProtoParser {
 		for(Proto p : protos) {
 			byte type = (byte) p.getType();
 			byte subtype = (byte) p.getSubtype();
-			short pKey = CharUtils.toShort(type, subtype);
+			short version = p.getVersion();
+			int pKey = CharUtils.toInt(type, subtype, version);
 			if (protoMap.containsKey(pKey)) {
 				Proto pOther = protoMap.get(pKey);
-				throw new RuntimeException("Duplicate proto message (same type and subtype): " + p.getClass().getSimpleName() + " " + pOther.getClass().getSimpleName());
+				throw new RuntimeException("Duplicate proto message (same type, subtype and version): " + p.getClass().getSimpleName() + " " + pOther.getClass().getSimpleName());
 			}
 			protoMap.put(pKey, p);
 		}
@@ -42,12 +43,13 @@ public abstract class ProtoParser {
 	
 	public Proto parse(ByteBuffer data) {
 		
-		if (data.remaining() < 2) return null;
+		if (data.remaining() < 4) return null;
 		
 		byte type = data.get();
 		byte subtype = data.get();
+		short version = data.getShort();
 		
-		short pKey = CharUtils.toShort(type, subtype);
+		int pKey = CharUtils.toInt(type, subtype, version);
 		
 		Proto p = protoMap.get(pKey);
 		

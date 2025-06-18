@@ -35,6 +35,7 @@ public abstract class AbstractProto implements Proto {
 	private final List<ProtoField> protoFields = new ArrayList<ProtoField>(16);
 	private char typeField = 0;
 	private char subtypeField = 0;
+	private short versionField = 0;
 	private final ByteBufferEncoder bbEncoder = new ByteBufferEncoder();
 	
 	public final void setType(char type) {
@@ -43,6 +44,10 @@ public abstract class AbstractProto implements Proto {
 	
 	public final void setSubtype(char subtype) {
 		this.subtypeField = subtype;
+	}
+	
+	public final void setVersion(short version) {
+		this.versionField = version;
 	}
 	
 	public final void add(ProtoField protoField) {
@@ -62,11 +67,17 @@ public abstract class AbstractProto implements Proto {
 	}
 	
 	@Override
+	public short getVersion() {
+		return versionField; // can return zero, no problem (default backwards compatible case)
+	}
+	
+	@Override
 	public boolean equals(Object o) {
 		if (o instanceof AbstractProto) {
 			AbstractProto ap = (AbstractProto) o;
 			if (ap.getType() != this.getType()) return false;
 			if (ap.getSubtype() != this.getSubtype()) return false;
+			if (ap.getVersion() != this.getVersion()) return false;
 			if (ap.protoFields.size() != this.protoFields.size()) return false;
 			for(int i = 0; i < this.protoFields.size(); i++) {
 				if (!ap.protoFields.get(i).equals(this.protoFields.get(i))) return false;
@@ -78,7 +89,7 @@ public abstract class AbstractProto implements Proto {
 	
 	@Override
 	public int getLength() {
-		int len = 2; // type + subtype
+		int len = 4; // type + subtype + version
 		int size = protoFields.size();
 		for(int i = 0; i < size; i++) {
 			len += protoFields.get(i).size();
@@ -99,6 +110,7 @@ public abstract class AbstractProto implements Proto {
 
 		buf.put((byte) getType());
 		buf.put((byte) getSubtype());
+		buf.putShort(getVersion());
 		
 		int size = protoFields.size();
 		for(int i = 0; i < size; i++) {
@@ -119,6 +131,11 @@ public abstract class AbstractProto implements Proto {
 			buf.put((byte) getSubtype());
 		} else {
 			buf.put((byte) '?');
+		}
+		
+		if (getVersion() > 0) {
+			writeAscii(buf, '-');
+			writeAscii(buf, getVersion());
 		}
 		
 		if (!shortVersion) {
@@ -195,7 +212,7 @@ public abstract class AbstractProto implements Proto {
 	}
 	
 	public void toString(StringBuilder sb) {
-		sb.append("Proto:{Type=").append(getType()).append(" Subtype=").append(getSubtype());
+		sb.append("Proto:{Type=").append(getType()).append(" Subtype=").append(getSubtype()).append(" Version=").append(getVersion());
 		if (protoFields.isEmpty()) {
 			sb.append("}");
 		} else {
@@ -336,9 +353,15 @@ public abstract class AbstractProto implements Proto {
 		varChars.writeAsciiTo(buf);
 	}
 	
-	protected final void writeAsciiTypeSubtypeName(boolean shortVersion, ByteBuffer buf) {
+	protected final void writeAsciiTypeSubtypeVersionName(boolean shortVersion, ByteBuffer buf) {
 		writeAscii(buf, getType());
 		writeAscii(buf, getSubtype());
+		
+		if (getVersion() > 0) {
+			writeAscii(buf, '-');
+			writeAscii(buf, getVersion());
+		}
+		
 		if (!shortVersion) {
 			writeAscii(buf, " (");
 			writeAscii(buf, this.getClass().getSimpleName());

@@ -57,8 +57,8 @@ public class CharsAndBytesTest {
 		
 		// BEGIN_AUTO_GENERATED_CODE
 
-        public final static char TYPE = 'C';
-        public final static char SUBTYPE = 'B';
+        public static final char TYPE = 'C';
+        public static final char SUBTYPE = 'B';
 
         public final TypeField typeField = new TypeField(this, TYPE);
         public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);
@@ -82,6 +82,7 @@ public class CharsAndBytesTest {
 		
 		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, proto.getType());
 		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 		
 		Assert.assertEquals(false, proto.myChars.isOptional());
 		Assert.assertEquals(true, proto.myChars.isPresent());
@@ -128,6 +129,7 @@ public class CharsAndBytesTest {
 		
 		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, proto.getType());
 		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 		
 		Assert.assertEquals(false, proto.myVarChars.isOptional());
 		Assert.assertEquals(true, proto.myVarChars.isPresent());
@@ -168,6 +170,7 @@ public class CharsAndBytesTest {
 		
 		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, proto.getType());
 		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 		
 		Assert.assertEquals(false, proto.myBytes.isOptional());
 		Assert.assertEquals(true, proto.myBytes.isPresent());
@@ -199,6 +202,7 @@ public class CharsAndBytesTest {
 		
 		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, proto.getType());
 		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 		
 		Assert.assertEquals(false, proto.myVarBytes.isOptional());
 		Assert.assertEquals(true, proto.myVarBytes.isPresent());
@@ -246,6 +250,7 @@ public class CharsAndBytesTest {
 		
 		Assert.assertEquals(CharsAndBytesProtoMessage.TYPE, bb.get());
 		Assert.assertEquals(CharsAndBytesProtoMessage.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort()); // default version
 		
 		CharsAndBytesProtoMessage received = new CharsAndBytesProtoMessage();
 		

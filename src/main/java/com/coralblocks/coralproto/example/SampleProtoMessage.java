@@ -27,6 +27,7 @@ public final class SampleProtoMessage extends AbstractProto {
 	
 	public static final char TYPE = 'P';
 	public static final char SUBTYPE = 'M';
+	public static final short VERSION = 0; // default (no version)
 	
 	public		byte					aByte;
 	public		short					aShort;
@@ -51,9 +52,14 @@ public final class SampleProtoMessage extends AbstractProto {
 	}
 	
 	@Override
+	public final short getVersion() {
+		return VERSION;
+	}
+	
+	@Override
 	public final int getLength() {
 		
-		return 2 /* Type (1 byte) + Subtype (1 byte) */
+		return 4 /* Type (1 byte) + Subtype (1 byte) + Version (2 bytes) */
 			 + 1 /* byte (1 byte) */
 			 + 2 /* short (2 bytes) */
 			 + 4 /* int (4 bytes) */
@@ -86,6 +92,7 @@ public final class SampleProtoMessage extends AbstractProto {
 
 		write(buf, TYPE);
 		write(buf, SUBTYPE);
+		write(buf, VERSION);
 		write(buf, aByte);
 		write(buf, aShort);
 		write(buf, aInt);
@@ -101,7 +108,7 @@ public final class SampleProtoMessage extends AbstractProto {
 	@Override
 	public final void writeAscii(boolean shortVersion, ByteBuffer buf) {
 		
-		writeAsciiTypeSubtypeName(shortVersion, buf);
+		writeAsciiTypeSubtypeVersionName(shortVersion, buf);
 		
 		writeAsciiSeparator(buf);
 		writeAscii(buf, aByte);

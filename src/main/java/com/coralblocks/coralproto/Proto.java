@@ -34,6 +34,13 @@ public interface Proto {
 	public char getSubtype();
 	
 	/**
+	 * Returns the version of this proto message
+	 * 
+	 * @return the version of this proto message
+	 */
+	public short getVersion();
+	
+	/**
 	 * Reads the contents of this proto message NOT including the type and subtype.
 	 * 
 	 * @param buf where to read this message from

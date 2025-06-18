@@ -85,6 +85,7 @@ public class PriceChangeMessageTest {
 		
 		Assert.assertEquals(PriceChangeMessage.TYPE, bb.get());
 		Assert.assertEquals(PriceChangeMessage.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort());
 		
 		proto.read(bb);
 		

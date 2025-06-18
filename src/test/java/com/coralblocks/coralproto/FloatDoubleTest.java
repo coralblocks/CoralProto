@@ -57,8 +57,8 @@ public class FloatDoubleTest {
 		
 		// BEGIN_AUTO_GENERATED_CODE
 
-        public final static char TYPE = 'F';
-        public final static char SUBTYPE = 'D';
+        public static final char TYPE = 'F';
+        public static final char SUBTYPE = 'D';
 
         public final TypeField typeField = new TypeField(this, TYPE);
         public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);
@@ -71,9 +71,9 @@ public class FloatDoubleTest {
 
         public final DoubleField myDouble1 = new DoubleField(this);
 
-        public final DoubleField myDouble2 = new DoubleField(this, 9);
+        public final DoubleField myDouble2 = new DoubleField(this, 6);
 
-        public final DoubleField myDouble3 = new DoubleField(this, 10, true);
+        public final DoubleField myDouble3 = new DoubleField(this, 7, true);
 
 
 		// END_AUTO_GENERATED_CODE
@@ -86,6 +86,7 @@ public class FloatDoubleTest {
 		
 		Assert.assertEquals(FloatDoubleProtoMessage.TYPE, proto.getType());
 		Assert.assertEquals(FloatDoubleProtoMessage.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 
 		Assert.assertEquals(false, proto.myFloat1.isOptional());
 		Assert.assertEquals(false, proto.myFloat2.isOptional());
@@ -136,6 +137,7 @@ public class FloatDoubleTest {
 		
 		Assert.assertEquals(FloatDoubleProtoMessage.TYPE, bb.get());
 		Assert.assertEquals(FloatDoubleProtoMessage.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort());
 		
 		FloatDoubleProtoMessage received = new FloatDoubleProtoMessage();
 		

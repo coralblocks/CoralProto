@@ -64,8 +64,8 @@ public class EnumTest {
 		
 		// BEGIN_AUTO_GENERATED_CODE
 
-        public final static char TYPE = 'E';
-        public final static char SUBTYPE = 'T';
+        public static final char TYPE = 'E';
+        public static final char SUBTYPE = 'T';
 
         public final TypeField typeField = new TypeField(this, TYPE);
         public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);
@@ -205,6 +205,7 @@ public class EnumTest {
 		
 		Assert.assertEquals(EnumProtoMessage.TYPE, proto.getType());
 		Assert.assertEquals(EnumProtoMessage.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 
 		Assert.assertEquals(false, proto.myCharEnum.isOptional());
 		Assert.assertEquals(true, proto.myCharEnum.isPresent());
@@ -275,6 +276,7 @@ public class EnumTest {
 		
 		Assert.assertEquals(EnumProtoMessage.TYPE, bb.get());
 		Assert.assertEquals(EnumProtoMessage.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort()); // default version
 		
 		EnumProtoMessage received = new EnumProtoMessage();
 		

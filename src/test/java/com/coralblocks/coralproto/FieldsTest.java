@@ -61,8 +61,8 @@ public class FieldsTest {
 		
 		// BEGIN_AUTO_GENERATED_CODE
 
-        public final static char TYPE = 'A';
-        public final static char SUBTYPE = 'F';
+        public static final char TYPE = 'A';
+        public static final char SUBTYPE = 'F';
 
         public final TypeField typeField = new TypeField(this, TYPE);
         public final SubtypeField subtypeField = new SubtypeField(this, SUBTYPE);
@@ -90,6 +90,7 @@ public class FieldsTest {
 		
 		Assert.assertEquals(AllFieldsProtoMessage.TYPE, proto.getType());
 		Assert.assertEquals(AllFieldsProtoMessage.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 
 		Assert.assertEquals(false, proto.myBoolean.isOptional());
 		Assert.assertEquals(true, proto.myBoolean.isPresent());
@@ -149,6 +150,7 @@ public class FieldsTest {
 		
 		Assert.assertEquals(AllFieldsProtoMessage.TYPE, bb.get());
 		Assert.assertEquals(AllFieldsProtoMessage.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort());
 		
 		AllFieldsProtoMessage received = new AllFieldsProtoMessage();
 		

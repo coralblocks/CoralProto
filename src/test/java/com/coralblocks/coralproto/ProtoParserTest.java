@@ -58,6 +58,7 @@ public class ProtoParserTest {
 		Assert.assertNotNull(proto);
 		Assert.assertEquals(ProtoMessage1.TYPE, proto.getType());
 		Assert.assertEquals(ProtoMessage1.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 		Assert.assertTrue(proto instanceof ProtoMessage1);
 		
 		ProtoMessage1 pParsed1 = (ProtoMessage1) proto;
@@ -80,6 +81,7 @@ public class ProtoParserTest {
 		Assert.assertNotNull(proto);
 		Assert.assertEquals(ProtoMessage2.TYPE, proto.getType());
 		Assert.assertEquals(ProtoMessage2.SUBTYPE, proto.getSubtype());
+		Assert.assertEquals(0, proto.getVersion());
 		Assert.assertTrue(proto instanceof ProtoMessage2);
 		
 		ProtoMessage2 pParsed2 = (ProtoMessage2) proto;

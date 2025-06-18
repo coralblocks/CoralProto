@@ -43,6 +43,7 @@ public class SchemaEvolvingTest {
 		
 		Assert.assertEquals(ProtoMessage1A.TYPE, bb.get());
 		Assert.assertEquals(ProtoMessage1A.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort());
 		
 		// schema has evolved, it now has an extra field...
 		
@@ -72,6 +73,7 @@ public class SchemaEvolvingTest {
 		
 		Assert.assertEquals(ProtoMessage1.TYPE, bb.get());
 		Assert.assertEquals(ProtoMessage1.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort());
 		
 		ProtoMessage1 p1 = new ProtoMessage1();
 		
@@ -98,6 +100,7 @@ public class SchemaEvolvingTest {
 		
 		Assert.assertEquals(ProtoMessage2A.TYPE, bb.get());
 		Assert.assertEquals(ProtoMessage2A.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort());
 		
 		// schema has evolved, it now has an extra field...
 		
@@ -129,6 +132,7 @@ public class SchemaEvolvingTest {
 		
 		Assert.assertEquals(ProtoMessage2.TYPE, bb.get());
 		Assert.assertEquals(ProtoMessage2.SUBTYPE, bb.get());
+		Assert.assertEquals(0, bb.getShort());
 		
 		ProtoMessage2 p2 = new ProtoMessage2();
 		

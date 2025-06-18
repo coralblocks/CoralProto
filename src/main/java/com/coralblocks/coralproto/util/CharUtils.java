@@ -32,14 +32,27 @@ public class CharUtils {
 		int len = s.length();
 		
 		return  (short) (
-				((( (len > 0 ? ((byte) s.charAt(0)) : (byte) ' ') & 0xFF)) << 0L)
-				+  ((( (len > 1 ? ((byte) s.charAt(1)) : (byte) ' ') & 0xFF)) << 8L)
+					((( (len > 0 ? ((byte) s.charAt(0)) : (byte) ' ') & 0xFF)) << 0)
+				+  	((( (len > 1 ? ((byte) s.charAt(1)) : (byte) ' ') & 0xFF)) << 8)
 				);
 	}
 	
 	public static final short toShort(byte b1, byte b2) {
 		
-		return  (short) ( ( (b1 & 0xFF) << 0L ) +  ( (b2 & 0xFF) << 8L ) );
+		return (short) (    (((b1 	& 0xFF)) << 0)
+						+  	(((b2 	& 0xFF)) << 8)
+					   );
+	}
+	
+	public static final int toInt(byte b1, byte b2, short s1) {
+		
+		byte high = (byte) ((s1 >> 8) & 0xFF);
+		byte low  = (byte) ((s1 >> 0) & 0xFF);
+		
+		return     (((b1 	& 0xFF)) << 0)
+				+  (((b2 	& 0xFF)) << 8)
+				+  (((high 	& 0xFF)) << 16)
+				+  (((low 	& 0xFF)) << 24);
 	}
 	
 }
