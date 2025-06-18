@@ -13,7 +13,8 @@ A fast, binary and garbage-free serialization framework with a simple, compact a
 - Enum fields (CharEnum, ShortEnum, IntEnum and TwoCharEnum)
 - Fields can be made optional
 - Repeating groups with nesting support (repeating groups inside repeating groups)
-- Schema evolution by appending new (optional or non-optional) fields
+- Schema evolution (minor) by appending new fields to the end of an existing message
+- Schema evolution (major) by bumping the version number of a message type to create a new message
 
 ## Schema Definition Language
 ```plain
