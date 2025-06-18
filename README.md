@@ -266,8 +266,8 @@ If you need more or less decimal precision, you can pass the number of decimals 
     myDouble3: double(9)	
 ```
 
-## Evolving the Schema
-You can evolve the schema without breaking compatibility by appending new fields to the end of your message. For example, you can evolve:
+## Evolving the Schema (minor thorugh appending new fields)
+You can evolve the schema without breaking compatibility by appending new fields to the end of an existing message. For example, you can evolve:
 ```plain
     CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage1
     TYPE = P
@@ -278,7 +278,7 @@ You can evolve the schema without breaking compatibility by appending new fields
 ```
 by appending a new field:
 ```plain
-    CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage1A
+    CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage1
     TYPE = P
     SUBTYPE = A
     
@@ -286,57 +286,8 @@ by appending a new field:
     symbolDesc: varchars(128)!
     extraField: int
 ```
-Then you can send an old version (without the field) to the new version:
-```java
-ByteBuffer bb = ByteBuffer.allocate(1024);
-
-ProtoMessage1 p1 = new ProtoMessage1();
-
-p1.symbolId.set(2L);
-p1.symbolDesc.set("IBM");
-
-p1.write(bb);
-
-bb.flip();
-
-Assert.assertEquals(ProtoMessage1A.TYPE, bb.get());
-Assert.assertEquals(ProtoMessage1A.SUBTYPE, bb.get());
-
-// schema has evolved, it now has an extra field...
-
-ProtoMessage1A p1A = new ProtoMessage1A();
-
-p1A.read(bb);
-
-Assert.assertEquals(2L, p1A.symbolId.get());
-Assert.assertEquals("IBM", p1A.symbolDesc.get().toString());
-Assert.assertEquals(0, p1A.extraField.get()); // default value
-```
-And you can send a new version (with the field) to the old version:
-```java
-ByteBuffer bb = ByteBuffer.allocate(1024);
-
-ProtoMessage1A p1A = new ProtoMessage1A();
-
-p1A.symbolId.set(2L);
-p1A.symbolDesc.set("IBM");
-p1A.extraField.set(111);
-
-p1A.write(bb);
-
-bb.flip();
-
-Assert.assertEquals(ProtoMessage1.TYPE, bb.get());
-Assert.assertEquals(ProtoMessage1.SUBTYPE, bb.get());
-
-ProtoMessage1 p1 = new ProtoMessage1();
-
-p1.read(bb);
-
-Assert.assertEquals(2L, p1.symbolId.get());
-Assert.assertEquals("IBM", p1.symbolDesc.get().toString());
-```
-**NOTE:** We are changing the message name from `ProtoMessage1` to `ProtoMessage1A` just to be able to test inside the same class. When you evolve a message you will want to keep the same message name.
+By doing that you can send an old version (without the field) to the new version and you can send a new version (with the field) to the old version. It is important to understand that you
+can do that without having to create a new message class, in other words, the message class and the message type will remain the same.
 
 ## Generating Source Code
 To generate the Java source code of your messages from the schema definition files, you should do:
