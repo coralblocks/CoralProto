@@ -269,7 +269,7 @@ If you need more or less decimal precision, you can pass the number of decimals 
 ## Evolving the Schema (minor thorugh appending new fields)
 You can evolve the schema without breaking compatibility by appending new fields to the end of an existing message. For example, you can evolve:
 ```plain
-    CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage1
+    CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage
     TYPE = P
     SUBTYPE = A
     
@@ -278,7 +278,7 @@ You can evolve the schema without breaking compatibility by appending new fields
 ```
 by appending a new field:
 ```plain
-    CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage1
+    CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage
     TYPE = P
     SUBTYPE = A
     
@@ -287,7 +287,7 @@ by appending a new field:
     extraField: int
 ```
 By doing that you can send an old version (without the field) to the new version and you can send a new version (with the field) to the old version. It is important to understand that you
-can do that without having to create a new message class, in other words, the message class will remain the same.
+can do that without having to create a new message class, in other words, the message class will remain the same (`ProtoMessage`).
 
 ## Evolving the Schema (major thorugh bumping the version)
 You can evolve the schema without breaking compatibility by creating a new and independent version of an existing message type. For example, you can evolve:
@@ -311,7 +311,7 @@ to a different one without any constraints:
     symbolId: long
     symbolDesc: varchars(256)! 
 ```
-that will continue to evolve in unpredictable ways:
+which can continue to evolve in any unpredictable ways:
 ```plain
     CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage_2
     TYPE = P
