@@ -18,7 +18,7 @@ package com.coralblocks.coralproto;
 import java.nio.ByteBuffer;
 
 import com.coralblocks.coralds.map.IntMap;
-import com.coralblocks.coralproto.util.CharUtils;
+import com.coralblocks.coralproto.util.ByteUtils;
 
 public abstract class ProtoParser {
 	
@@ -30,7 +30,7 @@ public abstract class ProtoParser {
 			byte type = (byte) p.getType();
 			byte subtype = (byte) p.getSubtype();
 			short version = p.getVersion();
-			int pKey = CharUtils.toInt(type, subtype, version);
+			int pKey = ByteUtils.toInt(type, subtype, version);
 			if (protoMap.containsKey(pKey)) {
 				Proto pOther = protoMap.get(pKey);
 				throw new RuntimeException("Duplicate proto message (same type, subtype and version): " + p.getClass().getSimpleName() + " " + pOther.getClass().getSimpleName());
@@ -49,7 +49,7 @@ public abstract class ProtoParser {
 		byte subtype = data.get();
 		short version = data.getShort();
 		
-		int pKey = CharUtils.toInt(type, subtype, version);
+		int pKey = ByteUtils.toInt(type, subtype, version);
 		
 		Proto p = protoMap.get(pKey);
 		

@@ -21,7 +21,7 @@ import com.coralblocks.coralds.map.IntMap;
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.enums.TwoCharEnum;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
-import com.coralblocks.coralproto.util.CharUtils;
+import com.coralblocks.coralproto.util.ByteUtils;
 
 public class TwoCharEnumField<E extends TwoCharEnum> implements ProtoField {
 	
@@ -99,7 +99,7 @@ public class TwoCharEnumField<E extends TwoCharEnum> implements ProtoField {
 		if (isOptional) this.isPresent = true;
 		byte b1 = buf.get();
 		byte b2 = buf.get();
-		int i =  CharUtils.toShort(b1, b2);
+		int i =  ByteUtils.toShort(b1, b2);
 		this.value = intMap.get(i);
 	}
 	
