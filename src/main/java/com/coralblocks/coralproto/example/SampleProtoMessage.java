@@ -25,13 +25,18 @@ import com.coralblocks.coralproto.field.VarBytes;
 import com.coralblocks.coralproto.field.VarChars;
 
 /**
- * <p>This is a Proto message where the fields are added directly and the parser is coded explicitly.</p>
- * <p>That way parsing is faster as you don't need to iterate over all the fields in a loop.</p>
+ * <p>This is a Proto message where the fields are added directly and there is no parser because the fields are read explicitly.</p>
+ * <p>That way reading is faster as you don't need to iterate over all the fields in a loop to parse the message.</p>
  * <p>The primitive types are also used <i>as-is</i>, in other words, an <code>int</code> is an <code>int</code> and not a {@link IntField}.</p>
- * <p>Parsing just reads field by field. See {@link #read(ByteBuffer)}, which you maintain and write yourself.</p>
+ * <p>
+ * To receive a message from a <code>ByteBuffer</code>, the fields are just read one by one. 
+ * See {@link #read(ByteBuffer)}, which you maintain and write yourself.
+ * Same thing happens when sending out the message to a <code>ByteBuffer</code>, the fields are written one by one.
+ * See {@link #write(ByteBuffer)}, which you maintain and write yourself.
+ * </p>
  * <p>
  * This is actually just a little bit faster but it can add up when you are parsing thousands of messages per second, 
- * if throughput is more important than latency.
+ * and throughput is more important than latency per message.
  * It gets faster as the number of fields in the message increases. For a small number of fields it is not that much faster.
  * </p> 
  * <p>
@@ -86,6 +91,11 @@ public final class SampleProtoMessage extends AbstractProto {
 			 + 1 /* boolean (1 byte) */;
 	}
 
+	/**
+	 * Read all the fields, one by one.
+	 * 
+	 * @param buf the <code>ByteBuffer</code> from where to read the fields
+	 */
 	@Override
     public final void read(ByteBuffer buf) {
 
@@ -101,6 +111,11 @@ public final class SampleProtoMessage extends AbstractProto {
 		aBoolean	=	read(buf, aBoolean);
     }
 
+	/**
+	 * Write all the fields, one by one.
+	 * 
+	 * @param buf the <code>ByteBuffer</code> to where to write the fields
+	 */
 	@Override
     public final void write(ByteBuffer buf) {
 
@@ -119,6 +134,12 @@ public final class SampleProtoMessage extends AbstractProto {
 		write(buf, aBoolean);
     }
 	
+	/**
+	 * Write all fields in ascii, one by one.
+	 * 
+	 * @param shortVersion true to write the ascii short version
+	 * @param buf the <code>ByteBuffer</code> to where to write the ascii fields
+	 */
 	@Override
 	public final void writeAscii(boolean shortVersion, ByteBuffer buf) {
 		
