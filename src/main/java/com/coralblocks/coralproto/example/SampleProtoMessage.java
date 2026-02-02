@@ -20,9 +20,23 @@ import java.nio.ByteBuffer;
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.field.Bytes;
 import com.coralblocks.coralproto.field.Chars;
+import com.coralblocks.coralproto.field.IntField;
 import com.coralblocks.coralproto.field.VarBytes;
 import com.coralblocks.coralproto.field.VarChars;
 
+/**
+ * <p>This is a Proto message where the fields are added directly and the parser is coded explicitly.</p>
+ * <p>That way parsing is faster as you don't need to iterate over all the fields in a loop.</p>
+ * <p>The primitive types are also used <i>as-is</i>, in other words, an <code>int</code> is an <code>int</code> and not a {@link IntField}.</p>
+ * <p>Parsing just reads field by field. See {@link #read(ByteBuffer)}, which you maintain and write yourself.</p>
+ * <p>
+ * This is actually just a little bit faster but it can add up when you are parsing thousands of messages per second, 
+ * if throughput is more important than latency.
+ * It gets faster as the number of fields in the message increases. For a small number of fields it is not that much faster.
+ * </p> 
+ * <p>
+ * As you can see, this approach is faster but requires more explicit coding from your part, and it offers no IDL for message definition.
+ */
 public final class SampleProtoMessage extends AbstractProto {
 	
 	public static final char TYPE = 'P';
