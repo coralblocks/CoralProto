@@ -3,7 +3,7 @@ A fast, binary and garbage-free serialization framework with a simple, compact a
 
 ## Features
 - Simple, compact and succinct non-XML schema definition language with message type and subtype
-- Fast parsing (or direct access without parsing)
+- Fast parsing (or [direct access](https://github.com/coralblocks/CoralProto/blob/main/src/main/java/com/coralblocks/coralproto/example/SampleProtoMessage.java) without parsing)
 - Strictly binary (big-endian or little-endian, you control your `ByteBuffer`)
 - Ascii encoding for logging/debugging
 - Garbage-free (no GC overhead)
