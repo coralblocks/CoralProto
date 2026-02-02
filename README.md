@@ -4,7 +4,7 @@ A fast, binary and garbage-free serialization framework with a simple, compact a
 ## Features
 - Simple, compact and succinct non-XML schema definition language with message type and subtype
 - Fast parsing (or direct access without parsing)
-- Strictly binary (big-endian)
+- Strictly binary (big-endian or little-endian, you control your `ByteBuffer`)
 - Ascii encoding for logging/debugging
 - Garbage-free (no GC overhead)
 - Primitive types (boolean, char, byte, short, int, long, float and double)
