@@ -194,7 +194,7 @@ public class RepeatingGroupsTest {
 	}
 
 	@Test
-	public void testPooledGroupElementsAreResetBeforeReuse() {
+	public void testGroupElementsAreResetBeforeReuse() {
 		RepeatingGroupProtoMessage proto = new RepeatingGroupProtoMessage();
 		proto.bids.nextElement();
 		proto.bids.levelId.set(99);
@@ -215,6 +215,27 @@ public class RepeatingGroupsTest {
 		proto.bids.legs.nextElement();
 		Assert.assertEquals(0, proto.bids.legs.legId.get());
 		Assert.assertFalse(proto.bids.legs.legCode.isPresent());
+	}
+
+	@Test
+	public void testGroupElementsRemainAllocatedForReuse() {
+		RepeatingGroupField group = new RepeatingGroupField(new ByteField(), new ByteField());
+		GroupField[] firstUse = new GroupField[4];
+
+		// Four elements cross the initial capacity of three and force one additional allocation.
+		for(int i = 0; i < firstUse.length; i++) {
+			firstUse[i] = group.nextElement();
+			((ByteField) firstUse[i].get(0)).set((byte) (i + 1));
+		}
+
+		group.clear();
+
+		// Reuse the same four elements in the same order and verify that their old values were cleared.
+		for(int i = 0; i < firstUse.length; i++) {
+			GroupField reused = group.nextElement();
+			Assert.assertSame(firstUse[i], reused);
+			Assert.assertEquals(0, ((ByteField) reused.get(0)).get());
+		}
 	}
 
 	@Test

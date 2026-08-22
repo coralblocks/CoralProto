@@ -19,18 +19,21 @@ import java.nio.ByteBuffer;
 import java.util.NoSuchElementException;
 
 import com.coralblocks.coralds.list.ArrayList;
-import com.coralblocks.coralpool.LinkedObjectPool;
-import com.coralblocks.coralpool.ObjectBuilder;
-import com.coralblocks.coralpool.ObjectPool;
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.util.ByteBufferEncoder;
 
 public class RepeatingGroupField implements ProtoField {
-	
+
+	// Number of reusable group elements created during construction.
+	private static final int INITIAL_CAPACITY = 3;
+
 	private final ByteBufferEncoder bbEncoder = new ByteBufferEncoder();
-	private final ObjectPool<GroupField> groupFieldPool;
-	private final ArrayList<GroupField> groupFields = new ArrayList<GroupField>(3);
+	// This list stores both the elements in the current message and extra elements ready for reuse.
+	private final ArrayList<GroupField> groupFields = new ArrayList<GroupField>(INITIAL_CAPACITY);
 	private final ProtoField[] protoFields;
+	// This is both the current element count and the list position used by nextElement().
+	// Entries before it belong to the current message; entries from it onward are available for reuse.
+	private int numberOfElements = 0;
 	private int cursor = -1;
 	
 	public RepeatingGroupField(ProtoField ... protoFields) {
@@ -40,15 +43,14 @@ public class RepeatingGroupField implements ProtoField {
 	public RepeatingGroupField(AbstractProto proto, ProtoField ... protoFields) {
 		if (proto != null) proto.add(this);
 		this.protoFields = protoFields;
-		final GroupField groupField = new GroupField(protoFields);
-		ObjectBuilder<GroupField> builder = new ObjectBuilder<GroupField>() {
-			@Override
-			public GroupField newInstance() {
-				return (GroupField) groupField.newInstance();
-			}
-		};
-		this.groupFieldPool = new LinkedObjectPool<GroupField>(2, builder);
-		this.groupFieldPool.release(groupField);
+
+		// Create the first three elements now so small groups do not allocate while being used.
+		GroupField firstGroupField = new GroupField(protoFields);
+		groupFields.addLast(firstGroupField);
+		for(int i = 1; i < INITIAL_CAPACITY; i++) {
+			groupFields.addLast((GroupField) firstGroupField.newInstance());
+		}
+
 		reset();
 	}
 	
@@ -57,8 +59,8 @@ public class RepeatingGroupField implements ProtoField {
 		if (o == this) return true;
 		if (o instanceof RepeatingGroupField) {
 			RepeatingGroupField rgf = (RepeatingGroupField) o;
-			if (rgf.groupFields.size() == this.groupFields.size()) {
-				for(int i = 0; i < groupFields.size(); i++) {
+			if (rgf.numberOfElements == this.numberOfElements) {
+				for(int i = 0; i < numberOfElements; i++) {
 					if (!this.groupFields.get(i).equals(rgf.groupFields.get(i))) return false;
 				}
 				return true;
@@ -70,7 +72,7 @@ public class RepeatingGroupField implements ProtoField {
 	@Override
 	public int hashCode() {
 		int result = 1;
-		for(int i = 0; i < groupFields.size(); i++) {
+		for(int i = 0; i < numberOfElements; i++) {
 			result = 31 * result + groupFields.get(i).hashCode();
 		}
 		return result;
@@ -78,46 +80,47 @@ public class RepeatingGroupField implements ProtoField {
 	
 	@Override
 	public void reset() {
-		for(int i = 0; i < groupFields.size(); i++) {
-			groupFieldPool.release(groupFields.get(i));
-		}
-		groupFields.clear();
-		cursor = -1;
+		clear();
 	}
 	
 	public int getNumberOfElements() {
-		return groupFields.size();
+		return numberOfElements;
 	}
 	
 	public GroupField nextElement() {
-		if (groupFields.size() >= Short.MAX_VALUE) {
+		// The element count is written as a signed short on the wire.
+		if (numberOfElements >= Short.MAX_VALUE) {
 			throw new IllegalStateException("Repeating group cannot contain more than " + Short.MAX_VALUE + " elements");
 		}
-		GroupField groupField = groupFieldPool.get();
+
+		// Grow if needed...
+		if (numberOfElements == groupFields.size()) {
+			groupFields.addLast((GroupField) groupFields.get(0).newInstance());
+		}
+
+		// Reuse the element at that position, clear its old values, and move to the next position.
+		GroupField groupField = groupFields.get(numberOfElements);
 		groupField.reset();
-		groupFields.addLast(groupField);
+		numberOfElements++;
 		return groupField;
 	}
 	
 	public void beginIteration() {
-		cursor = groupFields.isEmpty() ? -1 : 0;
+		cursor = numberOfElements == 0 ? -1 : 0;
 	}
 	
 	public boolean iterHasNext() {
-		return cursor >= 0 && cursor < groupFields.size();
+		return cursor >= 0 && cursor < numberOfElements;
 	}
 	
 	public GroupField iterNext() {
 		if (cursor < 0) return null;
-		if (cursor >= groupFields.size()) throw new NoSuchElementException();
+		if (cursor >= numberOfElements) throw new NoSuchElementException();
 		return groupFields.get(cursor++);
 	}
 	
 	public void clear() {
-		for(int i = 0; i < groupFields.size(); i++) {
-			groupFieldPool.release(groupFields.get(i));
-		}
-		groupFields.clear();
+		numberOfElements = 0;
 		cursor = -1;
 	}
 
@@ -125,7 +128,8 @@ public class RepeatingGroupField implements ProtoField {
 	public int size() {
 		
 		int size = 2;
-		for(int i = 0; i < groupFields.size(); i++) {
+		
+		for(int i = 0; i < numberOfElements; i++) {
 			size += groupFields.get(i).size();
 		}
 		
@@ -163,7 +167,7 @@ public class RepeatingGroupField implements ProtoField {
 	@Override
 	public void writeTo(ByteBuffer buf) {
 		buf.putShort((short) getNumberOfElements());
-		for(int i = 0; i < groupFields.size(); i++) {
+		for(int i = 0; i < numberOfElements; i++) {
 			groupFields.get(i).writeTo(buf);
 		}
 	}
