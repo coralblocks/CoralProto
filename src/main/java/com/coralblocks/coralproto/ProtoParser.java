@@ -41,9 +41,22 @@ public abstract class ProtoParser {
 	
 	protected abstract Proto[] defineProtoMessages();
 	
+	/**
+	 * Parses a registered message from the buffer. If the header is not registered,
+	 * this method returns null and leaves the buffer position unchanged.
+	 * <p>
+	 * The returned message is the reusable instance stored by this parser, not a
+	 * new object. Parsing another message with the same type, subtype and version
+	 * overwrites its fields.
+	 *
+	 * @param data the buffer containing the message
+	 * @return the parsed reusable message, or null when the header is incomplete or unknown
+	 */
 	public Proto parse(ByteBuffer data) {
 		
 		if (data.remaining() < 4) return null;
+
+		int entryPosition = data.position();
 		
 		byte type = data.get();
 		byte subtype = data.get();
@@ -53,7 +66,10 @@ public abstract class ProtoParser {
 		
 		Proto p = protoMap.get(pKey);
 		
-		if (p == null) return null;
+		if (p == null) {
+			data.position(entryPosition);
+			return null;
+		}
 		
 		p.read(data);
 		

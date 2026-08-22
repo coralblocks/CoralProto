@@ -90,5 +90,49 @@ public class ProtoParserTest {
 		Assert.assertEquals(false, pParsed2.symbolDesc.isPresent());
 		Assert.assertEquals(true, pParsed2.isMine.get());
 	}
+
+	@Test
+	public void testUnknownMessageDoesNotConsumeHeader() {
+		ProtoParser protoParser = new ProtoParser();
+		ByteBuffer bb = ByteBuffer.allocate(16);
+		bb.put((byte) 1);
+		int entryPosition = bb.position();
+		bb.put((byte) 'X');
+		bb.put((byte) 'Y');
+		bb.putShort((short) 99);
+		bb.putInt(1234);
+		bb.flip();
+		bb.position(entryPosition);
+		int limit = bb.limit();
+
+		Assert.assertNull(protoParser.parse(bb));
+		Assert.assertEquals(entryPosition, bb.position());
+		Assert.assertEquals(limit, bb.limit());
+	}
+
+	@Test
+	public void testParserReusesRegisteredMessage() {
+		ProtoParser protoParser = new ProtoParser();
+		ByteBuffer bb = ByteBuffer.allocate(1024);
+
+		ProtoMessage1 firstMessage = new ProtoMessage1();
+		firstMessage.symbolId.set(1L);
+		firstMessage.symbolDesc.set("FIRST");
+		firstMessage.write(bb);
+		bb.flip();
+		ProtoMessage1 firstParsed = (ProtoMessage1) protoParser.parse(bb);
+
+		bb.clear();
+		ProtoMessage1 secondMessage = new ProtoMessage1();
+		secondMessage.symbolId.set(2L);
+		secondMessage.symbolDesc.set("SECOND");
+		secondMessage.write(bb);
+		bb.flip();
+		ProtoMessage1 secondParsed = (ProtoMessage1) protoParser.parse(bb);
+
+		Assert.assertSame(firstParsed, secondParsed);
+		Assert.assertEquals(2L, firstParsed.symbolId.get());
+		Assert.assertEquals("SECOND", firstParsed.symbolDesc.get().toString());
+	}
 	
 }
