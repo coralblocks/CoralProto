@@ -22,6 +22,8 @@ import org.junit.Test;
 
 import com.coralblocks.coralproto.field.Chars;
 import com.coralblocks.coralproto.field.CharsField;
+import com.coralblocks.coralproto.field.IntField;
+import com.coralblocks.coralproto.field.RepeatingGroupField;
 import com.coralblocks.coralproto.field.VarBytes;
 import com.coralblocks.coralproto.field.VarBytesField;
 import com.coralblocks.coralproto.field.VarChars;
@@ -84,5 +86,26 @@ public class TruncatedInputTest {
 		Assert.assertThrows(IllegalArgumentException.class, () -> new VarBytes(4).readFrom(variableInput(5, 5)));
 		Assert.assertThrows(IllegalArgumentException.class, () -> new VarCharsField(4).readFrom(variableInput(5, 5)));
 		Assert.assertThrows(IllegalArgumentException.class, () -> new VarBytesField(4).readFrom(variableInput(5, 5)));
+	}
+
+	@Test
+	public void testOversizedVarBytesDoesNotChangeSourceLimit() {
+		ByteBuffer input = variableInput(5, 2);
+		int limit = input.limit();
+
+		Assert.assertThrows(IllegalArgumentException.class, () -> new VarBytesField(4).readFrom(input));
+		Assert.assertEquals(limit, input.limit());
+	}
+
+	@Test
+	public void testRepeatingGroupRejectsNegativeElementCount() {
+		RepeatingGroupField group = new RepeatingGroupField(new IntField(), new IntField());
+
+		ByteBuffer input = ByteBuffer.allocate(8);
+		input.putShort((short) -1);
+		input.flip();
+
+		IllegalArgumentException e = Assert.assertThrows(IllegalArgumentException.class, () -> group.readFrom(input));
+		Assert.assertEquals("Negative repeating group element count: -1", e.getMessage());
 	}
 }

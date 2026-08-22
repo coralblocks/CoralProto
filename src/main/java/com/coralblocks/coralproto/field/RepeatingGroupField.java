@@ -139,6 +139,9 @@ public class RepeatingGroupField implements ProtoField {
 	public void readFrom(ByteBuffer buf) {
 		clear();
 		short n = buf.getShort();
+		if (n < 0) {
+			throw new IllegalArgumentException("Negative repeating group element count: " + n);
+		}
 		for(int i = 0; i < n; i++) {
 			GroupField groupField = nextElement();
 			groupField.readFrom(buf);
