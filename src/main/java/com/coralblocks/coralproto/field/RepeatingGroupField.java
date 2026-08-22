@@ -22,6 +22,16 @@ import com.coralblocks.coralds.list.ArrayList;
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.util.ByteBufferEncoder;
 
+/**
+ * Stores reusable elements for a repeating group.
+ * <p>
+ * Generated subclasses expose fields for the currently selected element. When
+ * building a message, {@link #nextElement()} selects that element. When reading
+ * a parsed message, call {@link #beginIteration()} and then {@link #iterNext()}
+ * before accessing those fields. Do not access them immediately after
+ * {@link #readFrom(ByteBuffer)}: they point to the last decoded element, or may
+ * still point to an element from an earlier message when the group is empty.
+ */
 public class RepeatingGroupField implements ProtoField {
 
 	// Number of reusable group elements created during construction.
@@ -87,6 +97,12 @@ public class RepeatingGroupField implements ProtoField {
 		return numberOfElements;
 	}
 	
+	/**
+	 * Adds and selects the next element for writing. Generated child-field
+	 * references point to this element after this method returns.
+	 *
+	 * @return the selected element
+	 */
 	public GroupField nextElement() {
 		// The element count is written as a signed short on the wire.
 		if (numberOfElements >= Short.MAX_VALUE) {
@@ -105,6 +121,10 @@ public class RepeatingGroupField implements ProtoField {
 		return groupField;
 	}
 	
+	/**
+	 * Starts iteration at the first element. This does not select that element;
+	 * call {@link #iterNext()} before accessing generated child fields.
+	 */
 	public void beginIteration() {
 		cursor = numberOfElements == 0 ? -1 : 0;
 	}
@@ -113,6 +133,12 @@ public class RepeatingGroupField implements ProtoField {
 		return cursor >= 0 && cursor < numberOfElements;
 	}
 	
+	/**
+	 * Selects and returns the next element. Generated child-field references point
+	 * to this element after this method returns.
+	 *
+	 * @return the selected element, or null when iteration was not started or the group is empty
+	 */
 	public GroupField iterNext() {
 		if (cursor < 0) return null;
 		if (cursor >= numberOfElements) throw new NoSuchElementException();
@@ -151,6 +177,11 @@ public class RepeatingGroupField implements ProtoField {
 		throw new IllegalStateException("Cannot mark a required field as not present!");
 	}
 	
+	/**
+	 * Reads all elements from the buffer. After reading, use
+	 * {@link #beginIteration()} and {@link #iterNext()} before accessing generated
+	 * child fields.
+	 */
 	@Override
 	public void readFrom(ByteBuffer buf) {
 		clear();
