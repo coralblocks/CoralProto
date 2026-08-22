@@ -81,6 +81,9 @@ public class RepeatingGroupField implements ProtoField {
 	}
 	
 	public GroupField nextElement() {
+		if (groupFields.size() >= Short.MAX_VALUE) {
+			throw new IllegalStateException("Repeating group cannot contain more than " + Short.MAX_VALUE + " elements");
+		}
 		GroupField groupField = groupFieldPool.get();
 		groupField.reset();
 		groupFields.addLast(groupField);

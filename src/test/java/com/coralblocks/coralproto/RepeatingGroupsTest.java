@@ -22,6 +22,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.coralblocks.coralproto.field.BooleanField;
+import com.coralblocks.coralproto.field.ByteField;
 import com.coralblocks.coralproto.field.GroupField;
 import com.coralblocks.coralproto.field.IntField;
 import com.coralblocks.coralproto.field.LongField;
@@ -175,6 +176,21 @@ public class RepeatingGroupsTest {
 			proto.bids.orders.set(i);
 		}
 		return proto;
+	}
+
+	@Test
+	public void testRepeatingGroupRejectsTooManyElements() {
+		RepeatingGroupField group = new RepeatingGroupField(new ByteField(), new ByteField());
+		for(int i = 0; i < Short.MAX_VALUE; i++) group.nextElement();
+
+		IllegalStateException e = Assert.assertThrows(IllegalStateException.class, group::nextElement);
+		Assert.assertEquals("Repeating group cannot contain more than 32767 elements", e.getMessage());
+		Assert.assertEquals(Short.MAX_VALUE, group.getNumberOfElements());
+
+		ByteBuffer bb = ByteBuffer.allocate(Short.BYTES + Short.MAX_VALUE * 2);
+		group.writeTo(bb);
+		bb.flip();
+		Assert.assertEquals(Short.MAX_VALUE, bb.getShort());
 	}
 
 	@Test
