@@ -24,6 +24,11 @@ public class ByteBufferUtils {
 	}
 	
 	public static final void appendCharSequence(ByteBuffer buf, CharSequence s) {
+		if (s instanceof ByteBufferCharSequence) {
+			((ByteBufferCharSequence) s).appendTo(buf);
+			return;
+		}
+
 		int len = s.length();
 		for (int i = 0; i < len; i++) {
 			buf.put((byte) s.charAt(i));

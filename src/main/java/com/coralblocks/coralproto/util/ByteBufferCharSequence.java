@@ -40,6 +40,13 @@ public class ByteBufferCharSequence implements CharSequence {
     	byteBuffer.limit(actualSize).position(0);
     	return byteBuffer;
     }
+
+	final void appendTo(ByteBuffer destination) {
+		int destinationPosition = destination.position();
+		// Copy all characters at once without changing this sequence's buffer position or limit.
+		destination.put(destinationPosition, byteBuffer, 0, actualSize);
+		destination.position(destinationPosition + actualSize);
+	}
     
     @Override
     public boolean equals(Object o) {

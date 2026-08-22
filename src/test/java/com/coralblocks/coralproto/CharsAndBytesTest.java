@@ -55,7 +55,8 @@ public class CharsAndBytesTest {
 		Assert.assertThrows(IllegalArgumentException.class, () -> chars.setSize(9));
 
 		ByteBuffer encoded = ByteBuffer.allocate(chars.length());
-		ByteBufferUtils.appendCharSequence(encoded, chars);
+		CharSequence charSequence = chars;
+		ByteBufferUtils.appendCharSequence(encoded, charSequence);
 		encoded.flip();
 		Assert.assertEquals("ABCD", ByteBufferUtils.parseString(encoded));
 		Assert.assertEquals(position, storage.position());
