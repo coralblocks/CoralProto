@@ -253,8 +253,8 @@ And to define in your schema you simply do:
 The corresponding char of the enum will be transmitted through the wire.
 
 ## Float and Double Fields
-- Floats are transmitted through the wire as integers (4-byte big-endian). The default precision is 4 decimals.
-- Doubles are transmitted through the wire as longs (8-byte big-endian). The default precision is 8 decimals.
+- Floats are transmitted through the wire as integers (4-byte big-endian). Float precision must be between 1 and 5, defaulting to 4.
+- Doubles are transmitted through the wire as longs (8-byte big-endian). Double precision must be between 1 and 10, defaulting to 8.
 
 If you need more or less decimal precision, you can pass the number of decimals when defining the field in the schema:
 ```plain

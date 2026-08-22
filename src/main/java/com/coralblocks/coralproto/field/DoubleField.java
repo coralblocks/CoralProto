@@ -58,6 +58,7 @@ public class DoubleField implements ProtoField {
 	}
 	
 	public DoubleField(AbstractProto proto, int precision, boolean isOptional) {
+		if (precision < 1 || precision > 10) throw new IllegalArgumentException("Double precision must be between 1 and 10: " + precision);
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
 		this.precision = precision;

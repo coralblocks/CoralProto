@@ -34,9 +34,25 @@ public class FloatUtils {
 	}
 	
 	private static final int DEFAULT_MULTIPLIER = MULTIPLIERS[DEFAULT_PRECISION - 1];
+	private static final double MIN_ROUNDABLE_VALUE = Integer.MIN_VALUE - 0.5d;
+	private static final double MAX_ROUNDABLE_VALUE = Integer.MAX_VALUE + 0.5d;
+
+	/**
+	 * Scales in double precision so the multiplication does not introduce an
+	 * additional float-rounding step. The range check rejects non-finite and
+	 * overflowing values before rounding and narrowing the result to an int.
+	 */
+	private static int scaleToInt(float value, int multiplier) {
+		double scaled = (double) value * multiplier;
+		// Math.round rounds as floor(scaled + 0.5), making the upper bound exclusive.
+		if (!Double.isFinite(scaled) || scaled < MIN_ROUNDABLE_VALUE || scaled >= MAX_ROUNDABLE_VALUE) {
+			throw new IllegalArgumentException("Float value cannot be represented as a scaled int: " + value);
+		}
+		return (int) Math.round(scaled);
+	}
 	
 	public static int toInt(float value) {
-		return Math.round(value * DEFAULT_MULTIPLIER);
+		return scaleToInt(value, DEFAULT_MULTIPLIER);
 	}
 	
 	public static float toFloat(int value) {
@@ -44,7 +60,7 @@ public class FloatUtils {
 	}
 	
 	public static int toInt(float value, int precision) {
-		return Math.round(value * MULTIPLIERS[precision - 1]);
+		return scaleToInt(value, MULTIPLIERS[precision - 1]);
 	}
 	
 	public static float toFloat(int value, int precision) {

@@ -26,6 +26,8 @@ import com.coralblocks.coralproto.field.FloatField;
 import com.coralblocks.coralproto.field.SubtypeField;
 import com.coralblocks.coralproto.field.TypeField;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
+import com.coralblocks.coralproto.util.DoubleUtils;
+import com.coralblocks.coralproto.util.FloatUtils;
 
 
 public class FloatDoubleTest {
@@ -115,6 +117,34 @@ public class FloatDoubleTest {
 		Assert.assertTrue(1.12345678 == proto.myDouble1.get());
 		Assert.assertTrue(1.123456 == proto.myDouble2.get());
 		Assert.assertTrue(1.12345 == proto.myDouble3.get());
+	}
+
+	@Test
+	public void testPrecisionIsValidatedAtConstruction() {
+		new FloatField(1);
+		new FloatField(5);
+		Assert.assertThrows(IllegalArgumentException.class, () -> new FloatField(0));
+		Assert.assertThrows(IllegalArgumentException.class, () -> new FloatField(6));
+
+		new DoubleField(1);
+		new DoubleField(10);
+		Assert.assertThrows(IllegalArgumentException.class, () -> new DoubleField(0));
+		Assert.assertThrows(IllegalArgumentException.class, () -> new DoubleField(11));
+	}
+
+	@Test
+	public void testScaledValuesRejectOverflow() {
+		Assert.assertThrows(IllegalArgumentException.class, () -> FloatUtils.toInt(Float.MAX_VALUE));
+		Assert.assertThrows(IllegalArgumentException.class, () -> FloatUtils.toInt(Float.NaN));
+		Assert.assertThrows(IllegalArgumentException.class, () -> DoubleUtils.toLong(1.0e11));
+		Assert.assertThrows(IllegalArgumentException.class, () -> DoubleUtils.toLong(Double.POSITIVE_INFINITY));
+		Assert.assertEquals(Long.MAX_VALUE, DoubleUtils.toLong(DoubleUtils.toDouble(Long.MAX_VALUE)));
+	}
+
+	@Test
+	public void testFloatScalingUsesDoubleIntermediate() {
+		Assert.assertEquals(123456787, FloatUtils.toInt(12345.6789f));
+		Assert.assertEquals(-12, DoubleUtils.toLong(-1.25, 1));
 	}
 	
 	@Test

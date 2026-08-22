@@ -58,6 +58,7 @@ public class FloatField implements ProtoField {
 	}
 	
 	public FloatField(AbstractProto proto, int precision, boolean isOptional) {
+		if (precision < 1 || precision > 5) throw new IllegalArgumentException("Float precision must be between 1 and 5: " + precision);
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
 		this.precision = precision;

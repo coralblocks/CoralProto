@@ -34,9 +34,25 @@ public class DoubleUtils {
 	}
 	
 	private static final long DEFAULT_MULTIPLIER = MULTIPLIERS[DEFAULT_PRECISION - 1];
+	private static final double MIN_ROUNDABLE_VALUE = -0x1.0p63;
+	private static final double MAX_ROUNDABLE_VALUE = 0x1.0p63;
+
+	/**
+	 * Scales the value and verifies that the result fits the long transport
+	 * before rounding. Without this check, Math.round silently converts NaN to
+	 * zero and values beyond the long range to Long.MIN_VALUE or Long.MAX_VALUE.
+	 */
+	private static long scaleToLong(double value, long multiplier) {
+		double scaled = value * multiplier;
+		// Keep +2^63: Math.round maps it to Long.MAX_VALUE, preserving a decoded maximum long.
+		if (!Double.isFinite(scaled) || scaled < MIN_ROUNDABLE_VALUE || scaled > MAX_ROUNDABLE_VALUE) {
+			throw new IllegalArgumentException("Double value cannot be represented as a scaled long: " + value);
+		}
+		return Math.round(scaled);
+	}
 	
 	public static long toLong(double value) {
-		return Math.round(value * DEFAULT_MULTIPLIER);
+		return scaleToLong(value, DEFAULT_MULTIPLIER);
 	}
 	
 	public static double toDouble(long value) {
@@ -44,7 +60,7 @@ public class DoubleUtils {
 	}
 	
 	public static long toLong(double value, int precision) {
-		return Math.round(value * MULTIPLIERS[precision - 1]);
+		return scaleToLong(value, MULTIPLIERS[precision - 1]);
 	}
 	
 	public static double toDouble(long value, int precision) {
