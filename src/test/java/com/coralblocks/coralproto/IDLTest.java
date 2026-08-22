@@ -15,9 +15,11 @@
  */
 package com.coralblocks.coralproto;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -130,6 +132,36 @@ public class IDLTest {
 		} finally {
 			Files.deleteIfExists(temp);
 			Files.deleteIfExists(target);
+			Files.deleteIfExists(directory);
+		}
+	}
+
+	@Test
+	public void testCommandUsesProvidedFolder() throws IOException {
+		Path directory = Files.createTempDirectory("coralproto-idl-");
+		Path nestedDirectory = Files.createDirectory(directory.resolve("idl"));
+		Path schema = directory.resolve("Message.idl");
+		Path ignored = directory.resolve("Ignore.txt");
+		Path nestedSchema = nestedDirectory.resolve("Nested.idl");
+		Path generated = directory.resolve("Message.java.tmp");
+		try {
+			Files.writeString(schema, "CLASSNAME = example.Message\nTYPE = M\nSUBTYPE = S\nvalue: int\n");
+			Files.writeString(ignored, "not a schema");
+			Files.writeString(nestedSchema, "CLASSNAME = example.Nested\nTYPE = N\nSUBTYPE = S\nvalue: int\n");
+
+			List<File> files = IDL.findAllFiles(directory.toString(), ".idl");
+			Assert.assertEquals(1, files.size());
+			Assert.assertEquals(schema.toFile(), files.get(0));
+
+			IDL.main(new String[] { directory.toString(), "true", "idl" });
+			Assert.assertTrue(Files.exists(generated));
+			Assert.assertFalse(Files.exists(nestedDirectory.resolve("Nested.java.tmp")));
+		} finally {
+			Files.deleteIfExists(generated);
+			Files.deleteIfExists(nestedSchema);
+			Files.deleteIfExists(nestedDirectory);
+			Files.deleteIfExists(ignored);
+			Files.deleteIfExists(schema);
 			Files.deleteIfExists(directory);
 		}
 	}

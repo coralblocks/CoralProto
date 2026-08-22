@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.coralblocks.coralproto.util.IOUtils;
 import com.coralblocks.coralproto.util.RegexUtils;
@@ -166,31 +167,15 @@ public class IDL {
 	}
 	
 	public static List<File> findAllFiles(String dir, String extension) throws IOException {
-
-		String extensionWithoutDot = new String(extension);
-		if (extensionWithoutDot.startsWith(".")) {
-			extensionWithoutDot = extensionWithoutDot.substring(1);
-		}
-		
 		if (!extension.startsWith(".")) extension = "." + extension;
-		
-		if (dir.endsWith(File.separator)) {
-			dir += extensionWithoutDot + File.separator;
-		} else {
-			dir += File.separator + extensionWithoutDot + File.separator;
+		String fileExtension = extension;
+		try (Stream<Path> files = Files.list(Paths.get(dir))) {
+			return files
+					.filter(Files::isRegularFile)
+					.filter(path -> path.getFileName().toString().endsWith(fileExtension))
+					.map(Path::toFile)
+					.collect(Collectors.toList());
 		}
-
-		List<File> files = Files.list(Paths.get(dir))
-                .filter(Files::isRegularFile)
-                .map(Path::toFile)
-                .collect(Collectors.toList());
-		
-		List<File> list = new ArrayList<File>(files.size());
-		for(File f : files) {
-			if (f.getName().endsWith(extension)) list.add(f);
-		}
-		
-		return list;
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -222,7 +207,7 @@ public class IDL {
 			String absPath = f.getAbsolutePath();
 			String data = IOUtils.readFile(absPath);
 			String klassName = find(data, "CLASSNAME", true);
-			String folder = getFolder(absPath, extension);
+			String folder = getFolder(absPath);
 			String simpleClassName = getSimpleClassName(klassName);
 			String full = folder + simpleClassName + ".java.tmp";
 			System.out.println("Generating code: " + full);
@@ -232,13 +217,10 @@ public class IDL {
 		}
 	}
 	
-	private static String getFolder(String absPath, String extension) throws IOException {
-		int index = absPath.lastIndexOf(File.separatorChar);
-		if (index <= 0) throw new IOException("Could not find folder from path: " + absPath);
-		String s = absPath.substring(0, index + 1);
-		String remove = extension + File.separator;
-		index = s.lastIndexOf(remove);
-		return s.substring(0, index);
+	private static String getFolder(String absPath) throws IOException {
+		Path parent = Paths.get(absPath).getParent();
+		if (parent == null) throw new IOException("Could not find folder from path: " + absPath);
+		return parent.toString() + File.separator;
 	}
 	
 	private static String getSimpleClassName(String klassName) throws IOException {
