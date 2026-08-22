@@ -49,6 +49,13 @@ public interface Proto {
 	
 	/**
 	 * Writes the contents of this proto message INCLUDING the type and subtype.
+	 * If the buffer is already large enough, the number of bytes written can be
+	 * measured without calling {@link #getLength()} first:
+	 * <pre>
+	 * int start = buf.position();
+	 * proto.write(buf);
+	 * int length = buf.position() - start;
+	 * </pre>
 	 * 
 	 * @param buf where to write this message to
 	 */
@@ -64,6 +71,10 @@ public interface Proto {
 	
 	/**
 	 * Returns the total length of this proto message INCLUDING the type and subtype.
+	 * Use this when the length must be known before writing, such as when allocating
+	 * an exactly sized buffer. When writing to an existing buffer, measuring the
+	 * buffer position before and after {@link #write(ByteBuffer)} avoids this
+	 * separate pass over the message fields.
 	 * 
 	 * @return the total length of this message
 	 */

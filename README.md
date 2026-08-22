@@ -47,7 +47,7 @@ A fast, binary and garbage-free serialization framework with a simple, compact a
 
 **NOTE:** For convenience, you can place the schema specification inside the Java class so that when you execute its main method the class is updated with the generated source code of the message. You can see an example [here](https://github.com/coralblocks/CoralProto/blob/main/src/main/java/com/coralblocks/coralproto/example/PriceChangeMessage.java).
 
-## Writting the Message Fields
+## Writing the Message Fields
 ```java
 PriceChangeMessage proto = new PriceChangeMessage();
 
@@ -169,7 +169,7 @@ Assert.assertTrue(200.55 == proto.lastTradePrice.get());
 ```
 **NOTE:** The full automated test for the PriceChangeMessage can be seen [here](https://github.com/coralblocks/CoralProto/blob/main/src/test/java/com/coralblocks/coralproto/PriceChangeMessageTest.java).
 
-## Writting to and Reading from a ByteBuffer
+## Writing to and Reading from a ByteBuffer
 ```java
 PriceChangeMessage proto = new PriceChangeMessage();
 
