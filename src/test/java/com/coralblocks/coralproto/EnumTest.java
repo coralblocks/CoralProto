@@ -197,6 +197,16 @@ public class EnumTest {
             return twoCharString;
         }
     }
+
+	private static enum InvalidTwoChar implements TwoCharEnum {
+
+		BAD;
+
+		@Override
+		public String getString() {
+			return "BAD";
+		}
+	}
 	
 	@Test
 	public void testAllEnumFields() {
@@ -283,6 +293,31 @@ public class EnumTest {
 		TwoCharEnumField<CancelReason> twoCharField = new TwoCharEnumField<CancelReason>(CancelReason.ALL);
 		twoCharField.readFrom(bb);
 		Assert.assertNull(twoCharField.get());
+	}
+
+	@Test
+	public void testInvalidEnumSetDoesNotMarkOptionalFieldPresent() {
+		ShortEnumField<RejectReason> shortField = new ShortEnumField<RejectReason>(RejectReason.ALL, true);
+		Assert.assertThrows(IllegalArgumentException.class, () -> shortField.set(null));
+		Assert.assertFalse(shortField.isPresent());
+
+		IntEnumField<ReduceRejectReason> intField = new IntEnumField<ReduceRejectReason>(ReduceRejectReason.ALL, true);
+		Assert.assertThrows(IllegalArgumentException.class, () -> intField.set(null));
+		Assert.assertFalse(intField.isPresent());
+
+		TwoCharEnumField<CancelReason> twoCharField = new TwoCharEnumField<CancelReason>(CancelReason.ALL, true);
+		Assert.assertThrows(IllegalArgumentException.class, () -> twoCharField.set(null));
+		Assert.assertFalse(twoCharField.isPresent());
+
+		TwoCharEnumField<InvalidTwoChar> invalidSetField = new TwoCharEnumField<InvalidTwoChar>(new IntMap<InvalidTwoChar>(), true);
+		Assert.assertThrows(IllegalArgumentException.class, () -> invalidSetField.set(InvalidTwoChar.BAD));
+		Assert.assertFalse(invalidSetField.isPresent());
+
+		IntMap<InvalidTwoChar> invalidMap = new IntMap<InvalidTwoChar>();
+		invalidMap.put(CharUtils.toShort("ZZ"), InvalidTwoChar.BAD);
+		TwoCharEnumField<InvalidTwoChar> invalidMappedField = new TwoCharEnumField<InvalidTwoChar>(invalidMap);
+		invalidMappedField.readFrom(ByteBuffer.wrap(new byte[] { 'Z', 'Z' }));
+		Assert.assertThrows(IllegalStateException.class, () -> invalidMappedField.writeTo(ByteBuffer.allocate(2)));
 	}
 	
 	@Test

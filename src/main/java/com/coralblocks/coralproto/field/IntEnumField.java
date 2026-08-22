@@ -124,8 +124,8 @@ public class IntEnumField<E extends IntEnum> implements ProtoField {
 	}
 	
 	public final void set(E value) {
-		if (isOptional) this.isPresent = true;
 		if (value == null) throw new IllegalArgumentException("Cannot set a null value!");
+		if (isOptional) this.isPresent = true;
 		this.value = value;
 	}
 	
