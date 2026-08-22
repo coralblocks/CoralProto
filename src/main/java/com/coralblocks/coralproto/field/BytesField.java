@@ -152,7 +152,7 @@ public class BytesField implements ProtoField {
 	@Override
 	public final void writeTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		if (buf.remaining() < byteBuffer.capacity()) throw new IllegalArgumentException("Give ByteBuffer does not have space available: " + buf.remaining());
+		if (buf.remaining() < byteBuffer.capacity()) throw new IllegalArgumentException("The given ByteBuffer does not have enough space available: " + buf.remaining());
 		byteBuffer.limit(byteBuffer.capacity()).position(0);
 		buf.put(byteBuffer);
 	}
@@ -160,7 +160,7 @@ public class BytesField implements ProtoField {
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		if (buf.remaining() < byteBuffer.capacity()) throw new IllegalArgumentException("Give ByteBuffer does not have space available: " + buf.remaining());
+		if (buf.remaining() < byteBuffer.capacity()) throw new IllegalArgumentException("The given ByteBuffer does not have enough space available: " + buf.remaining());
 		byteBuffer.limit(byteBuffer.capacity()).position(0);
 		for(int i = 0; i < byteBuffer.capacity(); i++) {
 			byte b = byteBuffer.get();

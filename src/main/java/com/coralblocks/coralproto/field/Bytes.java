@@ -92,13 +92,13 @@ public class Bytes {
 	}
 	
 	public final void writeTo(ByteBuffer buf) {
-		if (buf.remaining() < byteBuffer.capacity()) throw new IllegalArgumentException("Give ByteBuffer does not have space available: " + buf.remaining());
+		if (buf.remaining() < byteBuffer.capacity()) throw new IllegalArgumentException("The given ByteBuffer does not have enough space available: " + buf.remaining());
 		ByteBuffer bb = get();
 		buf.put(bb);
 	}
 	
 	public final void writeAsciiTo(ByteBuffer buf) {
-		if (buf.remaining() < byteBuffer.capacity()) throw new IllegalArgumentException("Give ByteBuffer does not have space available: " + buf.remaining());
+		if (buf.remaining() < byteBuffer.capacity()) throw new IllegalArgumentException("The given ByteBuffer does not have enough space available: " + buf.remaining());
 		ByteBuffer bb = get();
 		for(int i = 0; i < bb.capacity(); i++) {
 			byte b = bb.get();

@@ -266,7 +266,7 @@ If you need more or less decimal precision, you can pass the number of decimals 
     myDouble3: double(9)	
 ```
 
-## Evolving the Schema (minor thorugh appending new fields)
+## Evolving the Schema (minor through appending new fields)
 You can evolve the schema without breaking compatibility by appending new fields to the end of an existing message. For example, you can evolve:
 
 ```plain
@@ -296,7 +296,7 @@ Group elements do not have their own length prefix, so an older reader will
 silently treat the appended bytes as the next element or the next field. Bump
 the message version when changing the fields inside a repeating group (see below).
 
-## Evolving the Schema (major thorugh bumping the version)
+## Evolving the Schema (major through bumping the version)
 You can evolve the schema without breaking compatibility by creating a new and independent version of an existing message type. For example, you can evolve:
 ```plain
     CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage
