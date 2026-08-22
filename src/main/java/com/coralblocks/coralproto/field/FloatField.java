@@ -141,7 +141,7 @@ public class FloatField implements ProtoField {
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
 		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		bbEncoder.append(buf, value);
+		bbEncoder.append(buf, value, precision);
 	}
 	
 	public final float get() {

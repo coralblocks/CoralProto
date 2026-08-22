@@ -45,17 +45,52 @@ public class ByteBufferEncoder {
 		sb.append(number);
 		ByteBufferUtils.appendCharSequence(buf, sb);
 	}
-	
-	public final void append(ByteBuffer buf, float number) {
-		sb.setLength(0);
-		sb.append(number);
-		ByteBufferUtils.appendCharSequence(buf, sb);
+
+	public final void append(ByteBuffer buf, float number, int precision) {
+		if (precision < 1 || precision > 5) throw new IllegalArgumentException("Float precision must be between 1 and 5: " + precision);
+		appendScaled(buf, FloatUtils.toInt(number, precision), precision);
 	}
-	
-	public final void append(ByteBuffer buf, double number) {
-		sb.setLength(0);
-		sb.append(number);
-		ByteBufferUtils.appendCharSequence(buf, sb);
+
+	public final void append(ByteBuffer buf, double number, int precision) {
+		if (precision < 1 || precision > 10) throw new IllegalArgumentException("Double precision must be between 1 and 10: " + precision);
+		appendScaled(buf, DoubleUtils.toLong(number, precision), precision);
+	}
+
+	/**
+	 * Appends an integer mantissa with the supplied decimal precision. The integer
+	 * part is not padded. The fractional part is padded with leading zeroes and
+	 * insignificant trailing zeroes are omitted. The conversion uses only integer
+	 * arithmetic and does not allocate.
+	 */
+	private void appendScaled(ByteBuffer buf, long number, int precision) {
+
+		long multiplier = 1;
+		for(int i = 0; i < precision; i++) multiplier *= 10;
+
+		long integerPart = number / multiplier;
+		long fractionalPart = number % multiplier;
+		if (number < 0) {
+			buf.put((byte) '-');
+			integerPart = -integerPart;
+			fractionalPart = -fractionalPart;
+		}
+
+		append(buf, integerPart);
+		buf.put((byte) '.');
+
+		int fractionalDigits = precision;
+		while(fractionalDigits > 1 && fractionalPart % 10 == 0) {
+			fractionalPart /= 10;
+			fractionalDigits--;
+		}
+
+		long divisor = 1;
+		for(int i = 1; i < fractionalDigits; i++) divisor *= 10;
+		while(divisor > 0) {
+			buf.put((byte) ('0' + fractionalPart / divisor));
+			fractionalPart %= divisor;
+			divisor /= 10;
+		}
 	}
 	
 }

@@ -146,6 +146,57 @@ public class FloatDoubleTest {
 		Assert.assertEquals(123456787, FloatUtils.toInt(12345.6789f));
 		Assert.assertEquals(-12, DoubleUtils.toLong(-1.25, 1));
 	}
+
+	@Test
+	public void testAsciiUsesScaledWireValue() {
+		ByteBuffer bb = ByteBuffer.allocate(64);
+
+		FloatField floatField = new FloatField(4);
+		floatField.set(1.23456f);
+		floatField.writeAsciiTo(bb);
+		bb.flip();
+		Assert.assertEquals("1.2346", ByteBufferUtils.parseString(bb));
+
+		bb.clear();
+		DoubleField doubleField = new DoubleField(4);
+		doubleField.set(-0.00124);
+		doubleField.writeAsciiTo(bb);
+		bb.flip();
+		Assert.assertEquals("-0.0012", ByteBufferUtils.parseString(bb));
+
+		bb.clear();
+		doubleField.set(1.2);
+		doubleField.writeAsciiTo(bb);
+		bb.flip();
+		Assert.assertEquals("1.2", ByteBufferUtils.parseString(bb));
+
+		bb.clear();
+		doubleField.set(1.23);
+		doubleField.writeAsciiTo(bb);
+		bb.flip();
+		Assert.assertEquals("1.23", ByteBufferUtils.parseString(bb));
+	}
+
+	@Test
+	public void testDoubleAsciiHandlesWireBoundaries() {
+		ByteBuffer wire = ByteBuffer.allocate(Long.BYTES);
+		ByteBuffer ascii = ByteBuffer.allocate(32);
+		DoubleField field = new DoubleField();
+
+		wire.putLong(Long.MIN_VALUE).flip();
+		field.readFrom(wire);
+		field.writeAsciiTo(ascii);
+		ascii.flip();
+		Assert.assertEquals("-92233720368.54775808", ByteBufferUtils.parseString(ascii));
+
+		wire.clear();
+		wire.putLong(Long.MAX_VALUE).flip();
+		field.readFrom(wire);
+		ascii.clear();
+		field.writeAsciiTo(ascii);
+		ascii.flip();
+		Assert.assertEquals("92233720368.54775807", ByteBufferUtils.parseString(ascii));
+	}
 	
 	@Test
 	public void testSendReceive() {
