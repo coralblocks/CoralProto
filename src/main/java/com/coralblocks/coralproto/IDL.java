@@ -33,6 +33,8 @@ import java.util.Queue;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.lang.model.SourceVersion;
+
 import com.coralblocks.coralproto.util.IOUtils;
 import com.coralblocks.coralproto.util.RegexUtils;
 
@@ -435,47 +437,56 @@ public class IDL {
 			code.append(indent).append("public ");
 		}
 		boolean isOptional = type.endsWith("!");
+		String exactType = isOptional ? type.substring(0, type.length() - 1) : type;
 		
-		if (type.startsWith("charEnum") || type.startsWith("intEnum") || type.startsWith("shortEnum") || type.startsWith("twoChar")) {
-			String all = getEnumAll(type);
-			String t = getEnumType(type);
+		if (isTypeWithArgument(exactType, "charEnum") || isTypeWithArgument(exactType, "intEnum")
+				|| isTypeWithArgument(exactType, "shortEnum") || isTypeWithArgument(exactType, "twoCharEnum")) {
+			String all = getEnumAll(exactType);
+			String t = getEnumType(exactType);
 			addEnumField(name, addThis, isOptional, groupFields, t, all);
-		} else if (type.startsWith("double")) {
-			String size = getSize(type, true);
+		} else if (exactType.equals("double") || isTypeWithArgument(exactType, "double")) {
+			String size = getSize(exactType, true);
 			if (size != null) addField(name, addThis, isOptional, groupFields, "DoubleField", size);
 			else addField(name, addThis, isOptional, groupFields, "DoubleField");
-		} else if (type.startsWith("float")) {
-			String size = getSize(type, true);
+		} else if (exactType.equals("float") || isTypeWithArgument(exactType, "float")) {
+			String size = getSize(exactType, true);
 			if (size != null) addField(name, addThis, isOptional, groupFields, "FloatField", size);
 			else addField(name, addThis, isOptional, groupFields, "FloatField");
-		} else if (type.startsWith("long")) {
+		} else if (exactType.equals("long")) {
 			addField(name, addThis, isOptional, groupFields, "LongField");
-		} else if (type.startsWith("int")) {
+		} else if (exactType.equals("int")) {
 			addField(name, addThis, isOptional, groupFields, "IntField");
-		} else if (type.startsWith("short")) {
+		} else if (exactType.equals("short")) {
 			addField(name, addThis, isOptional, groupFields, "ShortField");
-		}  else if (type.startsWith("boolean")) {
+		} else if (exactType.equals("boolean")) {
 			addField(name, addThis, isOptional, groupFields, "BooleanField");
-		} else if (type.startsWith("byte") && !type.startsWith("bytes")) {
+		} else if (exactType.equals("byte")) {
 			addField(name, addThis, isOptional, groupFields, "ByteField");
-		} else if (type.startsWith("char") && !type.startsWith("chars")) {
+		} else if (exactType.equals("char")) {
 			addField(name, addThis, isOptional, groupFields, "CharField");
-		} else if (type.startsWith("bytes")) {
-			String size = getSize(type, false);
+		} else if (isTypeWithArgument(exactType, "bytes")) {
+			String size = getSize(exactType, false);
 			addField(name, addThis, isOptional, groupFields, "BytesField", size);
-		} else if (type.startsWith("varbytes")) {
-			String size = getSize(type, false);
+		} else if (isTypeWithArgument(exactType, "varbytes")) {
+			String size = getSize(exactType, false);
 			addField(name, addThis, isOptional, groupFields, "VarBytesField", size);
-		} else if (type.startsWith("chars")) {
-			String size = getSize(type, false);
+		} else if (isTypeWithArgument(exactType, "chars")) {
+			String size = getSize(exactType, false);
 			addField(name, addThis, isOptional, groupFields, "CharsField", size);
-		} else if (type.startsWith("varchars")) {
-			String size = getSize(type, false);
+		} else if (isTypeWithArgument(exactType, "varchars")) {
+			String size = getSize(exactType, false);
 			addField(name, addThis, isOptional, groupFields, "VarCharsField", size);
 		} else {
-			throw new IllegalStateException("Bad type: " + type);
+			throw new IllegalArgumentException("Invalid type '" + type + "' for field '" + name + "'");
 		}
 		code.append("\n");
+	}
+
+	private static boolean isTypeWithArgument(String type, String name) {
+		String prefix = name + "(";
+		if (!type.startsWith(prefix) || !type.endsWith(")")) return false;
+		String argument = type.substring(prefix.length(), type.length() - 1);
+		return !argument.trim().isEmpty() && argument.indexOf('(') < 0 && argument.indexOf(')') < 0;
 	}
 
 	private void createDirectMethods(Map<String, Object> map, String indent, short version) {
@@ -656,7 +667,8 @@ public class IDL {
 			q.poll();
 
 			int idx = line.indexOf(":");
-			String name = line.substring(ind.length(), idx);
+			String name = line.substring(ind.length(), idx).trim();
+			validateFieldName(name);
 			String value = line.substring(idx + 1).trim();
 
 			if (!value.isEmpty()) {
@@ -678,6 +690,13 @@ public class IDL {
 		}
 
 		return map;
+	}
+
+	private static void validateFieldName(String name) {
+		boolean reservedLiteral = name.equals("true") || name.equals("false") || name.equals("null");
+		if (!SourceVersion.isIdentifier(name) || SourceVersion.isKeyword(name, SourceVersion.RELEASE_17) || reservedLiteral) {
+			throw new IllegalArgumentException("Invalid Java field name: " + name);
+		}
 	}
 	
 	private String findIndent(String line) {
