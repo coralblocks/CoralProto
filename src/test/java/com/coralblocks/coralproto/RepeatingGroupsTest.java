@@ -239,6 +239,24 @@ public class RepeatingGroupsTest {
 	}
 
 	@Test
+	public void testRepeatingGroupWithOneField() {
+		RepeatingGroupField group = new RepeatingGroupField(new IntField());
+		for(int i = 1; i <= 3; i++) {
+			GroupField element = group.nextElement();
+			((IntField) element.get(0)).set(i * 10);
+		}
+
+		ByteBuffer bb = ByteBuffer.allocate(group.size());
+		group.writeTo(bb);
+		bb.flip();
+
+		RepeatingGroupField received = new RepeatingGroupField(new IntField());
+		received.readFrom(bb);
+		Assert.assertEquals(group, received);
+		Assert.assertEquals(3, received.getNumberOfElements());
+	}
+
+	@Test
 	public void testRepeatingGroupRejectsTooManyElements() {
 		RepeatingGroupField group = new RepeatingGroupField(new ByteField(), new ByteField());
 		for(int i = 0; i < Short.MAX_VALUE; i++) group.nextElement();

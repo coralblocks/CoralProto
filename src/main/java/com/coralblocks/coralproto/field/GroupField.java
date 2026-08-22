@@ -41,7 +41,7 @@ public class GroupField implements ProtoField {
 	public GroupField(AbstractProto proto, boolean isOptional, ProtoField ... fields) {
 		if (proto != null) proto.add(this);
 		this.isOptional = isOptional;
-		if (fields == null || fields.length < 2) throw new IllegalArgumentException(GroupField.class.getSimpleName() + " must have at least 2 fields!");
+		if (fields == null || fields.length == 0) throw new IllegalArgumentException(GroupField.class.getSimpleName() + " must have at least 1 field!");
 		this.protoFields = fields;
 		reset();
 	}
