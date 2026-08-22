@@ -178,6 +178,30 @@ public class RepeatingGroupsTest {
 	}
 
 	@Test
+	public void testPooledGroupElementsAreResetBeforeReuse() {
+		RepeatingGroupProtoMessage proto = new RepeatingGroupProtoMessage();
+		proto.bids.nextElement();
+		proto.bids.levelId.set(99);
+		proto.bids.qty.set(100);
+		proto.bids.legs.nextElement();
+		proto.bids.legs.legId.set(99);
+		proto.bids.legs.legCode.set(999);
+		proto.bids.orders.set(1);
+
+		proto.bids.clear();
+		proto.bids.nextElement();
+
+		Assert.assertFalse(proto.bids.levelId.isPresent());
+		Assert.assertEquals(0, proto.bids.qty.get());
+		Assert.assertEquals(0, proto.bids.legs.getNumberOfElements());
+		Assert.assertEquals(0, proto.bids.orders.get());
+
+		proto.bids.legs.nextElement();
+		Assert.assertEquals(0, proto.bids.legs.legId.get());
+		Assert.assertFalse(proto.bids.legs.legCode.isPresent());
+	}
+
+	@Test
 	public void testRepeatingGroupEqualityIsReflexive() {
 		RepeatingGroupProtoMessage proto = createProtoWithThreeBids();
 		Assert.assertTrue(proto.equals(proto));

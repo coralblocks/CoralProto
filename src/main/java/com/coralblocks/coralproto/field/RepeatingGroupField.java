@@ -82,6 +82,7 @@ public class RepeatingGroupField implements ProtoField {
 	
 	public GroupField nextElement() {
 		GroupField groupField = groupFieldPool.get();
+		groupField.reset();
 		groupFields.addLast(groupField);
 		return groupField;
 	}
