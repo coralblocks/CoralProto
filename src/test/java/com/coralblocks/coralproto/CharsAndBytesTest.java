@@ -97,6 +97,8 @@ public class CharsAndBytesTest {
 		chars2.set("ABCD");
 		Assert.assertEquals(chars1, chars2);
 		Assert.assertEquals(chars1.hashCode(), chars2.hashCode());
+		chars2.set("WXYZ");
+		Assert.assertNotEquals(chars1, chars2);
 
 		VarChars varChars1 = new VarChars(8);
 		VarChars varChars2 = new VarChars(8);
@@ -104,6 +106,8 @@ public class CharsAndBytesTest {
 		varChars2.set("ABCD");
 		Assert.assertEquals(varChars1, varChars2);
 		Assert.assertEquals(varChars1.hashCode(), varChars2.hashCode());
+		varChars2.set("WXYZ");
+		Assert.assertNotEquals(varChars1, varChars2);
 
 		VarBytes varBytes1 = new VarBytes(8);
 		VarBytes varBytes2 = new VarBytes(8);
@@ -111,6 +115,8 @@ public class CharsAndBytesTest {
 		varBytes2.set(new byte[] { 1, 2, 3, 4 });
 		Assert.assertEquals(varBytes1, varBytes2);
 		Assert.assertEquals(varBytes1.hashCode(), varBytes2.hashCode());
+		varBytes2.set(new byte[] { 4, 3, 2, 1 });
+		Assert.assertNotEquals(varBytes1, varBytes2);
 	}
 
 	@Test

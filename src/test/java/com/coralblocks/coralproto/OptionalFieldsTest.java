@@ -361,4 +361,37 @@ public class OptionalFieldsTest {
 		
 		Assert.assertEquals("OF (OptionalFieldsProtoMessage)|BLANK|33|BLANK|BLANK|222222|3300", ByteBufferUtils.parseString(bb));
 	}
+
+	@Test
+	public void testAbsentWireValuesReplaceStalePresence() {
+		OptionalFieldsProtoMessage absent = new OptionalFieldsProtoMessage();
+		OptionalFieldsProtoMessage reused = new OptionalFieldsProtoMessage();
+		reused.myBoolean.set(true);
+		reused.myByte.set(33);
+		reused.myChar.set('S');
+		reused.myInt.set(1111);
+		reused.myLong.set(222222L);
+		reused.myShort.set(3300);
+
+		ByteBuffer expected = ByteBuffer.allocate(absent.getLength());
+		absent.write(expected);
+		expected.flip();
+
+		ByteBuffer input = expected.duplicate();
+		input.position(4);
+		reused.read(input);
+
+		Assert.assertEquals(absent, reused);
+		Assert.assertFalse(reused.myBoolean.isPresent());
+		Assert.assertFalse(reused.myByte.isPresent());
+		Assert.assertFalse(reused.myChar.isPresent());
+		Assert.assertFalse(reused.myInt.isPresent());
+		Assert.assertFalse(reused.myLong.isPresent());
+		Assert.assertFalse(reused.myShort.isPresent());
+
+		ByteBuffer actual = ByteBuffer.allocate(reused.getLength());
+		reused.write(actual);
+		actual.flip();
+		Assert.assertEquals(expected, actual);
+	}
 }

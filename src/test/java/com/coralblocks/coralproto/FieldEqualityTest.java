@@ -34,13 +34,132 @@ import com.coralblocks.coralproto.field.IntEnumField;
 import com.coralblocks.coralproto.field.IntField;
 import com.coralblocks.coralproto.field.LongField;
 import com.coralblocks.coralproto.field.ProtoField;
+import com.coralblocks.coralproto.field.RepeatingGroupField;
 import com.coralblocks.coralproto.field.ShortEnumField;
 import com.coralblocks.coralproto.field.ShortField;
+import com.coralblocks.coralproto.field.SubtypeField;
 import com.coralblocks.coralproto.field.TwoCharEnumField;
+import com.coralblocks.coralproto.field.TypeField;
 import com.coralblocks.coralproto.field.VarBytesField;
 import com.coralblocks.coralproto.field.VarCharsField;
+import com.coralblocks.coralproto.field.VersionField;
 
 public class FieldEqualityTest {
+
+	@Test
+	public void testDifferentValuesAreNotEqualForEveryFieldType() {
+		BooleanField boolean1 = new BooleanField();
+		BooleanField boolean2 = new BooleanField();
+		boolean1.set(true);
+		boolean2.set(false);
+		Assert.assertNotEquals(boolean1, boolean2);
+
+		ByteField byte1 = new ByteField();
+		ByteField byte2 = new ByteField();
+		byte1.set(1);
+		byte2.set(2);
+		Assert.assertNotEquals(byte1, byte2);
+
+		CharField char1 = new CharField();
+		CharField char2 = new CharField();
+		char1.set('A');
+		char2.set('B');
+		Assert.assertNotEquals(char1, char2);
+
+		ShortField short1 = new ShortField();
+		ShortField short2 = new ShortField();
+		short1.set(1);
+		short2.set(2);
+		Assert.assertNotEquals(short1, short2);
+
+		IntField int1 = new IntField();
+		IntField int2 = new IntField();
+		int1.set(1);
+		int2.set(2);
+		Assert.assertNotEquals(int1, int2);
+
+		LongField long1 = new LongField();
+		LongField long2 = new LongField();
+		long1.set(1);
+		long2.set(2);
+		Assert.assertNotEquals(long1, long2);
+
+		FloatField float1 = new FloatField();
+		FloatField float2 = new FloatField();
+		float1.set(1.5f);
+		float2.set(2.5f);
+		Assert.assertNotEquals(float1, float2);
+
+		DoubleField double1 = new DoubleField();
+		DoubleField double2 = new DoubleField();
+		double1.set(1.5);
+		double2.set(2.5);
+		Assert.assertNotEquals(double1, double2);
+
+		BytesField bytes1 = new BytesField(4);
+		BytesField bytes2 = new BytesField(4);
+		bytes1.set(new byte[] { 1, 2, 3, 4 });
+		bytes2.set(new byte[] { 4, 3, 2, 1 });
+		Assert.assertNotEquals(bytes1, bytes2);
+
+		CharsField chars1 = new CharsField(4);
+		CharsField chars2 = new CharsField(4);
+		chars1.set("ABCD");
+		chars2.set("WXYZ");
+		Assert.assertNotEquals(chars1, chars2);
+
+		VarBytesField varBytes1 = new VarBytesField(4);
+		VarBytesField varBytes2 = new VarBytesField(4);
+		varBytes1.set(new byte[] { 1, 2 });
+		varBytes2.set(new byte[] { 3, 4 });
+		Assert.assertNotEquals(varBytes1, varBytes2);
+
+		VarCharsField varChars1 = new VarCharsField(4);
+		VarCharsField varChars2 = new VarCharsField(4);
+		varChars1.set("AB");
+		varChars2.set("CD");
+		Assert.assertNotEquals(varChars1, varChars2);
+
+		CharEnumField<EnumTest.Side> charEnum1 = new CharEnumField<EnumTest.Side>(EnumTest.Side.ALL);
+		CharEnumField<EnumTest.Side> charEnum2 = new CharEnumField<EnumTest.Side>(EnumTest.Side.ALL);
+		charEnum1.set(EnumTest.Side.BUY);
+		charEnum2.set(EnumTest.Side.SELL);
+		Assert.assertNotEquals(charEnum1, charEnum2);
+
+		ShortEnumField<EnumTest.RejectReason> shortEnum1 = new ShortEnumField<EnumTest.RejectReason>(EnumTest.RejectReason.ALL);
+		ShortEnumField<EnumTest.RejectReason> shortEnum2 = new ShortEnumField<EnumTest.RejectReason>(EnumTest.RejectReason.ALL);
+		shortEnum1.set(EnumTest.RejectReason.BAD_TYPE);
+		shortEnum2.set(EnumTest.RejectReason.BAD_TIF);
+		Assert.assertNotEquals(shortEnum1, shortEnum2);
+
+		IntEnumField<EnumTest.ReduceRejectReason> intEnum1 = new IntEnumField<EnumTest.ReduceRejectReason>(EnumTest.ReduceRejectReason.ALL);
+		IntEnumField<EnumTest.ReduceRejectReason> intEnum2 = new IntEnumField<EnumTest.ReduceRejectReason>(EnumTest.ReduceRejectReason.ALL);
+		intEnum1.set(EnumTest.ReduceRejectReason.ZERO);
+		intEnum2.set(EnumTest.ReduceRejectReason.NEGATIVE);
+		Assert.assertNotEquals(intEnum1, intEnum2);
+
+		TwoCharEnumField<EnumTest.CancelReason> twoCharEnum1 = new TwoCharEnumField<EnumTest.CancelReason>(EnumTest.CancelReason.ALL);
+		TwoCharEnumField<EnumTest.CancelReason> twoCharEnum2 = new TwoCharEnumField<EnumTest.CancelReason>(EnumTest.CancelReason.ALL);
+		twoCharEnum1.set(EnumTest.CancelReason.MISSED);
+		twoCharEnum2.set(EnumTest.CancelReason.USER);
+		Assert.assertNotEquals(twoCharEnum1, twoCharEnum2);
+
+		GroupField group1 = new GroupField(new IntField());
+		GroupField group2 = new GroupField(new IntField());
+		((IntField) group1.get(0)).set(1);
+		((IntField) group2.get(0)).set(2);
+		Assert.assertNotEquals(group1, group2);
+
+		RepeatingGroupField repeating1 = new RepeatingGroupField(new IntField());
+		RepeatingGroupField repeating2 = new RepeatingGroupField(new IntField());
+		((IntField) repeating1.nextElement().get(0)).set(1);
+		((IntField) repeating2.nextElement().get(0)).set(2);
+		Assert.assertNotEquals(repeating1, repeating2);
+
+		Assert.assertNotEquals(new TypeField(new AbstractProto() { }, 'A'), new TypeField(new AbstractProto() { }, 'B'));
+		Assert.assertNotEquals(new SubtypeField(new AbstractProto() { }, 'A'), new SubtypeField(new AbstractProto() { }, 'B'));
+		Assert.assertNotEquals(new VersionField(new AbstractProto() { }, (short) 1), new VersionField(new AbstractProto() { }, (short) 2));
+	}
 
 	private static void assertPresenceAwareEquality(ProtoField absentWithStaleValue, ProtoField freshAbsent,
 			ProtoField presentWithSameValue) {
