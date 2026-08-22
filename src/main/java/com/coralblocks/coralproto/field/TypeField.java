@@ -38,4 +38,9 @@ public class TypeField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		return type;
+	}
 }

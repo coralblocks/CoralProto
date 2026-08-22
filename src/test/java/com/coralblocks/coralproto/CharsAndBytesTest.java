@@ -23,10 +23,13 @@ import org.junit.Test;
 
 import com.coralblocks.coralproto.field.Bytes;
 import com.coralblocks.coralproto.field.BytesField;
+import com.coralblocks.coralproto.field.Chars;
 import com.coralblocks.coralproto.field.CharsField;
 import com.coralblocks.coralproto.field.SubtypeField;
 import com.coralblocks.coralproto.field.TypeField;
+import com.coralblocks.coralproto.field.VarBytes;
 import com.coralblocks.coralproto.field.VarBytesField;
+import com.coralblocks.coralproto.field.VarChars;
 import com.coralblocks.coralproto.field.VarCharsField;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
 
@@ -40,6 +43,7 @@ public class CharsAndBytesTest {
 		bytes1.set(new byte[] { 1, 2, 3, 4 });
 		bytes2.set(new byte[] { 1, 2, 3, 4 });
 		Assert.assertEquals(bytes1, bytes2);
+		Assert.assertEquals(bytes1.hashCode(), bytes2.hashCode());
 
 		bytes2.set(new byte[] { 9, 9, 9, 9 });
 		Assert.assertNotEquals(bytes1, bytes2);
@@ -52,9 +56,34 @@ public class CharsAndBytesTest {
 		bytes1.set(new byte[] { 1, 2, 3, 4 });
 		bytes2.set(new byte[] { 1, 2, 3, 4 });
 		Assert.assertEquals(bytes1, bytes2);
+		Assert.assertEquals(bytes1.hashCode(), bytes2.hashCode());
 
 		bytes2.set(new byte[] { 9, 9, 9, 9 });
 		Assert.assertNotEquals(bytes1, bytes2);
+	}
+
+	@Test
+	public void testStandaloneValueHashCodes() {
+		Chars chars1 = new Chars(4);
+		Chars chars2 = new Chars(4);
+		chars1.set("ABCD");
+		chars2.set("ABCD");
+		Assert.assertEquals(chars1, chars2);
+		Assert.assertEquals(chars1.hashCode(), chars2.hashCode());
+
+		VarChars varChars1 = new VarChars(8);
+		VarChars varChars2 = new VarChars(8);
+		varChars1.set("ABCD");
+		varChars2.set("ABCD");
+		Assert.assertEquals(varChars1, varChars2);
+		Assert.assertEquals(varChars1.hashCode(), varChars2.hashCode());
+
+		VarBytes varBytes1 = new VarBytes(8);
+		VarBytes varBytes2 = new VarBytes(8);
+		varBytes1.set(new byte[] { 1, 2, 3, 4 });
+		varBytes2.set(new byte[] { 1, 2, 3, 4 });
+		Assert.assertEquals(varBytes1, varBytes2);
+		Assert.assertEquals(varBytes1.hashCode(), varBytes2.hashCode());
 	}
 
 	@Test

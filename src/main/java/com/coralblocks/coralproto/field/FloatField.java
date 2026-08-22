@@ -67,6 +67,7 @@ public class FloatField implements ProtoField {
 	
 	@Override
 	public boolean equals(Object o) {
+		if (o == this) return true;
 		if (o instanceof FloatField) {
 			FloatField cf = (FloatField) o;
 			boolean present = this.isPresent();
@@ -74,6 +75,12 @@ public class FloatField implements ProtoField {
 			return !present || cf.value == this.value;
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		if (!isPresent() || value == 0.0f) return 0;
+		return Float.hashCode(value);
 	}
 	
 	@Override

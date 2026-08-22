@@ -55,6 +55,11 @@ public class LongField implements ProtoField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		return isPresent() ? Long.hashCode(value) : 0;
+	}
 	
 	@Override
 	public void reset() {

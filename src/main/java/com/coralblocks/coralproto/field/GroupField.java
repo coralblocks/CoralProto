@@ -62,6 +62,16 @@ public class GroupField implements ProtoField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		if (!isPresent()) return 0;
+		int result = 1;
+		for(int i = 0; i < protoFields.length; i++) {
+			result = 31 * result + protoFields[i].hashCode();
+		}
+		return result;
+	}
 	
 	@Override
 	public void reset() {

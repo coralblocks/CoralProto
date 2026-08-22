@@ -53,6 +53,11 @@ public class CharField implements ProtoField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		return isPresent() ? value : 0;
+	}
 	
 	@Override
 	public void reset() {

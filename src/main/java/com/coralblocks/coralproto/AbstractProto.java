@@ -73,11 +73,14 @@ public abstract class AbstractProto implements Proto {
 	
 	@Override
 	public boolean equals(Object o) {
+		if (o == this) return true;
 		if (o instanceof AbstractProto) {
 			AbstractProto ap = (AbstractProto) o;
-			if (ap.getType() != this.getType()) return false;
-			if (ap.getSubtype() != this.getSubtype()) return false;
-			if (ap.getVersion() != this.getVersion()) return false;
+			if (ap.typeField == 0 || this.typeField == 0) return false;
+			if (ap.subtypeField == 0 || this.subtypeField == 0) return false;
+			if (ap.typeField != this.typeField) return false;
+			if (ap.subtypeField != this.subtypeField) return false;
+			if (ap.versionField != this.versionField) return false;
 			if (ap.protoFields.size() != this.protoFields.size()) return false;
 			for(int i = 0; i < this.protoFields.size(); i++) {
 				if (!ap.protoFields.get(i).equals(this.protoFields.get(i))) return false;
@@ -85,6 +88,17 @@ public abstract class AbstractProto implements Proto {
 			return true;
 		}
 		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = typeField;
+		result = 31 * result + subtypeField;
+		result = 31 * result + versionField;
+		for(int i = 0; i < protoFields.size(); i++) {
+			result = 31 * result + protoFields.get(i).hashCode();
+		}
+		return result;
 	}
 	
 	@Override

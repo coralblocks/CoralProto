@@ -38,4 +38,9 @@ public class VersionField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		return version;
+	}
 }

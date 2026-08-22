@@ -66,6 +66,15 @@ public class RepeatingGroupField implements ProtoField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		int result = 1;
+		for(int i = 0; i < groupFields.size(); i++) {
+			result = 31 * result + groupFields.get(i).hashCode();
+		}
+		return result;
+	}
 	
 	@Override
 	public void reset() {

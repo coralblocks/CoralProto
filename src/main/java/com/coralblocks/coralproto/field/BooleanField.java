@@ -53,6 +53,11 @@ public class BooleanField implements ProtoField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		return isPresent() ? Boolean.hashCode(value) : 0;
+	}
 	
 	@Override
 	public void reset() {

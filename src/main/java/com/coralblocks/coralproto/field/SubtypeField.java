@@ -38,4 +38,9 @@ public class SubtypeField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		return subtype;
+	}
 }

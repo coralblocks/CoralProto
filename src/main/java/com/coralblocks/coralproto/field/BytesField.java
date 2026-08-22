@@ -59,6 +59,13 @@ public class BytesField implements ProtoField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		if (!isPresent()) return 0;
+		byteBuffer.limit(byteBuffer.capacity()).position(0);
+		return byteBuffer.hashCode();
+	}
 	
 	@Override
 	public void reset() {

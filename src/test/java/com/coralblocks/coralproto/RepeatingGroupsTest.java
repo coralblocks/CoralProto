@@ -221,6 +221,10 @@ public class RepeatingGroupsTest {
 	public void testRepeatingGroupEqualityIsReflexive() {
 		RepeatingGroupProtoMessage proto = createProtoWithThreeBids();
 		Assert.assertTrue(proto.equals(proto));
+
+		RepeatingGroupProtoMessage equalProto = createProtoWithThreeBids();
+		Assert.assertEquals(proto, equalProto);
+		Assert.assertEquals(proto.hashCode(), equalProto.hashCode());
 	}
 
 	@Test

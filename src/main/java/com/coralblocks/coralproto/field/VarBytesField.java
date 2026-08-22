@@ -60,6 +60,13 @@ public class VarBytesField implements ProtoField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		if (!isPresent()) return 0;
+		byteBuffer.limit(size).position(0);
+		return byteBuffer.hashCode();
+	}
 	
 	@Override
 	public void reset() {

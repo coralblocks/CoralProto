@@ -39,6 +39,11 @@ public class VarChars {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		return bbcs.hashCode();
+	}
 	
 	public void clear() {
 		this.bbcs.setSize(0);		

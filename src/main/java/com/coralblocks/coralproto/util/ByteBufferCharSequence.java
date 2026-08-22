@@ -47,6 +47,11 @@ public class ByteBufferCharSequence implements CharSequence {
     	}
     	return false;
     }
+
+    @Override
+    public int hashCode() {
+        return getByteBuffer().hashCode();
+    }
     
     @Override
     public int length() {

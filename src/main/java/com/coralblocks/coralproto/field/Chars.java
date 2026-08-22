@@ -38,6 +38,11 @@ public class Chars {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		return bbcs.hashCode();
+	}
 	
 	public void clear() {
 		ByteBuffer byteBuffer = this.bbcs.getByteBuffer();

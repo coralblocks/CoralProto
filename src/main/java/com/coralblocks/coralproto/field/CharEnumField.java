@@ -58,6 +58,11 @@ public class CharEnumField<E extends CharEnum> implements ProtoField {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		return isPresent() && value != null ? value.hashCode() : 0;
+	}
 	
 	@Override
 	public void reset() {

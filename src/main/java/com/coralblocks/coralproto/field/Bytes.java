@@ -39,6 +39,12 @@ public class Bytes {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		byteBuffer.limit(byteBuffer.capacity()).position(0);
+		return byteBuffer.hashCode();
+	}
 	
 	public void clear() {
 		this.byteBuffer.clear();

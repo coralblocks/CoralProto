@@ -40,6 +40,12 @@ public class VarBytes {
 		}
 		return false;
 	}
+
+	@Override
+	public int hashCode() {
+		byteBuffer.limit(size).position(0);
+		return byteBuffer.hashCode();
+	}
 	
 	public void clear() {
 		this.size = 0;

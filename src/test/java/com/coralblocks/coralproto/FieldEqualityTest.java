@@ -15,6 +15,9 @@
  */
 package com.coralblocks.coralproto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -42,6 +45,7 @@ public class FieldEqualityTest {
 	private static void assertPresenceAwareEquality(ProtoField absentWithStaleValue, ProtoField freshAbsent,
 			ProtoField presentWithSameValue) {
 		Assert.assertEquals(absentWithStaleValue, freshAbsent);
+		Assert.assertEquals(absentWithStaleValue.hashCode(), freshAbsent.hashCode());
 		Assert.assertNotEquals(absentWithStaleValue, presentWithSameValue);
 	}
 
@@ -205,6 +209,42 @@ public class FieldEqualityTest {
 		proto3.myLong.set(5);
 
 		Assert.assertEquals(proto1, proto2);
+		Assert.assertEquals(proto1.hashCode(), proto2.hashCode());
 		Assert.assertNotEquals(proto1, proto3);
+
+		Map<AbstractProto, String> protos = new HashMap<AbstractProto, String>();
+		protos.put(proto1, "proto");
+		Assert.assertEquals("proto", protos.get(proto2));
+	}
+
+	@Test
+	public void testUnsetProtoEqualityDoesNotThrow() {
+		AbstractProto proto1 = new AbstractProto() { };
+		AbstractProto proto2 = new AbstractProto() { };
+
+		Assert.assertEquals(proto1, proto1);
+		Assert.assertNotEquals(proto1, proto2);
+		Assert.assertNotEquals(proto1, new OptionalFieldsTest.OptionalFieldsProtoMessage());
+	}
+
+	@Test
+	public void testFloatingPointHashCodesFollowEquality() {
+		FloatField float1 = new FloatField();
+		FloatField float2 = new FloatField();
+		float1.set(0.0f);
+		float2.set(-0.0f);
+		Assert.assertEquals(float1, float2);
+		Assert.assertEquals(float1.hashCode(), float2.hashCode());
+		float1.set(Float.NaN);
+		Assert.assertEquals(float1, float1);
+
+		DoubleField double1 = new DoubleField();
+		DoubleField double2 = new DoubleField();
+		double1.set(0.0);
+		double2.set(-0.0);
+		Assert.assertEquals(double1, double2);
+		Assert.assertEquals(double1.hashCode(), double2.hashCode());
+		double1.set(Double.NaN);
+		Assert.assertEquals(double1, double1);
 	}
 }
