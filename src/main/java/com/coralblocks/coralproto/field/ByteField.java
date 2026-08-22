@@ -49,7 +49,9 @@ public class ByteField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof ByteField) {
 			ByteField bf = (ByteField) o;
-			return bf.value == this.value;
+			boolean present = this.isPresent();
+			if (bf.isPresent() != present) return false;
+			return !present || bf.value == this.value;
 		}
 		return false;
 	}

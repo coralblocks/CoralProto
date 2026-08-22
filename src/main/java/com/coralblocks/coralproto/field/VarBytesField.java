@@ -51,6 +51,9 @@ public class VarBytesField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof VarBytesField) {
 			VarBytesField vbf = (VarBytesField) o;
+			boolean present = this.isPresent();
+			if (vbf.isPresent() != present) return false;
+			if (!present) return true;
 			vbf.byteBuffer.limit(vbf.size).position(0);
 			this.byteBuffer.limit(this.size).position(0);
 			return vbf.byteBuffer.equals(this.byteBuffer);

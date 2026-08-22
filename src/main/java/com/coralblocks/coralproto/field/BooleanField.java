@@ -47,7 +47,9 @@ public class BooleanField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof BooleanField) {
 			BooleanField bf = (BooleanField) o;
-			return bf.value == this.value;
+			boolean present = this.isPresent();
+			if (bf.isPresent() != present) return false;
+			return !present || bf.value == this.value;
 		}
 		return false;
 	}

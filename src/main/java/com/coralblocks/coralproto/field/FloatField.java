@@ -68,7 +68,9 @@ public class FloatField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof FloatField) {
 			FloatField cf = (FloatField) o;
-			return cf.value == this.value;
+			boolean present = this.isPresent();
+			if (cf.isPresent() != present) return false;
+			return !present || cf.value == this.value;
 		}
 		return false;
 	}

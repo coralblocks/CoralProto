@@ -52,7 +52,9 @@ public class VarCharsField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof VarCharsField) {
 			VarCharsField vcf = (VarCharsField) o;
-			return vcf.bbcs.equals(this.bbcs);
+			boolean present = this.isPresent();
+			if (vcf.isPresent() != present) return false;
+			return !present || vcf.bbcs.equals(this.bbcs);
 		}
 		return false;
 	}

@@ -52,7 +52,9 @@ public class ShortEnumField<E extends ShortEnum> implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof ShortEnumField) {
 			ShortEnumField<?> bf = (ShortEnumField<?>) o;
-			return bf.value == this.value;
+			boolean present = this.isPresent();
+			if (bf.isPresent() != present) return false;
+			return !present || bf.value == this.value;
 		}
 		return false;
 	}

@@ -49,7 +49,9 @@ public class ShortField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof ShortField) {
 			ShortField cf = (ShortField) o;
-			return cf.value == this.value;
+			boolean present = this.isPresent();
+			if (cf.isPresent() != present) return false;
+			return !present || cf.value == this.value;
 		}
 		return false;
 	}

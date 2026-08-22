@@ -51,7 +51,9 @@ public class CharsField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof CharsField) {
 			CharsField cf = (CharsField) o;
-			return cf.bbcs.equals(this.bbcs);
+			boolean present = this.isPresent();
+			if (cf.isPresent() != present) return false;
+			return !present || cf.bbcs.equals(this.bbcs);
 		}
 		return false;
 	}

@@ -52,7 +52,9 @@ public class IntEnumField<E extends IntEnum> implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof IntEnumField) {
 			IntEnumField<?> bf = (IntEnumField<?>) o;
-			return bf.value == this.value;
+			boolean present = this.isPresent();
+			if (bf.isPresent() != present) return false;
+			return !present || bf.value == this.value;
 		}
 		return false;
 	}

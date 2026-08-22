@@ -50,6 +50,9 @@ public class GroupField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof GroupField) {
 			GroupField gf = (GroupField) o;
+			boolean present = this.isPresent();
+			if (gf.isPresent() != present) return false;
+			if (!present) return true;
 			if (gf.protoFields.length == this.protoFields.length) {
 				for(int i = 0; i < this.protoFields.length; i++) {
 					if (!gf.protoFields[i].equals(this.protoFields[i])) return false;

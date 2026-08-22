@@ -50,6 +50,9 @@ public class BytesField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof BytesField) {
 			BytesField bf = (BytesField) o;
+			boolean present = this.isPresent();
+			if (bf.isPresent() != present) return false;
+			if (!present) return true;
 			bf.byteBuffer.limit(bf.byteBuffer.capacity()).position(0);
 			this.byteBuffer.limit(this.byteBuffer.capacity()).position(0);
 			return this.byteBuffer.equals(bf.byteBuffer);

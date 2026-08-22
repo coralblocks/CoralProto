@@ -53,7 +53,9 @@ public class TwoCharEnumField<E extends TwoCharEnum> implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof TwoCharEnumField) {
 			TwoCharEnumField<?> bf = (TwoCharEnumField<?>) o;
-			return bf.value == this.value;
+			boolean present = this.isPresent();
+			if (bf.isPresent() != present) return false;
+			return !present || bf.value == this.value;
 		}
 		return false;
 	}

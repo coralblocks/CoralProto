@@ -68,7 +68,9 @@ public class DoubleField implements ProtoField {
 	public boolean equals(Object o) {
 		if (o instanceof DoubleField) {
 			DoubleField cf = (DoubleField) o;
-			return cf.value == this.value;
+			boolean present = this.isPresent();
+			if (cf.isPresent() != present) return false;
+			return !present || cf.value == this.value;
 		}
 		return false;
 	}
