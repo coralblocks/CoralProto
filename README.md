@@ -268,6 +268,7 @@ If you need more or less decimal precision, you can pass the number of decimals 
 
 ## Evolving the Schema (minor thorugh appending new fields)
 You can evolve the schema without breaking compatibility by appending new fields to the end of an existing message. For example, you can evolve:
+
 ```plain
     CLASSNAME = com.coralblocks.coralproto.example.ProtoMessage
     TYPE = P
@@ -288,6 +289,12 @@ by appending a new field:
 ```
 By doing that you can send an old version (without the field) to the new version and you can send a new version (with the field) to the old version. It is important to understand that you
 can do that without having to create a new message class, in other words, the message class will remain the same (`ProtoMessage`).
+
+**NOTE:** This minor-evolution rule applies only to fields appended at the top
+level of a message. Never append new fields to an existing repeating group.
+Group elements do not have their own length prefix, so an older reader will
+silently treat the appended bytes as the next element or the next field. Bump
+the message version when changing the fields inside a repeating group (see below).
 
 ## Evolving the Schema (major thorugh bumping the version)
 You can evolve the schema without breaking compatibility by creating a new and independent version of an existing message type. For example, you can evolve:
