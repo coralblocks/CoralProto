@@ -31,10 +31,36 @@ import com.coralblocks.coralproto.field.VarBytes;
 import com.coralblocks.coralproto.field.VarBytesField;
 import com.coralblocks.coralproto.field.VarChars;
 import com.coralblocks.coralproto.field.VarCharsField;
+import com.coralblocks.coralproto.util.ByteBufferCharSequence;
 import com.coralblocks.coralproto.util.ByteBufferUtils;
 
 
 public class CharsAndBytesTest {
+
+	@Test
+	public void testByteBufferCharSequenceContract() {
+		ByteBufferCharSequence chars = new ByteBufferCharSequence(8);
+		chars.setSize(4);
+		ByteBuffer storage = chars.getByteBuffer();
+		storage.put((byte) 'A').put((byte) 'B').put((byte) 'C').put((byte) 'D');
+		int position = storage.position();
+		int limit = storage.limit();
+
+		Assert.assertEquals('B', chars.charAt(1));
+		Assert.assertEquals(position, storage.position());
+		Assert.assertEquals(limit, storage.limit());
+		Assert.assertThrows(IndexOutOfBoundsException.class, () -> chars.charAt(-1));
+		Assert.assertThrows(IndexOutOfBoundsException.class, () -> chars.charAt(chars.length()));
+		Assert.assertThrows(IllegalArgumentException.class, () -> chars.setSize(-1));
+		Assert.assertThrows(IllegalArgumentException.class, () -> chars.setSize(9));
+
+		ByteBuffer encoded = ByteBuffer.allocate(chars.length());
+		ByteBufferUtils.appendCharSequence(encoded, chars);
+		encoded.flip();
+		Assert.assertEquals("ABCD", ByteBufferUtils.parseString(encoded));
+		Assert.assertEquals(position, storage.position());
+		Assert.assertEquals(limit, storage.limit());
+	}
 
 	@Test
 	public void testBytesEquality() {

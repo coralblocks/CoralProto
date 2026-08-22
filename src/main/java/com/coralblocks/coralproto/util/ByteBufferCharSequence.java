@@ -28,10 +28,12 @@ public class ByteBufferCharSequence implements CharSequence {
     }
     
     public void setSize(int size) {
-    	if (size > byteBuffer.capacity()) {
-    		throw new IllegalArgumentException("size bigger than buffer capacity: " + size + " (capacity=" + byteBuffer.capacity() + ")");
-    	}
-    	this.actualSize = size;
+		if (size < 0 || size > byteBuffer.capacity()) {
+			throw new IllegalArgumentException("size must be between zero and buffer capacity: " + size + " (capacity=" + byteBuffer.capacity() + ")");
+		}
+		this.actualSize = size;
+		// Keep the limit in sync here so charAt does not have to change buffer state for every character.
+		byteBuffer.limit(size);
     }
     
     public ByteBuffer getByteBuffer() {
@@ -60,16 +62,15 @@ public class ByteBufferCharSequence implements CharSequence {
 
     @Override
     public char charAt(int index) {
-    	if (index >= actualSize) {
-    		throw new IllegalArgumentException("index greater or equal than length: " + index + " (length=" + actualSize + ")");
-    	}
-    	byteBuffer.limit(actualSize).position(0);
+		if (index < 0 || index >= actualSize) {
+			throw new IndexOutOfBoundsException("index: " + index + " (length=" + actualSize + ")");
+		}
         return (char) byteBuffer.get(index);
     }
 
     @Override
     public CharSequence subSequence(int start, int end) {
-    	throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException();
     }
 
     @Override
