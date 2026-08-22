@@ -386,6 +386,29 @@ public class CharsAndBytesTest {
 	}
 	
 	@Test
+	public void testHeapBackedFieldsWithDirectMessageBuffer() {
+		CharsAndBytesProtoMessage proto = new CharsAndBytesProtoMessage();
+		proto.myChars.set("ABCD1234");
+		proto.myVarChars.set("0123456789ABC");
+		proto.myBytes.set("ZZZZXXXX".getBytes());
+		proto.myVarBytes.set("ABCDEFGHIJKLMNOPQRSTUVXZ".getBytes());
+
+		Assert.assertFalse(proto.myChars.getByteBuffer().isDirect());
+		Assert.assertFalse(((ByteBufferCharSequence) proto.myVarChars.get()).getByteBuffer().isDirect());
+		Assert.assertFalse(proto.myBytes.get().isDirect());
+		Assert.assertFalse(proto.myVarBytes.get().isDirect());
+
+		ByteBuffer wire = ByteBuffer.allocateDirect(proto.getLength());
+		proto.write(wire);
+		wire.flip();
+		wire.position(4); // type + subtype + version
+
+		CharsAndBytesProtoMessage received = new CharsAndBytesProtoMessage();
+		received.read(wire);
+		Assert.assertEquals(proto, received);
+	}
+
+	@Test
 	public void testSendAndReceive() {
 		
 		CharsAndBytesProtoMessage proto = new CharsAndBytesProtoMessage();

@@ -23,7 +23,7 @@ public class ByteBufferCharSequence implements CharSequence {
     private int actualSize;
 
     public ByteBufferCharSequence(int maxSize) {
-        this.byteBuffer = ByteBuffer.allocateDirect(maxSize);
+        this.byteBuffer = ByteBuffer.allocate(maxSize);
         this.actualSize = maxSize;
     }
     

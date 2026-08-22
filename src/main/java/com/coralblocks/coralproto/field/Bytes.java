@@ -25,7 +25,7 @@ public class Bytes {
 	private final ByteBuffer byteBuffer;
 	
 	public Bytes(int size) {
-		this.byteBuffer = ByteBuffer.allocateDirect(size);
+		this.byteBuffer = ByteBuffer.allocate(size);
 		clear();
 	}
 	

@@ -41,7 +41,7 @@ public class BytesField implements ProtoField {
 	
 	public BytesField(AbstractProto proto, int size, boolean isOptional) {
 		if (proto != null) proto.add(this);
-		this.byteBuffer = ByteBuffer.allocateDirect(size);
+		this.byteBuffer = ByteBuffer.allocate(size);
 		this.isOptional = isOptional;
 		reset();
 	}
