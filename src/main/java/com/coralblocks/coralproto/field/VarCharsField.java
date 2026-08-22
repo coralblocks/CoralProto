@@ -86,7 +86,6 @@ public class VarCharsField implements ProtoField {
 	@Override
 	public final int size() {
 		int len = bbcs.length();
-		enforceMaxLength(len);
 		if (isOptional) {
 			return isPresent ? 1 + 4 + len : 1;
 		} else {
