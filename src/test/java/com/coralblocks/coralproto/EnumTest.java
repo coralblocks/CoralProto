@@ -257,6 +257,33 @@ public class EnumTest {
 		proto.myTwoCharEnum.set(CancelReason.LIQUIDITY);
 		Assert.assertEquals(CancelReason.LIQUIDITY, proto.myTwoCharEnum.get());
 	}
+
+	@Test
+	public void testUnknownEnumWireValuesBecomeNull() {
+		ByteBuffer bb = ByteBuffer.allocate(Integer.BYTES);
+
+		bb.put((byte) 'X').flip();
+		CharEnumField<Side> charField = new CharEnumField<Side>(Side.ALL, true);
+		charField.readFrom(bb);
+		Assert.assertTrue(charField.isPresent());
+		Assert.assertNull(charField.get());
+		Assert.assertThrows(IllegalStateException.class, () -> charField.writeTo(ByteBuffer.allocate(1)));
+
+		bb.clear().putShort((short) 999).flip();
+		ShortEnumField<RejectReason> shortField = new ShortEnumField<RejectReason>(RejectReason.ALL);
+		shortField.readFrom(bb);
+		Assert.assertNull(shortField.get());
+
+		bb.clear().putInt(9999).flip();
+		IntEnumField<ReduceRejectReason> intField = new IntEnumField<ReduceRejectReason>(ReduceRejectReason.ALL);
+		intField.readFrom(bb);
+		Assert.assertNull(intField.get());
+
+		bb.clear().put((byte) 'Z').put((byte) 'Z').flip();
+		TwoCharEnumField<CancelReason> twoCharField = new TwoCharEnumField<CancelReason>(CancelReason.ALL);
+		twoCharField.readFrom(bb);
+		Assert.assertNull(twoCharField.get());
+	}
 	
 	@Test
 	public void testSendAndReceive() {
