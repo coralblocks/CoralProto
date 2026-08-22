@@ -166,6 +166,47 @@ public class RepeatingGroupsTest {
 
 		// END_AUTO_GENERATED_CODE
 	}
+
+	private static RepeatingGroupProtoMessage createProtoWithThreeBids() {
+		RepeatingGroupProtoMessage proto = new RepeatingGroupProtoMessage();
+		for(int i = 1; i <= 3; i++) {
+			proto.bids.nextElement();
+			proto.bids.qty.set(i * 100);
+			proto.bids.orders.set(i);
+		}
+		return proto;
+	}
+
+	@Test
+	public void testRepeatingGroupEqualityIsReflexive() {
+		RepeatingGroupProtoMessage proto = createProtoWithThreeBids();
+		Assert.assertTrue(proto.equals(proto));
+	}
+
+	@Test
+	public void testInternalOperationsDoNotCorruptIteration() {
+		RepeatingGroupProtoMessage proto = createProtoWithThreeBids();
+		RepeatingGroupProtoMessage equalProto = createProtoWithThreeBids();
+		ByteBuffer bb = ByteBuffer.allocate(1024);
+		int count = 0;
+
+		proto.bids.beginIteration();
+		while(proto.bids.iterHasNext()) {
+			proto.bids.iterNext();
+			count++;
+			Assert.assertEquals(count * 100, proto.bids.qty.get());
+
+			proto.getLength();
+			proto.toString();
+			bb.clear();
+			proto.write(bb);
+			bb.clear();
+			proto.writeAscii(true, bb);
+			Assert.assertEquals(proto, equalProto);
+		}
+
+		Assert.assertEquals(3, count);
+	}
 	
 	@Test
 	public void testRepeatingGroupFields() {

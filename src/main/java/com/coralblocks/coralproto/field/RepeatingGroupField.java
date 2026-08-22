@@ -16,9 +16,9 @@
 package com.coralblocks.coralproto.field;
 
 import java.nio.ByteBuffer;
-import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-import com.coralblocks.coralds.list.LinkedList;
+import com.coralblocks.coralds.list.ArrayList;
 import com.coralblocks.coralpool.LinkedObjectPool;
 import com.coralblocks.coralpool.ObjectBuilder;
 import com.coralblocks.coralpool.ObjectPool;
@@ -29,9 +29,9 @@ public class RepeatingGroupField implements ProtoField {
 	
 	private final ByteBufferEncoder bbEncoder = new ByteBufferEncoder();
 	private final ObjectPool<GroupField> groupFieldPool;
-	private final LinkedList<GroupField> groupFields = new LinkedList<GroupField>(3);
+	private final ArrayList<GroupField> groupFields = new ArrayList<GroupField>(3);
 	private final ProtoField[] protoFields;
-	private Iterator<GroupField> iterator;
+	private int cursor = -1;
 	
 	public RepeatingGroupField(ProtoField ... protoFields) {
 		this(null, protoFields);
@@ -54,13 +54,12 @@ public class RepeatingGroupField implements ProtoField {
 	
 	@Override
 	public boolean equals(Object o) {
+		if (o == this) return true;
 		if (o instanceof RepeatingGroupField) {
 			RepeatingGroupField rgf = (RepeatingGroupField) o;
 			if (rgf.groupFields.size() == this.groupFields.size()) {
-				Iterator<GroupField> iter1 = this.groupFields.iterator();
-				Iterator<GroupField> iter2 = rgf.groupFields.iterator();
-				while(iter1.hasNext() && iter2.hasNext()) {
-					if (!iter1.next().equals(iter2.next())) return false;
+				for(int i = 0; i < groupFields.size(); i++) {
+					if (!this.groupFields.get(i).equals(rgf.groupFields.get(i))) return false;
 				}
 				return true;
 			}
@@ -70,11 +69,11 @@ public class RepeatingGroupField implements ProtoField {
 	
 	@Override
 	public void reset() {
-		Iterator<GroupField> iter = groupFields.iterator();
-		while(iter.hasNext()) {
-			groupFieldPool.release(iter.next());
+		for(int i = 0; i < groupFields.size(); i++) {
+			groupFieldPool.release(groupFields.get(i));
 		}
 		groupFields.clear();
+		cursor = -1;
 	}
 	
 	public int getNumberOfElements() {
@@ -82,47 +81,39 @@ public class RepeatingGroupField implements ProtoField {
 	}
 	
 	public GroupField nextElement() {
-		groupFields.addLast(groupFieldPool.get());
-		return groupFields.last();
+		GroupField groupField = groupFieldPool.get();
+		groupFields.addLast(groupField);
+		return groupField;
 	}
 	
 	public void beginIteration() {
-		if (groupFields.isEmpty()) {
-			this.iterator = null;
-		} else {
-			this.iterator = iterator();
-		}
+		cursor = groupFields.isEmpty() ? -1 : 0;
 	}
 	
 	public boolean iterHasNext() {
-		if (iterator == null) return false;
-		return iterator.hasNext();
+		return cursor >= 0 && cursor < groupFields.size();
 	}
 	
 	public GroupField iterNext() {
-		if (iterator == null) return null;
-		return iterator.next();
+		if (cursor < 0) return null;
+		if (cursor >= groupFields.size()) throw new NoSuchElementException();
+		return groupFields.get(cursor++);
 	}
 	
 	public void clear() {
-		Iterator<GroupField> iter = groupFields.iterator();
-		while(iter.hasNext()) {
-			groupFieldPool.release(iter.next());
+		for(int i = 0; i < groupFields.size(); i++) {
+			groupFieldPool.release(groupFields.get(i));
 		}
 		groupFields.clear();
-	}
-	
-	private Iterator<GroupField> iterator() {
-		return groupFields.iterator();
+		cursor = -1;
 	}
 
 	@Override
 	public int size() {
 		
 		int size = 2;
-		Iterator<GroupField> iter = groupFields.iterator();
-		while(iter.hasNext()) {
-			size += iter.next().size();
+		for(int i = 0; i < groupFields.size(); i++) {
+			size += groupFields.get(i).size();
 		}
 		
 		return size;
@@ -156,9 +147,8 @@ public class RepeatingGroupField implements ProtoField {
 	@Override
 	public void writeTo(ByteBuffer buf) {
 		buf.putShort((short) getNumberOfElements());
-		Iterator<GroupField> iter = iterator();
-		while(iter.hasNext()) {
-			iter.next().writeTo(buf);
+		for(int i = 0; i < groupFields.size(); i++) {
+			groupFields.get(i).writeTo(buf);
 		}
 	}
 
@@ -169,12 +159,9 @@ public class RepeatingGroupField implements ProtoField {
 		if (n > 0) {
 			buf.put((byte) '=');
 			buf.put((byte) '[');
-			int count = 0;
-			Iterator<GroupField> iter = iterator();
-			while(iter.hasNext()) {
-				if (count > 0) buf.put((byte) ';');
-				iter.next().writeAsciiTo(buf);
-				count++;
+			for(int i = 0; i < n; i++) {
+				if (i > 0) buf.put((byte) ';');
+				groupFields.get(i).writeAsciiTo(buf);
 			}
 			buf.put((byte) ']');
 		}
@@ -187,12 +174,9 @@ public class RepeatingGroupField implements ProtoField {
 		sb.append(n);
 		if (n > 0) {
 			sb.append("=[");
-			int count = 0;
-			Iterator<GroupField> iter = iterator();
-			while(iter.hasNext()) {
-				if (count > 0) sb.append(';');
-				sb.append(iter.next().toString());
-				count++;
+			for(int i = 0; i < n; i++) {
+				if (i > 0) sb.append(';');
+				sb.append(groupFields.get(i).toString());
 			}
 			sb.append(']');
 		}
