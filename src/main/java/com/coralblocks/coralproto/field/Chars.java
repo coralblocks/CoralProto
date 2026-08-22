@@ -84,6 +84,7 @@ public class Chars {
 	
 	public final void readFrom(ByteBuffer src) {
 		ByteBuffer byteBuffer = bbcs.getByteBuffer();
+		ReadUtils.ensureRemaining(src, byteBuffer.capacity());
 		int savedLim = src.limit();
 		src.limit(src.position() + byteBuffer.capacity());
 		byteBuffer.put(src);

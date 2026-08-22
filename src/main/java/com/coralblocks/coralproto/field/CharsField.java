@@ -152,8 +152,9 @@ public class CharsField implements ProtoField {
 	
 	@Override
 	public final void readFrom(ByteBuffer src) {
-		if (isOptional) this.isPresent = true;
 		ByteBuffer byteBuffer = bbcs.getByteBuffer();
+		ReadUtils.ensureRemaining(src, byteBuffer.capacity());
+		if (isOptional) this.isPresent = true;
 		int savedLim = src.limit();
 		src.limit(src.position() + byteBuffer.capacity());
 		byteBuffer.put(src);

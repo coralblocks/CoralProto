@@ -151,9 +151,8 @@ public class VarCharsField implements ProtoField {
 	
 	@Override
 	public final void readFrom(ByteBuffer src) {
+		int len = ReadUtils.readLength(src, maxLength);
 		if (isOptional) this.isPresent = true;
-		int len = src.getInt();
-		enforceMaxLength(len);
 		int savedLim = src.limit();
 		src.limit(src.position() + len);
 		bbcs.setSize(len);

@@ -82,8 +82,7 @@ public class VarChars {
 	}
 	
 	public final void readFrom(ByteBuffer src) {
-		int len = src.getInt();
-		enforceMaxLength(len);
+		int len = ReadUtils.readLength(src, maxLength);
 		int savedLim = src.limit();
 		src.limit(src.position() + len);
 		bbcs.setSize(len);

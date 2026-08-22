@@ -139,9 +139,9 @@ public class VarBytesField implements ProtoField {
 	
 	@Override
 	public final void readFrom(ByteBuffer src) {
+		int len = ReadUtils.readLength(src, byteBuffer.capacity());
 		if (isOptional) this.isPresent = true;
 		byteBuffer.clear();
-		int len = src.getInt();
 		int savedLim = src.limit();
 		src.limit(src.position() + len);
 		byteBuffer.put(src);

@@ -82,9 +82,8 @@ public class VarBytes {
 	}
 	
 	public final void readFrom(ByteBuffer src) {
+		int len = ReadUtils.readLength(src, byteBuffer.capacity());
 		byteBuffer.clear();
-		int len = src.getInt();
-		enforceMaxLength(len);
 		int savedLim = src.limit();
 		src.limit(src.position() + len);
 		byteBuffer.put(src);
