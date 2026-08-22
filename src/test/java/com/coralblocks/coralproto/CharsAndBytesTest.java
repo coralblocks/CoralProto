@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.coralblocks.coralproto.field.Bytes;
 import com.coralblocks.coralproto.field.BytesField;
 import com.coralblocks.coralproto.field.CharsField;
 import com.coralblocks.coralproto.field.SubtypeField;
@@ -31,6 +32,42 @@ import com.coralblocks.coralproto.util.ByteBufferUtils;
 
 
 public class CharsAndBytesTest {
+
+	@Test
+	public void testBytesEquality() {
+		Bytes bytes1 = new Bytes(4);
+		Bytes bytes2 = new Bytes(4);
+		bytes1.set(new byte[] { 1, 2, 3, 4 });
+		bytes2.set(new byte[] { 1, 2, 3, 4 });
+		Assert.assertEquals(bytes1, bytes2);
+
+		bytes2.set(new byte[] { 9, 9, 9, 9 });
+		Assert.assertNotEquals(bytes1, bytes2);
+	}
+
+	@Test
+	public void testBytesFieldEquality() {
+		BytesField bytes1 = new BytesField(4);
+		BytesField bytes2 = new BytesField(4);
+		bytes1.set(new byte[] { 1, 2, 3, 4 });
+		bytes2.set(new byte[] { 1, 2, 3, 4 });
+		Assert.assertEquals(bytes1, bytes2);
+
+		bytes2.set(new byte[] { 9, 9, 9, 9 });
+		Assert.assertNotEquals(bytes1, bytes2);
+	}
+
+	@Test
+	public void testProtoEqualityIncludesBytesField() {
+		CharsAndBytesProtoMessage proto1 = new CharsAndBytesProtoMessage();
+		CharsAndBytesProtoMessage proto2 = new CharsAndBytesProtoMessage();
+		proto1.myBytes.set("12345678".getBytes());
+		proto2.myBytes.set("12345678".getBytes());
+		Assert.assertEquals(proto1, proto2);
+
+		proto2.myBytes.set("99999999".getBytes());
+		Assert.assertNotEquals(proto1, proto2);
+	}
 	
 	public static class CharsAndBytesProtoMessage extends AbstractProto {
 		

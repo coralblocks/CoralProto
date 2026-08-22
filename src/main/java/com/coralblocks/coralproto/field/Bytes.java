@@ -33,8 +33,8 @@ public class Bytes {
 	public boolean equals(Object o) {
 		if (o instanceof Bytes) {
 			Bytes bf = (Bytes) o;
-			bf.byteBuffer.limit(bf.byteBuffer.capacity()).limit(0);
-			this.byteBuffer.limit(this.byteBuffer.capacity()).limit(0);
+			bf.byteBuffer.limit(bf.byteBuffer.capacity()).position(0);
+			this.byteBuffer.limit(this.byteBuffer.capacity()).position(0);
 			return this.byteBuffer.equals(bf.byteBuffer);
 		}
 		return false;
