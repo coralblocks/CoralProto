@@ -347,8 +347,6 @@ $ java com.coralblocks.coralproto.IDL <FOLDER_NAME> <DRY_RUN> <EXTENSION>
   
 The source code of the messages will be generated inside the same folder.
 
-**NOTE:** When the source code is generated you will most probably need to use `ORGANIZE IMPORTS` (usually CTRL + O) of your IDE to add the correct import statements for the code to compile.
-
 ## Logging in Ascii
 You can print/log your message in ascii. See below:
 ```java
