@@ -37,6 +37,7 @@ public abstract class AbstractProto implements Proto {
 	private char subtypeField = 0;
 	private short versionField = 0;
 	private final ByteBufferEncoder bbEncoder = new ByteBufferEncoder();
+	private final String simpleClassName = getClass().getSimpleName();
 	
 	public final void setType(char type) {
 		this.typeField = type;
@@ -154,7 +155,7 @@ public abstract class AbstractProto implements Proto {
 		
 		if (!shortVersion) {
 			writeAscii(buf, " (");
-			writeAscii(buf, getClass().getSimpleName());
+			writeAscii(buf, simpleClassName);
 			writeAscii(buf, ")");
 
 		}
@@ -378,7 +379,7 @@ public abstract class AbstractProto implements Proto {
 		
 		if (!shortVersion) {
 			writeAscii(buf, " (");
-			writeAscii(buf, this.getClass().getSimpleName());
+			writeAscii(buf, simpleClassName);
 			writeAscii(buf, ")");
 		}
 	}
