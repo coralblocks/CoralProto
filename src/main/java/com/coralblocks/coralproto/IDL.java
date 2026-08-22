@@ -665,7 +665,13 @@ public class IDL {
 				
 				// find the indent...
 				String nextLine = q.peek();
+				if (nextLine == null) {
+					throw new IllegalArgumentException("Repeating group '" + name + "' must contain at least one indented field");
+				}
 				String newIndent = findIndent(nextLine);
+				if (newIndent.length() <= ind.length() || !newIndent.startsWith(ind)) {
+					throw new IllegalArgumentException("Repeating group '" + name + "' must contain at least one indented field");
+				}
 				
 				map.put(name, parseMap(q, newIndent));
 			}
