@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This utility class provides some useful methods to perform common I/O operations. 
@@ -31,7 +32,7 @@ public class IOUtils {
 	}
 
 	public static String readFile(String file) throws IOException {
-		return readFile(file, null);
+		return readFile(file, StandardCharsets.UTF_8.name());
 	}
 	
 	public static String readFile(String file, String charset) throws IOException {
@@ -40,21 +41,11 @@ public class IOUtils {
 		
 		if (!f.exists()) return null;
 		
-		FileInputStream fis = null;
-		BufferedReader br = null;
-		
-		try {
-			
-			fis = new FileInputStream(f);
-			
-			if (charset != null) {
-			
-				br = new BufferedReader(new InputStreamReader(fis, charset));
-				
-			} else {
-				
-				br = new BufferedReader(new InputStreamReader(fis));
-			}
+		String resolvedCharset = charset != null ? charset : StandardCharsets.UTF_8.name();
+
+		try (FileInputStream fis = new FileInputStream(f);
+			 InputStreamReader reader = new InputStreamReader(fis, resolvedCharset);
+			 BufferedReader br = new BufferedReader(reader)) {
 			
 			StringBuilder sb = new StringBuilder(1024);
 			
@@ -66,12 +57,6 @@ public class IOUtils {
 			}
 			
 			return sb.toString();
-
-		} finally {
-			
-			br.close();
-			
 		}
 	}
-
 }
