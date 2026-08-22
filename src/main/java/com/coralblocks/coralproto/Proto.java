@@ -42,6 +42,8 @@ public interface Proto {
 	
 	/**
 	 * Reads the contents of this proto message NOT including the type and subtype.
+	 * The buffer must be externally framed to contain only this message because an
+	 * older schema may leave appended fields unread during schema evolution.
 	 * 
 	 * @param buf where to read this message from
 	 */
