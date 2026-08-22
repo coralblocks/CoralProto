@@ -16,6 +16,7 @@
 package com.coralblocks.coralproto.field;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.util.ByteBufferCharSequence;
@@ -25,6 +26,8 @@ public class CharsField implements ProtoField {
 	private final boolean isOptional;
 	private boolean isPresent;
 	private final ByteBufferCharSequence bbcs;
+	// Reuse these spaces to clear or pad the field with one bulk copy.
+	private final byte[] spaces;
 	private final int size;
 	
 	public CharsField(int size) {
@@ -42,6 +45,8 @@ public class CharsField implements ProtoField {
 	public CharsField(AbstractProto proto, int size, boolean isOptional) {
 		if (proto != null) proto.add(this);
 		this.bbcs = new ByteBufferCharSequence(size);
+		this.spaces = new byte[size];
+		Arrays.fill(spaces, (byte) ' ');
 		this.isOptional = isOptional;
 		this.size = size;
 		reset();
@@ -67,7 +72,7 @@ public class CharsField implements ProtoField {
 	public void reset() {
 		this.isPresent = false;
 		ByteBuffer byteBuffer = this.bbcs.getByteBuffer();
-		for(int i = 0; i < byteBuffer.capacity(); i++) byteBuffer.put((byte) ' ');
+		byteBuffer.put(spaces);
 	}
 	
 	@Override
@@ -109,7 +114,7 @@ public class CharsField implements ProtoField {
 	public final CharsField clear() {
 		ByteBufferCharSequence bacs = getAndMarkAsPresent();
 		ByteBuffer byteBuffer = bacs.getByteBuffer();
-		for(int i = 0; i < size; i++) byteBuffer.put((byte) ' ');
+		byteBuffer.put(spaces);
 		return this;
 	}
 	
@@ -121,7 +126,7 @@ public class CharsField implements ProtoField {
 		ByteBufferCharSequence bacs = getAndMarkAsPresent();
 		ByteBuffer byteBuffer = bacs.getByteBuffer();
 		for(int i = 0; i < len; i++) byteBuffer.put((byte) cs.charAt(i));
-		for(int i = len; i < size; i++) byteBuffer.put((byte) ' ');
+		byteBuffer.put(spaces, 0, size - len);
 	}
 	
 	public final void set(byte[] array) {
@@ -132,7 +137,7 @@ public class CharsField implements ProtoField {
 		ByteBufferCharSequence bacs = getAndMarkAsPresent();
 		ByteBuffer byteBuffer = bacs.getByteBuffer();
 		byteBuffer.put(array);
-		for(int i = len; i < size; i++) byteBuffer.put((byte) ' ');
+		byteBuffer.put(spaces, 0, size - len);
 	}
 	
 	public final void set(char[] array) {
@@ -143,7 +148,7 @@ public class CharsField implements ProtoField {
 		ByteBufferCharSequence bacs = getAndMarkAsPresent();
 		ByteBuffer byteBuffer = bacs.getByteBuffer();
 		for(int i = 0; i < len; i++) byteBuffer.put((byte) array[i]);
-		for(int i = len; i < size; i++)  byteBuffer.put((byte) ' ');
+		byteBuffer.put(spaces, 0, size - len);
 	}
 	
 	public final CharSequence get() {
