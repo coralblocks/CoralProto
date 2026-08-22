@@ -58,6 +58,7 @@ public class ByteField implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		this.value = 0;
 	}
 	

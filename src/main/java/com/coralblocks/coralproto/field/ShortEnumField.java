@@ -61,6 +61,7 @@ public class ShortEnumField<E extends ShortEnum> implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		this.value = null;
 	}
 	

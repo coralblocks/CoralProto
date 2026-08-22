@@ -63,6 +63,7 @@ public class VarBytesField implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		this.size = 0;
 	}
 	

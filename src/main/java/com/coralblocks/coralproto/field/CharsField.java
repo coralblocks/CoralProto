@@ -60,6 +60,7 @@ public class CharsField implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		ByteBuffer byteBuffer = this.bbcs.getByteBuffer();
 		for(int i = 0; i < byteBuffer.capacity(); i++) byteBuffer.put((byte) ' ');
 	}

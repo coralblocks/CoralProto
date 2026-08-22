@@ -77,6 +77,7 @@ public class FloatField implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		this.value = 0;
 	}
 	

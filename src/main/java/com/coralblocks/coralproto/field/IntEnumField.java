@@ -61,6 +61,7 @@ public class IntEnumField<E extends IntEnum> implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		this.value = null;
 	}
 	

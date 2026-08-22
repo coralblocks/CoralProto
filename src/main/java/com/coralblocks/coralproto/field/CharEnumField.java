@@ -61,6 +61,7 @@ public class CharEnumField<E extends CharEnum> implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		this.value = null;
 	}
 	

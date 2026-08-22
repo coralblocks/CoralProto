@@ -62,6 +62,7 @@ public class BytesField implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		this.byteBuffer.clear();
 		for(int i = 0; i < byteBuffer.capacity(); i++) this.byteBuffer.put((byte) 0);
 		this.byteBuffer.flip();

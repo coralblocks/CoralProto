@@ -61,6 +61,7 @@ public class VarCharsField implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		this.bbcs.setSize(0);		
 	}
 	

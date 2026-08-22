@@ -56,6 +56,7 @@ public class BooleanField implements ProtoField {
 	
 	@Override
 	public void reset() {
+		this.isPresent = false;
 		this.value = false;
 	}
 	

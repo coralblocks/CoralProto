@@ -66,11 +66,7 @@ public class GroupField implements ProtoField {
 	@Override
 	public void reset() {
 		this.isPresent = false;
-		for(int i = 0; i < protoFields.length; i++) {
-			ProtoField protoField = protoFields[i];
-			protoField.reset();
-			if (protoField.isOptional()) protoField.markAsNotPresent();
-		}
+		for(int i = 0; i < protoFields.length; i++) protoFields[i].reset();
 	}
 	
 	@Override
