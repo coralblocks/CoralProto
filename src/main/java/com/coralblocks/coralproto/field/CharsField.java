@@ -187,22 +187,11 @@ public class CharsField implements ProtoField {
 	
 	@Override
 	public String toString() {
-		if (isOptional) {
-			if (isPresent) {
-				StringBuilder sb = new StringBuilder(size + 2);
-				sb.append('[');
-				sb.append(bbcs);
-				sb.append(']');
-				return sb.toString();
-			} else {
-				return "BLANK";
-			}
-		} else {
-			StringBuilder sb = new StringBuilder(size + 2);
-			sb.append('[');
-			sb.append(bbcs);
-			sb.append(']');
-			return sb.toString();
-		}
+		if (isOptional && !isPresent) return "BLANK";
+		StringBuilder sb = new StringBuilder(size + 2);
+		sb.append('[');
+		sb.append(bbcs);
+		sb.append(']');
+		return sb.toString();
 	}
 }

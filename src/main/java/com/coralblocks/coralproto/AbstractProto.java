@@ -38,6 +38,7 @@ public abstract class AbstractProto implements Proto {
 	private short versionField = 0;
 	private final ByteBufferEncoder bbEncoder = new ByteBufferEncoder();
 	private final String simpleClassName = getClass().getSimpleName();
+	private StringBuilder sb;
 	
 	public final void setType(char type) {
 		this.typeField = type;
@@ -215,8 +216,6 @@ public abstract class AbstractProto implements Proto {
 	protected final void writeAsciiSeparator(ByteBuffer buf) {
 		buf.put(SEPARATOR);
 	}
-	
-	private StringBuilder sb;
 	
 	@Override
 	public String toString() {

@@ -174,25 +174,13 @@ public class BytesField implements ProtoField {
 	
 	@Override
 	public String toString() {
-		if (isOptional) {
-			if (isPresent) {
-				ByteBuffer byteBuffer = get();
-				StringBuilder sb = new StringBuilder(byteBuffer.capacity() + 2);
-				sb.append('[');
-				sb.append(ByteBufferUtils.parseString(byteBuffer));
-				sb.append(']');
-				return sb.toString();
-			} else {
-				return "BLANK";
-			}
-		} else {
-			ByteBuffer byteBuffer = get();
-			StringBuilder sb = new StringBuilder(byteBuffer.capacity() + 2);
-			sb.append('[');
-			sb.append(ByteBufferUtils.parseString(byteBuffer));
-			sb.append(']');
-			return sb.toString();
-		}
+		if (isOptional && !isPresent) return "BLANK";
+		ByteBuffer byteBuffer = get();
+		StringBuilder sb = new StringBuilder(byteBuffer.capacity() + 2);
+		sb.append('[');
+		sb.append(ByteBufferUtils.parseString(byteBuffer));
+		sb.append(']');
+		return sb.toString();
 	}
 	
 }

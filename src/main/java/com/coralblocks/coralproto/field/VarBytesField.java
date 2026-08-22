@@ -181,20 +181,7 @@ public class VarBytesField implements ProtoField {
 	
 	@Override
 	public String toString() {
-		if (isOptional) {
-			if (isPresent) {
-				ByteBuffer byteBuffer = get();
-				StringBuilder sb = new StringBuilder(byteBuffer.remaining());
-				sb.append(ByteBufferUtils.parseString(byteBuffer));
-				return sb.toString();
-			} else {
-				return "BLANK";
-			}
-		} else {
-			ByteBuffer byteBuffer = get();
-			StringBuilder sb = new StringBuilder(byteBuffer.remaining());
-			sb.append(ByteBufferUtils.parseString(byteBuffer));
-			return sb.toString();
-		}
+		if (isOptional && !isPresent) return "BLANK";
+		return ByteBufferUtils.parseString(get());
 	}
 }
