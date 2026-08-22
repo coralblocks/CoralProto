@@ -208,7 +208,7 @@ public abstract class AbstractProto implements Proto {
 		}
 	}
 	
-	private final void writeAscii(ByteBuffer buf, String s) {
+	protected final void writeAscii(ByteBuffer buf, String s) {
 		ByteBufferUtils.appendCharSequence(buf, s);
 	}
 	

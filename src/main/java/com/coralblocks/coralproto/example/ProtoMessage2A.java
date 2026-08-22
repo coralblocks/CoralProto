@@ -64,6 +64,93 @@ public class ProtoMessage2A extends AbstractProto {
 
     public final IntField extraField = new IntField(this, true);
 
+    // For better performance, these methods handle each field directly instead of
+    // using the default implementation, which loops over the registered fields.
+    // This code is generated and should never be maintained by hand.
+    @Override
+    public final int getLength() {
+        return 4
+            + orderId.size()
+            + symbolDesc.size()
+            + isMine.size()
+            + extraField.size();
+    }
+
+    @Override
+    public final void read(java.nio.ByteBuffer buf) {
+        if (buf.hasRemaining()) {
+            orderId.readFrom(buf);
+        } else {
+            orderId.reset();
+        }
+        if (buf.hasRemaining() && buf.get() == 'Y') {
+            symbolDesc.readFrom(buf);
+        } else {
+            symbolDesc.markAsNotPresent();
+        }
+        if (buf.hasRemaining() && buf.get() == 'Y') {
+            isMine.readFrom(buf);
+        } else {
+            isMine.markAsNotPresent();
+        }
+        if (buf.hasRemaining() && buf.get() == 'Y') {
+            extraField.readFrom(buf);
+        } else {
+            extraField.markAsNotPresent();
+        }
+    }
+
+    @Override
+    public final void write(java.nio.ByteBuffer buf) {
+        buf.put((byte) TYPE);
+        buf.put((byte) SUBTYPE);
+        buf.putShort((short) 0);
+        orderId.writeTo(buf);
+        if (symbolDesc.isPresent()) {
+            buf.put((byte) 'Y');
+            symbolDesc.writeTo(buf);
+        } else {
+            buf.put((byte) 'N');
+        }
+        if (isMine.isPresent()) {
+            buf.put((byte) 'Y');
+            isMine.writeTo(buf);
+        } else {
+            buf.put((byte) 'N');
+        }
+        if (extraField.isPresent()) {
+            buf.put((byte) 'Y');
+            extraField.writeTo(buf);
+        } else {
+            buf.put((byte) 'N');
+        }
+    }
+
+    @Override
+    public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {
+        writeAsciiTypeSubtypeVersionName(shortVersion, buf);
+        writeAsciiSeparator(buf);
+        orderId.writeAsciiTo(buf);
+        writeAsciiSeparator(buf);
+        if (symbolDesc.isPresent()) {
+            symbolDesc.writeAsciiTo(buf);
+        } else {
+            writeAscii(buf, "BLANK");
+        }
+        writeAsciiSeparator(buf);
+        if (isMine.isPresent()) {
+            isMine.writeAsciiTo(buf);
+        } else {
+            writeAscii(buf, "BLANK");
+        }
+        writeAsciiSeparator(buf);
+        if (extraField.isPresent()) {
+            extraField.writeAsciiTo(buf);
+        } else {
+            writeAscii(buf, "BLANK");
+        }
+    }
+
 
 	// END_AUTO_GENERATED_CODE
 

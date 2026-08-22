@@ -79,6 +79,138 @@ public class OptionalFieldsTest {
 
         public final ShortField myShort = new ShortField(this, true);
 
+        // For better performance, these methods handle each field directly instead of
+        // using the default implementation, which loops over the registered fields.
+        // This code is generated and should never be maintained by hand.
+        @Override
+        public final int getLength() {
+            return 4
+                + myBoolean.size()
+                + myByte.size()
+                + myChar.size()
+                + myInt.size()
+                + myLong.size()
+                + myShort.size();
+        }
+
+        @Override
+        public final void read(java.nio.ByteBuffer buf) {
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                myBoolean.readFrom(buf);
+            } else {
+                myBoolean.markAsNotPresent();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                myByte.readFrom(buf);
+            } else {
+                myByte.markAsNotPresent();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                myChar.readFrom(buf);
+            } else {
+                myChar.markAsNotPresent();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                myInt.readFrom(buf);
+            } else {
+                myInt.markAsNotPresent();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                myLong.readFrom(buf);
+            } else {
+                myLong.markAsNotPresent();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                myShort.readFrom(buf);
+            } else {
+                myShort.markAsNotPresent();
+            }
+        }
+
+        @Override
+        public final void write(java.nio.ByteBuffer buf) {
+            buf.put((byte) TYPE);
+            buf.put((byte) SUBTYPE);
+            buf.putShort((short) 0);
+            if (myBoolean.isPresent()) {
+                buf.put((byte) 'Y');
+                myBoolean.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+            if (myByte.isPresent()) {
+                buf.put((byte) 'Y');
+                myByte.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+            if (myChar.isPresent()) {
+                buf.put((byte) 'Y');
+                myChar.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+            if (myInt.isPresent()) {
+                buf.put((byte) 'Y');
+                myInt.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+            if (myLong.isPresent()) {
+                buf.put((byte) 'Y');
+                myLong.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+            if (myShort.isPresent()) {
+                buf.put((byte) 'Y');
+                myShort.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+        }
+
+        @Override
+        public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {
+            writeAsciiTypeSubtypeVersionName(shortVersion, buf);
+            writeAsciiSeparator(buf);
+            if (myBoolean.isPresent()) {
+                myBoolean.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+            writeAsciiSeparator(buf);
+            if (myByte.isPresent()) {
+                myByte.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+            writeAsciiSeparator(buf);
+            if (myChar.isPresent()) {
+                myChar.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+            writeAsciiSeparator(buf);
+            if (myInt.isPresent()) {
+                myInt.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+            writeAsciiSeparator(buf);
+            if (myLong.isPresent()) {
+                myLong.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+            writeAsciiSeparator(buf);
+            if (myShort.isPresent()) {
+                myShort.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+        }
+
 
 		// END_AUTO_GENERATED_CODE
 	}

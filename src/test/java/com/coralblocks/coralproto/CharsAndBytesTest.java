@@ -137,6 +137,66 @@ public class CharsAndBytesTest {
 
         public final VarBytesField myVarBytes = new VarBytesField(this, 1024);
 
+        // For better performance, these methods handle each field directly instead of
+        // using the default implementation, which loops over the registered fields.
+        // This code is generated and should never be maintained by hand.
+        @Override
+        public final int getLength() {
+            return 4
+                + myChars.size()
+                + myVarChars.size()
+                + myBytes.size()
+                + myVarBytes.size();
+        }
+
+        @Override
+        public final void read(java.nio.ByteBuffer buf) {
+            if (buf.hasRemaining()) {
+                myChars.readFrom(buf);
+            } else {
+                myChars.reset();
+            }
+            if (buf.hasRemaining()) {
+                myVarChars.readFrom(buf);
+            } else {
+                myVarChars.reset();
+            }
+            if (buf.hasRemaining()) {
+                myBytes.readFrom(buf);
+            } else {
+                myBytes.reset();
+            }
+            if (buf.hasRemaining()) {
+                myVarBytes.readFrom(buf);
+            } else {
+                myVarBytes.reset();
+            }
+        }
+
+        @Override
+        public final void write(java.nio.ByteBuffer buf) {
+            buf.put((byte) TYPE);
+            buf.put((byte) SUBTYPE);
+            buf.putShort((short) 0);
+            myChars.writeTo(buf);
+            myVarChars.writeTo(buf);
+            myBytes.writeTo(buf);
+            myVarBytes.writeTo(buf);
+        }
+
+        @Override
+        public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {
+            writeAsciiTypeSubtypeVersionName(shortVersion, buf);
+            writeAsciiSeparator(buf);
+            myChars.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myVarChars.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myBytes.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myVarBytes.writeAsciiTo(buf);
+        }
+
 
 		// END_AUTO_GENERATED_CODE
 	}

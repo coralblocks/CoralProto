@@ -164,6 +164,66 @@ public class RepeatingGroupsTest {
 
         public final BidsRepeatingGroup bids = new BidsRepeatingGroup(this);
 
+        // For better performance, these methods handle each field directly instead of
+        // using the default implementation, which loops over the registered fields.
+        // This code is generated and should never be maintained by hand.
+        @Override
+        public final int getLength() {
+            return 4
+                + myBoolean.size()
+                + myLong.size()
+                + bids.size();
+        }
+
+        @Override
+        public final void read(java.nio.ByteBuffer buf) {
+            if (buf.hasRemaining()) {
+                myBoolean.readFrom(buf);
+            } else {
+                myBoolean.reset();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                myLong.readFrom(buf);
+            } else {
+                myLong.markAsNotPresent();
+            }
+            if (buf.hasRemaining()) {
+                bids.readFrom(buf);
+            } else {
+                bids.reset();
+            }
+        }
+
+        @Override
+        public final void write(java.nio.ByteBuffer buf) {
+            buf.put((byte) TYPE);
+            buf.put((byte) SUBTYPE);
+            buf.putShort((short) 0);
+            myBoolean.writeTo(buf);
+            if (myLong.isPresent()) {
+                buf.put((byte) 'Y');
+                myLong.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+            bids.writeTo(buf);
+        }
+
+        @Override
+        public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {
+            writeAsciiTypeSubtypeVersionName(shortVersion, buf);
+            writeAsciiSeparator(buf);
+            myBoolean.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            if (myLong.isPresent()) {
+                myLong.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+            writeAsciiSeparator(buf);
+            bids.writeAsciiTo(buf);
+        }
+
 
 		// END_AUTO_GENERATED_CODE
 	}

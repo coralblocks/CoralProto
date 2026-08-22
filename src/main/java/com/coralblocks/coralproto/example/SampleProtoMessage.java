@@ -40,7 +40,8 @@ import com.coralblocks.coralproto.field.VarChars;
  * It gets faster as the number of fields in the message increases. For a small number of fields it is not that much faster.
  * </p> 
  * <p>
- * As you can see, this approach is a bit faster but requires much more explicit coding from your part, and it offers no IDL for message definition.
+ * The IDL now generates the same straight-line structure for regular field objects. This example goes further by using raw primitives,
+ * which requires writing and maintaining the serialization code by hand.
  * </p>
  */
 public final class SampleProtoMessage extends AbstractProto {

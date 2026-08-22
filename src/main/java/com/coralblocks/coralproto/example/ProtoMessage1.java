@@ -56,6 +56,57 @@ public class ProtoMessage1 extends AbstractProto {
 
     public final VarCharsField symbolDesc = new VarCharsField(this, 128, true);
 
+    // For better performance, these methods handle each field directly instead of
+    // using the default implementation, which loops over the registered fields.
+    // This code is generated and should never be maintained by hand.
+    @Override
+    public final int getLength() {
+        return 4
+            + symbolId.size()
+            + symbolDesc.size();
+    }
+
+    @Override
+    public final void read(java.nio.ByteBuffer buf) {
+        if (buf.hasRemaining()) {
+            symbolId.readFrom(buf);
+        } else {
+            symbolId.reset();
+        }
+        if (buf.hasRemaining() && buf.get() == 'Y') {
+            symbolDesc.readFrom(buf);
+        } else {
+            symbolDesc.markAsNotPresent();
+        }
+    }
+
+    @Override
+    public final void write(java.nio.ByteBuffer buf) {
+        buf.put((byte) TYPE);
+        buf.put((byte) SUBTYPE);
+        buf.putShort((short) 0);
+        symbolId.writeTo(buf);
+        if (symbolDesc.isPresent()) {
+            buf.put((byte) 'Y');
+            symbolDesc.writeTo(buf);
+        } else {
+            buf.put((byte) 'N');
+        }
+    }
+
+    @Override
+    public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {
+        writeAsciiTypeSubtypeVersionName(shortVersion, buf);
+        writeAsciiSeparator(buf);
+        symbolId.writeAsciiTo(buf);
+        writeAsciiSeparator(buf);
+        if (symbolDesc.isPresent()) {
+            symbolDesc.writeAsciiTo(buf);
+        } else {
+            writeAscii(buf, "BLANK");
+        }
+    }
+
 
 	// END_AUTO_GENERATED_CODE
 

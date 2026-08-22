@@ -180,6 +180,111 @@ public class PriceChangeMessage extends AbstractProto {
 
         public final DoubleField lastTradePrice = new DoubleField(this, true);
 
+        // For better performance, these methods handle each field directly instead of
+        // using the default implementation, which loops over the registered fields.
+        // This code is generated and should never be maintained by hand.
+        @Override
+        public final int getLength() {
+            return 4
+                + symbolId.size()
+                + symbolDesc.size()
+                + mqReqId.size()
+                + orders.size()
+                + lastTradeQty.size()
+                + lastTradePrice.size();
+        }
+
+        @Override
+        public final void read(java.nio.ByteBuffer buf) {
+            if (buf.hasRemaining()) {
+                symbolId.readFrom(buf);
+            } else {
+                symbolId.reset();
+            }
+            if (buf.hasRemaining()) {
+                symbolDesc.readFrom(buf);
+            } else {
+                symbolDesc.reset();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                mqReqId.readFrom(buf);
+            } else {
+                mqReqId.markAsNotPresent();
+            }
+            if (buf.hasRemaining()) {
+                orders.readFrom(buf);
+            } else {
+                orders.reset();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                lastTradeQty.readFrom(buf);
+            } else {
+                lastTradeQty.markAsNotPresent();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                lastTradePrice.readFrom(buf);
+            } else {
+                lastTradePrice.markAsNotPresent();
+            }
+        }
+
+        @Override
+        public final void write(java.nio.ByteBuffer buf) {
+            buf.put((byte) TYPE);
+            buf.put((byte) SUBTYPE);
+            buf.putShort((short) 0);
+            symbolId.writeTo(buf);
+            symbolDesc.writeTo(buf);
+            if (mqReqId.isPresent()) {
+                buf.put((byte) 'Y');
+                mqReqId.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+            orders.writeTo(buf);
+            if (lastTradeQty.isPresent()) {
+                buf.put((byte) 'Y');
+                lastTradeQty.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+            if (lastTradePrice.isPresent()) {
+                buf.put((byte) 'Y');
+                lastTradePrice.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+        }
+
+        @Override
+        public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {
+            writeAsciiTypeSubtypeVersionName(shortVersion, buf);
+            writeAsciiSeparator(buf);
+            symbolId.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            symbolDesc.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            if (mqReqId.isPresent()) {
+                mqReqId.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+            writeAsciiSeparator(buf);
+            orders.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            if (lastTradeQty.isPresent()) {
+                lastTradeQty.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+            writeAsciiSeparator(buf);
+            if (lastTradePrice.isPresent()) {
+                lastTradePrice.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+        }
+
 
 	// END_AUTO_GENERATED_CODE
 

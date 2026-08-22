@@ -234,10 +234,11 @@ public class IDL {
 	
 	public IDL(String idl, String indent) {
 		this.idl = idl;
-		parseTypeSubtypeAndVersion(idl, indent);
+		short version = parseTypeSubtypeAndVersion(idl, indent);
 		Queue<String> lines = parseLines(idl);
 		Map<String, Object> map = parseMap(lines, "");
 		configure(map, true, indent, null, "");
+		createDirectMethods(map, indent, version);
 	}
 	
 	public String getCode() {
@@ -462,6 +463,85 @@ public class IDL {
 		}
 		code.append("\n");
 	}
+
+	private void createDirectMethods(Map<String, Object> map, String indent, short version) {
+		String bodyIndent = indent + INDENT;
+		String branchIndent = bodyIndent + INDENT;
+
+		code.append(indent).append("// For better performance, these methods handle each field directly instead of\n");
+		code.append(indent).append("// using the default implementation, which loops over the registered fields.\n");
+		code.append(indent).append("// This code is generated and should never be maintained by hand.\n");
+		code.append(indent).append("@Override\n");
+		code.append(indent).append("public final int getLength() {\n");
+		code.append(bodyIndent).append("return 4");
+		for(String name : map.keySet()) {
+			code.append("\n").append(bodyIndent).append(INDENT).append("+ ").append(name).append(".size()");
+		}
+		code.append(";\n");
+		code.append(indent).append("}\n\n");
+
+		code.append(indent).append("@Override\n");
+		code.append(indent).append("public final void read(java.nio.ByteBuffer buf) {\n");
+		for(Map.Entry<String, Object> entry : map.entrySet()) {
+			String name = entry.getKey();
+			if (isOptionalField(entry.getValue())) {
+				code.append(bodyIndent).append("if (buf.hasRemaining() && buf.get() == 'Y') {\n");
+				code.append(branchIndent).append(name).append(".readFrom(buf);\n");
+				code.append(bodyIndent).append("} else {\n");
+				code.append(branchIndent).append(name).append(".markAsNotPresent();\n");
+				code.append(bodyIndent).append("}\n");
+			} else {
+				code.append(bodyIndent).append("if (buf.hasRemaining()) {\n");
+				code.append(branchIndent).append(name).append(".readFrom(buf);\n");
+				code.append(bodyIndent).append("} else {\n");
+				code.append(branchIndent).append(name).append(".reset();\n");
+				code.append(bodyIndent).append("}\n");
+			}
+		}
+		code.append(indent).append("}\n\n");
+
+		code.append(indent).append("@Override\n");
+		code.append(indent).append("public final void write(java.nio.ByteBuffer buf) {\n");
+		code.append(bodyIndent).append("buf.put((byte) TYPE);\n");
+		code.append(bodyIndent).append("buf.put((byte) SUBTYPE);\n");
+		code.append(bodyIndent).append("buf.putShort((short) ").append(version).append(");\n");
+		for(Map.Entry<String, Object> entry : map.entrySet()) {
+			String name = entry.getKey();
+			if (isOptionalField(entry.getValue())) {
+				code.append(bodyIndent).append("if (").append(name).append(".isPresent()) {\n");
+				code.append(branchIndent).append("buf.put((byte) 'Y');\n");
+				code.append(branchIndent).append(name).append(".writeTo(buf);\n");
+				code.append(bodyIndent).append("} else {\n");
+				code.append(branchIndent).append("buf.put((byte) 'N');\n");
+				code.append(bodyIndent).append("}\n");
+			} else {
+				code.append(bodyIndent).append(name).append(".writeTo(buf);\n");
+			}
+		}
+		code.append(indent).append("}\n\n");
+
+		code.append(indent).append("@Override\n");
+		code.append(indent).append("public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {\n");
+		code.append(bodyIndent).append("writeAsciiTypeSubtypeVersionName(shortVersion, buf);\n");
+		for(Map.Entry<String, Object> entry : map.entrySet()) {
+			String name = entry.getKey();
+			code.append(bodyIndent).append("writeAsciiSeparator(buf);\n");
+			if (isOptionalField(entry.getValue())) {
+				code.append(bodyIndent).append("if (").append(name).append(".isPresent()) {\n");
+				code.append(branchIndent).append(name).append(".writeAsciiTo(buf);\n");
+				code.append(bodyIndent).append("} else {\n");
+				code.append(branchIndent).append("writeAscii(buf, \"BLANK\");\n");
+				code.append(bodyIndent).append("}\n");
+			} else {
+				code.append(bodyIndent).append(name).append(".writeAsciiTo(buf);\n");
+			}
+		}
+		code.append(indent).append("}\n\n");
+	}
+
+	private boolean isOptionalField(Object type) {
+		return type instanceof String && ((String) type).endsWith("!");
+	}
 	
 	private static boolean isNumber(String value) {
 		try {
@@ -591,7 +671,7 @@ public class IDL {
 		return sb.toString();
 	}
 	
-	private void parseTypeSubtypeAndVersion(String idl, String indent) {
+	private short parseTypeSubtypeAndVersion(String idl, String indent) {
 		String type = find("TYPE", true);
 		if (type.length() != 1) throw new RuntimeException("Type is not a character: " + type);
 		code.append(indent + "public static final char TYPE = '").append(type).append("';\n");
@@ -622,6 +702,7 @@ public class IDL {
 		}
 		
 		code.append("\n");
+		return version > 0 ? version : 0;
 	}
 	
 	private String find(String field, boolean isRequired) {

@@ -77,6 +77,102 @@ public class FloatDoubleTest {
 
         public final DoubleField myDouble3 = new DoubleField(this, 7, true);
 
+        // For better performance, these methods handle each field directly instead of
+        // using the default implementation, which loops over the registered fields.
+        // This code is generated and should never be maintained by hand.
+        @Override
+        public final int getLength() {
+            return 4
+                + myFloat1.size()
+                + myFloat2.size()
+                + myFloat3.size()
+                + myDouble1.size()
+                + myDouble2.size()
+                + myDouble3.size();
+        }
+
+        @Override
+        public final void read(java.nio.ByteBuffer buf) {
+            if (buf.hasRemaining()) {
+                myFloat1.readFrom(buf);
+            } else {
+                myFloat1.reset();
+            }
+            if (buf.hasRemaining()) {
+                myFloat2.readFrom(buf);
+            } else {
+                myFloat2.reset();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                myFloat3.readFrom(buf);
+            } else {
+                myFloat3.markAsNotPresent();
+            }
+            if (buf.hasRemaining()) {
+                myDouble1.readFrom(buf);
+            } else {
+                myDouble1.reset();
+            }
+            if (buf.hasRemaining()) {
+                myDouble2.readFrom(buf);
+            } else {
+                myDouble2.reset();
+            }
+            if (buf.hasRemaining() && buf.get() == 'Y') {
+                myDouble3.readFrom(buf);
+            } else {
+                myDouble3.markAsNotPresent();
+            }
+        }
+
+        @Override
+        public final void write(java.nio.ByteBuffer buf) {
+            buf.put((byte) TYPE);
+            buf.put((byte) SUBTYPE);
+            buf.putShort((short) 0);
+            myFloat1.writeTo(buf);
+            myFloat2.writeTo(buf);
+            if (myFloat3.isPresent()) {
+                buf.put((byte) 'Y');
+                myFloat3.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+            myDouble1.writeTo(buf);
+            myDouble2.writeTo(buf);
+            if (myDouble3.isPresent()) {
+                buf.put((byte) 'Y');
+                myDouble3.writeTo(buf);
+            } else {
+                buf.put((byte) 'N');
+            }
+        }
+
+        @Override
+        public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {
+            writeAsciiTypeSubtypeVersionName(shortVersion, buf);
+            writeAsciiSeparator(buf);
+            myFloat1.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myFloat2.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            if (myFloat3.isPresent()) {
+                myFloat3.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+            writeAsciiSeparator(buf);
+            myDouble1.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myDouble2.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            if (myDouble3.isPresent()) {
+                myDouble3.writeAsciiTo(buf);
+            } else {
+                writeAscii(buf, "BLANK");
+            }
+        }
+
 
 		// END_AUTO_GENERATED_CODE
 	}

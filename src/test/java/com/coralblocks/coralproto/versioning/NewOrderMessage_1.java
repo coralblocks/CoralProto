@@ -62,6 +62,84 @@ public class NewOrderMessage_1 extends AbstractProto {
 
         public final LongField size = new LongField(this);
 
+        // For better performance, these methods handle each field directly instead of
+        // using the default implementation, which loops over the registered fields.
+        // This code is generated and should never be maintained by hand.
+        @Override
+        public final int getLength() {
+            return 4
+                + clientId.size()
+                + symbol.size()
+                + symbolId.size()
+                + price.size()
+                + side.size()
+                + size.size();
+        }
+
+        @Override
+        public final void read(java.nio.ByteBuffer buf) {
+            if (buf.hasRemaining()) {
+                clientId.readFrom(buf);
+            } else {
+                clientId.reset();
+            }
+            if (buf.hasRemaining()) {
+                symbol.readFrom(buf);
+            } else {
+                symbol.reset();
+            }
+            if (buf.hasRemaining()) {
+                symbolId.readFrom(buf);
+            } else {
+                symbolId.reset();
+            }
+            if (buf.hasRemaining()) {
+                price.readFrom(buf);
+            } else {
+                price.reset();
+            }
+            if (buf.hasRemaining()) {
+                side.readFrom(buf);
+            } else {
+                side.reset();
+            }
+            if (buf.hasRemaining()) {
+                size.readFrom(buf);
+            } else {
+                size.reset();
+            }
+        }
+
+        @Override
+        public final void write(java.nio.ByteBuffer buf) {
+            buf.put((byte) TYPE);
+            buf.put((byte) SUBTYPE);
+            buf.putShort((short) 1);
+            clientId.writeTo(buf);
+            symbol.writeTo(buf);
+            symbolId.writeTo(buf);
+            price.writeTo(buf);
+            side.writeTo(buf);
+            size.writeTo(buf);
+        }
+
+        @Override
+        public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {
+            writeAsciiTypeSubtypeVersionName(shortVersion, buf);
+            writeAsciiSeparator(buf);
+            clientId.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            symbol.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            symbolId.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            price.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            side.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            size.writeAsciiTo(buf);
+        }
+
 
 	// END_AUTO_GENERATED_CODE
 }

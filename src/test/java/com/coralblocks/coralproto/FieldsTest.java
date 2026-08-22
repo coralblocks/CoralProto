@@ -79,6 +79,84 @@ public class FieldsTest {
 
         public final ShortField myShort = new ShortField(this);
 
+        // For better performance, these methods handle each field directly instead of
+        // using the default implementation, which loops over the registered fields.
+        // This code is generated and should never be maintained by hand.
+        @Override
+        public final int getLength() {
+            return 4
+                + myBoolean.size()
+                + myByte.size()
+                + myChar.size()
+                + myInt.size()
+                + myLong.size()
+                + myShort.size();
+        }
+
+        @Override
+        public final void read(java.nio.ByteBuffer buf) {
+            if (buf.hasRemaining()) {
+                myBoolean.readFrom(buf);
+            } else {
+                myBoolean.reset();
+            }
+            if (buf.hasRemaining()) {
+                myByte.readFrom(buf);
+            } else {
+                myByte.reset();
+            }
+            if (buf.hasRemaining()) {
+                myChar.readFrom(buf);
+            } else {
+                myChar.reset();
+            }
+            if (buf.hasRemaining()) {
+                myInt.readFrom(buf);
+            } else {
+                myInt.reset();
+            }
+            if (buf.hasRemaining()) {
+                myLong.readFrom(buf);
+            } else {
+                myLong.reset();
+            }
+            if (buf.hasRemaining()) {
+                myShort.readFrom(buf);
+            } else {
+                myShort.reset();
+            }
+        }
+
+        @Override
+        public final void write(java.nio.ByteBuffer buf) {
+            buf.put((byte) TYPE);
+            buf.put((byte) SUBTYPE);
+            buf.putShort((short) 0);
+            myBoolean.writeTo(buf);
+            myByte.writeTo(buf);
+            myChar.writeTo(buf);
+            myInt.writeTo(buf);
+            myLong.writeTo(buf);
+            myShort.writeTo(buf);
+        }
+
+        @Override
+        public final void writeAscii(boolean shortVersion, java.nio.ByteBuffer buf) {
+            writeAsciiTypeSubtypeVersionName(shortVersion, buf);
+            writeAsciiSeparator(buf);
+            myBoolean.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myByte.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myChar.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myInt.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myLong.writeAsciiTo(buf);
+            writeAsciiSeparator(buf);
+            myShort.writeAsciiTo(buf);
+        }
+
 
 		// END_AUTO_GENERATED_CODE
 	}
