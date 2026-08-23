@@ -87,6 +87,10 @@ public class Chars {
 		for(int i = 0; i < len; i++) byteBuffer.put((byte) array[i]);
 		byteBuffer.put(spaces, 0, size - len);
 	}
+
+	public final CharSequence get() {
+		return bbcs;
+	}
 	
 	public final ByteBuffer getByteBuffer() {
 		return bbcs.getByteBuffer();

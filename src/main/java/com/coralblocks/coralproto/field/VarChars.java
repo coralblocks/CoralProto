@@ -62,6 +62,10 @@ public class VarChars {
 		return 4 + len;
 	}
 
+	public final CharSequence get() {
+		return bbcs;
+	}
+
 	public final void set(CharSequence cs) {
 		int len = cs.length();
 		enforceMaxLength(len);

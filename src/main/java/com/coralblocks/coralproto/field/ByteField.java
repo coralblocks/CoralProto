@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.coralblocks.coralproto.field;
 
@@ -20,38 +20,35 @@ import java.nio.ByteBuffer;
 import com.coralblocks.coralproto.AbstractProto;
 import com.coralblocks.coralproto.util.ByteBufferEncoder;
 
-public class ByteField implements ProtoField {
-	
+public class ByteField extends AbstractField {
+
 	private final ByteBufferEncoder bbEncoder = new ByteBufferEncoder();
-	private final boolean isOptional;
-	private boolean isPresent;
 	private byte value;
-	
+
 	public ByteField() {
 		this(null);
 	}
-	
+
 	public ByteField(AbstractProto proto) {
 		this(proto, false);
 	}
-	
+
 	public ByteField(boolean isOptional) {
 		this(null, isOptional);
 	}
-	
+
 	public ByteField(AbstractProto proto, boolean isOptional) {
-		if (proto != null) proto.add(this);
-		this.isOptional = isOptional;
+		super(proto, isOptional);
 		reset();
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof ByteField) {
-			ByteField bf = (ByteField) o;
-			boolean present = this.isPresent();
-			if (bf.isPresent() != present) return false;
-			return !present || bf.value == this.value;
+			ByteField field = (ByteField) o;
+			boolean present = isPresent();
+			if (field.isPresent() != present) return false;
+			return !present || field.value == value;
 		}
 		return false;
 	}
@@ -60,83 +57,58 @@ public class ByteField implements ProtoField {
 	public int hashCode() {
 		return isPresent() ? value : 0;
 	}
-	
+
 	@Override
 	public void reset() {
-		this.isPresent = false;
-		this.value = 0;
+		resetPresence();
+		value = 0;
 	}
-	
+
 	@Override
 	public ProtoField newInstance() {
-		return new ByteField(null, this.isOptional);
+		return new ByteField(null, isOptional());
 	}
 
 	@Override
 	public final int size() {
-		if (isOptional) {
-			return isPresent ? 1 + 1 : 1;
-		} else {
-			return 1;
-		}
+		return sizeWithPresence(Byte.BYTES);
 	}
 
-	@Override
-	public final boolean isPresent() {
-		if (!isOptional) return true;
-		return isPresent;
-	}
-
-	@Override
-	public final boolean isOptional() {
-		return isOptional;
-	}
-	
-	@Override
-	public final void markAsNotPresent() {
-		if (!isOptional) throw new IllegalStateException("Cannot mark a required field as not present!");
-		this.isPresent = false;
-	}
-	
 	@Override
 	public final void readFrom(ByteBuffer buf) {
-		if (isOptional) this.isPresent = true;
-		this.value = buf.get();
+		value = buf.get();
+		markAsPresent();
 	}
-	
+
 	@Override
 	public final void writeTo(ByteBuffer buf) {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
+		requirePresentForWrite();
 		buf.put(value);
 	}
-	
+
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
+		requirePresentForWrite();
 		bbEncoder.append(buf, value);
 	}
-	
+
 	public final byte get() {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot get an optional field that is not present!");
+		requirePresent();
 		return value;
 	}
-	
+
 	public final void set(byte value) {
-		if (isOptional) this.isPresent = true;
 		this.value = value;
+		markAsPresent();
 	}
-	
+
 	public final void set(int value) {
 		if (value > Byte.MAX_VALUE || value < Byte.MIN_VALUE) throw new RuntimeException("Value is not a byte: " + value);
 		set((byte) value);
 	}
-	
+
 	@Override
 	public String toString() {
-		if (isOptional) {
-			return isPresent ? String.valueOf(value) : "BLANK";
-		} else {
-			return String.valueOf(value);
-		}
+		return isPresent() ? String.valueOf(value) : "BLANK";
 	}
 }

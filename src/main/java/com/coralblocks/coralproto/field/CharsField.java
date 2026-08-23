@@ -9,189 +9,120 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.coralblocks.coralproto.field;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import com.coralblocks.coralproto.AbstractProto;
-import com.coralblocks.coralproto.util.ByteBufferCharSequence;
 
-public class CharsField implements ProtoField {
-	
-	private final boolean isOptional;
-	private boolean isPresent;
-	private final ByteBufferCharSequence bbcs;
-	// Reuse these spaces to clear or pad the field with one bulk copy.
-	private final byte[] spaces;
-	private final int size;
-	
+public class CharsField extends AbstractField {
+
+	private final Chars chars;
+
 	public CharsField(int size) {
 		this(null, size);
 	}
-	
+
 	public CharsField(AbstractProto proto, int size) {
 		this(proto, size, false);
 	}
-	
+
 	public CharsField(int size, boolean isOptional) {
 		this(null, size, isOptional);
 	}
-	
+
 	public CharsField(AbstractProto proto, int size, boolean isOptional) {
-		if (proto != null) proto.add(this);
-		this.bbcs = new ByteBufferCharSequence(size);
-		this.spaces = new byte[size];
-		Arrays.fill(spaces, (byte) ' ');
-		this.isOptional = isOptional;
-		this.size = size;
-		reset();
+		super(proto, isOptional);
+		this.chars = new Chars(size);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof CharsField) {
-			CharsField cf = (CharsField) o;
-			boolean present = this.isPresent();
-			if (cf.isPresent() != present) return false;
-			return !present || cf.bbcs.equals(this.bbcs);
+			CharsField field = (CharsField) o;
+			boolean present = isPresent();
+			if (field.isPresent() != present) return false;
+			return !present || chars.equals(field.chars);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return isPresent() ? bbcs.hashCode() : 0;
+		return isPresent() ? chars.hashCode() : 0;
 	}
-	
+
 	@Override
 	public void reset() {
-		this.isPresent = false;
-		ByteBuffer byteBuffer = this.bbcs.getByteBuffer();
-		byteBuffer.put(spaces);
+		resetPresence();
+		chars.clear();
 	}
-	
+
 	@Override
 	public ProtoField newInstance() {
-		return new CharsField(null, size, isOptional);
+		return new CharsField(null, chars.size(), isOptional());
 	}
 
 	@Override
 	public final int size() {
-		if (isOptional) {
-			return isPresent ? 1 + size : 1;
-		} else {
-			return size;
-		}
+		return sizeWithPresence(chars.size());
 	}
 
-	@Override
-	public final boolean isPresent() {
-		if (!isOptional) return true;
-		return isPresent;
-	}
-
-	@Override
-	public final boolean isOptional() {
-		return isOptional;
-	}
-	
-	@Override
-	public final void markAsNotPresent() {
-		if (!isOptional) throw new IllegalStateException("Cannot mark a required field as not present!");
-		this.isPresent = false;
-	}
-	
-	private final ByteBufferCharSequence getAndMarkAsPresent() {
-		if (isOptional) isPresent = true;
-		return (ByteBufferCharSequence) get();
-	}
-	
 	public final CharsField clear() {
-		ByteBufferCharSequence bacs = getAndMarkAsPresent();
-		ByteBuffer byteBuffer = bacs.getByteBuffer();
-		byteBuffer.put(spaces);
+		chars.clear();
+		markAsPresent();
 		return this;
 	}
-	
+
 	public final void set(CharSequence cs) {
-		int len = cs.length();
-		if (len > size) {
-			throw new IllegalArgumentException("CharSequence is larger than field length: " + cs.toString() + " (" + size + ")");
-		}
-		ByteBufferCharSequence bacs = getAndMarkAsPresent();
-		ByteBuffer byteBuffer = bacs.getByteBuffer();
-		for(int i = 0; i < len; i++) byteBuffer.put((byte) cs.charAt(i));
-		byteBuffer.put(spaces, 0, size - len);
+		chars.set(cs);
+		markAsPresent();
 	}
-	
+
 	public final void set(byte[] array) {
-		int len = array.length;
-		if (len > size) {
-			throw new IllegalArgumentException("Array is larger than field length: " + len);
-		}
-		ByteBufferCharSequence bacs = getAndMarkAsPresent();
-		ByteBuffer byteBuffer = bacs.getByteBuffer();
-		byteBuffer.put(array);
-		byteBuffer.put(spaces, 0, size - len);
+		chars.set(array);
+		markAsPresent();
 	}
-	
+
 	public final void set(char[] array) {
-		int len = array.length;
-		if (len > size) {
-			throw new IllegalArgumentException("Array is larger than field length: " + len);
-		}
-		ByteBufferCharSequence bacs = getAndMarkAsPresent();
-		ByteBuffer byteBuffer = bacs.getByteBuffer();
-		for(int i = 0; i < len; i++) byteBuffer.put((byte) array[i]);
-		byteBuffer.put(spaces, 0, size - len);
+		chars.set(array);
+		markAsPresent();
 	}
-	
+
 	public final CharSequence get() {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot get an optional field that is not present!");
-		return bbcs;
+		requirePresent();
+		return chars.get();
 	}
-	
+
 	public final ByteBuffer getByteBuffer() {
-		return ((ByteBufferCharSequence) get()).getByteBuffer();
+		requirePresent();
+		return chars.getByteBuffer();
 	}
-	
+
 	@Override
 	public final void readFrom(ByteBuffer src) {
-		ByteBuffer byteBuffer = bbcs.getByteBuffer();
-		ReadUtils.ensureRemaining(src, byteBuffer.capacity());
-		if (isOptional) this.isPresent = true;
-		int savedLim = src.limit();
-		src.limit(src.position() + byteBuffer.capacity());
-		byteBuffer.put(src);
-		src.limit(savedLim);
+		chars.readFrom(src);
+		markAsPresent();
 	}
-	
+
 	@Override
 	public final void writeTo(ByteBuffer buf) {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		ByteBuffer byteBuffer = bbcs.getByteBuffer();
-		buf.put(byteBuffer);
+		requirePresentForWrite();
+		chars.writeTo(buf);
 	}
-	
+
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		ByteBuffer byteBuffer = bbcs.getByteBuffer();
-		buf.put(byteBuffer);
+		requirePresentForWrite();
+		chars.writeAsciiTo(buf);
 	}
-	
+
 	@Override
 	public String toString() {
-		if (isOptional && !isPresent) return "BLANK";
-		StringBuilder sb = new StringBuilder(size + 2);
-		sb.append('[');
-		sb.append(bbcs);
-		sb.append(']');
-		return sb.toString();
+		return isPresent() ? chars.toString() : "BLANK";
 	}
 }

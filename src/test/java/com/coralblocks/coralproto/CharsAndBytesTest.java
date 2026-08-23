@@ -130,6 +130,25 @@ public class CharsAndBytesTest {
 		proto2.myBytes.set("99999999".getBytes());
 		Assert.assertNotEquals(proto1, proto2);
 	}
+
+	@Test
+	public void testRejectedValuesDoNotMarkOptionalFieldsAsPresent() {
+		BytesField bytes = new BytesField(4, true);
+		Assert.assertThrows(IllegalArgumentException.class, () -> bytes.set(new byte[] { 1, 2, 3 }));
+		Assert.assertFalse(bytes.isPresent());
+
+		CharsField chars = new CharsField(4, true);
+		Assert.assertThrows(IllegalArgumentException.class, () -> chars.set("TOO LONG"));
+		Assert.assertFalse(chars.isPresent());
+
+		VarBytesField varBytes = new VarBytesField(4, true);
+		Assert.assertThrows(RuntimeException.class, () -> varBytes.set(new byte[] { 1, 2, 3, 4, 5 }));
+		Assert.assertFalse(varBytes.isPresent());
+
+		VarCharsField varChars = new VarCharsField(4, true);
+		Assert.assertThrows(RuntimeException.class, () -> varChars.set("TOO LONG"));
+		Assert.assertFalse(varChars.isPresent());
+	}
 	
 	public static class CharsAndBytesProtoMessage extends AbstractProto {
 		

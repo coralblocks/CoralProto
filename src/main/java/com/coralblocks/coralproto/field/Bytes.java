@@ -56,7 +56,7 @@ public class Bytes {
 		return byteBuffer.capacity();
 	}
 
-	private final ByteBuffer get() {
+	public final ByteBuffer get() {
 		byteBuffer.limit(byteBuffer.capacity()).position(0);
 		return byteBuffer;
 	}

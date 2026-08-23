@@ -9,179 +9,113 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.coralblocks.coralproto.field;
 
 import java.nio.ByteBuffer;
 
 import com.coralblocks.coralproto.AbstractProto;
-import com.coralblocks.coralproto.util.ByteBufferUtils;
-import com.coralblocks.coralproto.util.CharUtils;
 
-public class VarBytesField implements ProtoField {
-	
-	private final boolean isOptional;
-	private boolean isPresent;
-	private final ByteBuffer byteBuffer;
-	private int size;
-	
-	public VarBytesField(int maxLength) {	
+public class VarBytesField extends AbstractField {
+
+	private final VarBytes varBytes;
+
+	public VarBytesField(int maxLength) {
 		this(null, maxLength);
 	}
-	
+
 	public VarBytesField(AbstractProto proto, int maxLength) {
 		this(proto, maxLength, false);
 	}
-	
+
 	public VarBytesField(int maxLength, boolean isOptional) {
 		this(null, maxLength, isOptional);
 	}
-	
+
 	public VarBytesField(AbstractProto proto, int maxLength, boolean isOptional) {
-		if (proto != null) proto.add(this);
-		this.byteBuffer = ByteBuffer.allocate(maxLength);
-		this.isOptional = isOptional;
-		reset();
+		super(proto, isOptional);
+		this.varBytes = new VarBytes(maxLength);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof VarBytesField) {
-			VarBytesField vbf = (VarBytesField) o;
-			boolean present = this.isPresent();
-			if (vbf.isPresent() != present) return false;
-			if (!present) return true;
-			vbf.byteBuffer.limit(vbf.size).position(0);
-			this.byteBuffer.limit(this.size).position(0);
-			return vbf.byteBuffer.equals(this.byteBuffer);
+			VarBytesField field = (VarBytesField) o;
+			boolean present = isPresent();
+			if (field.isPresent() != present) return false;
+			return !present || varBytes.equals(field.varBytes);
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		if (!isPresent()) return 0;
-		byteBuffer.limit(size).position(0);
-		return byteBuffer.hashCode();
+		return isPresent() ? varBytes.hashCode() : 0;
 	}
-	
+
 	@Override
 	public void reset() {
-		this.isPresent = false;
-		this.size = 0;
+		resetPresence();
+		varBytes.clear();
 	}
-	
-	public final int getMaxLength() {
-		return byteBuffer.capacity();
-	}
-	
+
 	@Override
 	public ProtoField newInstance() {
-		return new VarBytesField(null, byteBuffer.capacity(), isOptional);
+		return new VarBytesField(null, varBytes.getMaxLength(), isOptional());
+	}
+
+	public final int getMaxLength() {
+		return varBytes.getMaxLength();
 	}
 
 	@Override
 	public final int size() {
-		if (isOptional) {
-			return isPresent ? 1 + 4 + size : 1;
-		} else {
-			return 4 + size;
-		}
+		return sizeWithPresence(varBytes.size());
 	}
 
-	@Override
-	public final boolean isPresent() {
-		if (!isOptional) return true;
-		return isPresent;
-	}
-
-	@Override
-	public final boolean isOptional() {
-		return isOptional;
-	}
-	
-	@Override
-	public final void markAsNotPresent() {
-		if (!isOptional) throw new IllegalStateException("Cannot mark a required field as not present!");
-		this.isPresent = false;
-	}
-	
 	public final ByteBuffer get() {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot get an optional field that is not present!");
-		byteBuffer.limit(size).position(0);
-		return byteBuffer;
+		requirePresent();
+		return varBytes.get();
 	}
-	
-	private final ByteBuffer getAndMarkAsPresent() {
-		if (isOptional) isPresent = true;
-		return get();
-	}
-	
+
 	public final void set(byte[] array, int offset, int len) {
-		ByteBuffer bb = getAndMarkAsPresent();
-		bb.clear();
-		bb.put(array, offset, len);
-		bb.flip();
-		this.size = len;
+		varBytes.set(array, offset, len);
+		markAsPresent();
 	}
-	
+
 	public final void set(byte[] array) {
-		ByteBuffer bb = getAndMarkAsPresent();
-		bb.clear();
-		bb.put(array);
-		bb.flip();
-		this.size = array.length;
+		varBytes.set(array);
+		markAsPresent();
 	}
-	
+
 	public final void set(ByteBuffer buf) {
-		ByteBuffer bb = getAndMarkAsPresent();
-		bb.clear();
-		bb.put(buf);
-		bb.flip();
-		this.size = bb.remaining();
+		varBytes.set(buf);
+		markAsPresent();
 	}
-	
+
 	@Override
 	public final void readFrom(ByteBuffer src) {
-		int len = ReadUtils.readLength(src, byteBuffer.capacity());
-		if (isOptional) this.isPresent = true;
-		byteBuffer.clear();
-		int savedLim = src.limit();
-		src.limit(src.position() + len);
-		byteBuffer.put(src);
-		byteBuffer.flip();
-		src.limit(savedLim);
-		this.size = len;
+		varBytes.readFrom(src);
+		markAsPresent();
 	}
-	
+
 	@Override
 	public final void writeTo(ByteBuffer buf) {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		buf.putInt(size);
-		buf.put(get());
+		requirePresentForWrite();
+		varBytes.writeTo(buf);
 	}
-	
+
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		ByteBuffer byteBuffer = get();
-		int len = byteBuffer.remaining();
-		for(int i = 0; i < len; i++) {
-			byte b = byteBuffer.get();
-			if (CharUtils.isPrintable((char) b)) {
-				buf.put((byte) b);
-			} else {
-				buf.put((byte) '?');
-			}
-		}
+		requirePresentForWrite();
+		varBytes.writeAsciiTo(buf);
 	}
-	
+
 	@Override
 	public String toString() {
-		if (isOptional && !isPresent) return "BLANK";
-		return ByteBufferUtils.parseString(get());
+		return isPresent() ? varBytes.toString() : "BLANK";
 	}
 }

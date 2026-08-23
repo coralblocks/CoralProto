@@ -63,6 +63,11 @@ public class VarBytes {
 		return 4 + size;
 	}
 
+	public final ByteBuffer get() {
+		byteBuffer.limit(size).position(0);
+		return byteBuffer;
+	}
+
 	public final void set(byte[] array, int offset, int len) {
 		enforceMaxLength(len);
 		byteBuffer.clear();
@@ -100,12 +105,11 @@ public class VarBytes {
 	
 	public final void writeTo(ByteBuffer buf) {
 		buf.putInt(size);
-		byteBuffer.limit(size).position(0);
-		buf.put(byteBuffer);
+		buf.put(get());
 	}
 	
 	public final void writeAsciiTo(ByteBuffer buf) {
-		byteBuffer.limit(size).position(0);
+		ByteBuffer byteBuffer = get();
 		int len = byteBuffer.remaining();
 		for(int i = 0; i < len; i++) {
 			byte b = byteBuffer.get();
@@ -119,9 +123,6 @@ public class VarBytes {
 	
 	@Override
 	public String toString() {
-		byteBuffer.limit(size).position(0);
-		StringBuilder sb = new StringBuilder(byteBuffer.remaining());
-		sb.append(ByteBufferUtils.parseString(byteBuffer));
-		return sb.toString();
+		return ByteBufferUtils.parseString(get());
 	}
 }

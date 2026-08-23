@@ -69,6 +69,12 @@ public class TruncatedInputTest {
 		}
 	}
 
+	private static void assertTruncatedOptionalFieldRemainsAbsent(ProtoField field, int width) {
+		ByteBuffer input = fixedInput(width - 1);
+		Assert.assertThrows(BufferUnderflowException.class, () -> field.readFrom(input));
+		Assert.assertFalse(field.isPresent());
+	}
+
 	@Test
 	public void testFixedWidthFieldsRejectEveryTruncation() {
 		assertFixedWidthFieldRejectsEveryTruncation(new BooleanField(), Byte.BYTES);
@@ -83,6 +89,16 @@ public class TruncatedInputTest {
 		assertFixedWidthFieldRejectsEveryTruncation(new ShortEnumField<EnumTest.RejectReason>(EnumTest.RejectReason.ALL), Short.BYTES);
 		assertFixedWidthFieldRejectsEveryTruncation(new IntEnumField<EnumTest.ReduceRejectReason>(EnumTest.ReduceRejectReason.ALL), Integer.BYTES);
 		assertFixedWidthFieldRejectsEveryTruncation(new TwoCharEnumField<EnumTest.CancelReason>(EnumTest.CancelReason.ALL), Short.BYTES);
+	}
+
+	@Test
+	public void testTruncatedOptionalPrimitiveFieldsRemainAbsent() {
+		assertTruncatedOptionalFieldRemainsAbsent(new BooleanField(true), Byte.BYTES);
+		assertTruncatedOptionalFieldRemainsAbsent(new ByteField(true), Byte.BYTES);
+		assertTruncatedOptionalFieldRemainsAbsent(new CharField(true), Byte.BYTES);
+		assertTruncatedOptionalFieldRemainsAbsent(new ShortField(true), Short.BYTES);
+		assertTruncatedOptionalFieldRemainsAbsent(new IntField(true), Integer.BYTES);
+		assertTruncatedOptionalFieldRemainsAbsent(new LongField(true), Long.BYTES);
 	}
 
 	@Test

@@ -9,9 +9,9 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
- * either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.coralblocks.coralproto.field;
 
@@ -19,37 +19,34 @@ import java.nio.ByteBuffer;
 
 import com.coralblocks.coralproto.AbstractProto;
 
-public class CharField implements ProtoField {
-	
-	private final boolean isOptional;
-	private boolean isPresent;
+public class CharField extends AbstractField {
+
 	private char value;
-	
+
 	public CharField() {
 		this(null);
 	}
-	
+
 	public CharField(AbstractProto proto) {
 		this(proto, false);
 	}
-	
+
 	public CharField(boolean isOptional) {
 		this(null, isOptional);
 	}
-	
+
 	public CharField(AbstractProto proto, boolean isOptional) {
-		if (proto != null) proto.add(this);
-		this.isOptional = isOptional;
+		super(proto, isOptional);
 		reset();
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof CharField) {
-			CharField cf = (CharField) o;
-			boolean present = this.isPresent();
-			if (cf.isPresent() != present) return false;
-			return !present || cf.value == this.value;
+			CharField field = (CharField) o;
+			boolean present = isPresent();
+			if (field.isPresent() != present) return false;
+			return !present || field.value == value;
 		}
 		return false;
 	}
@@ -58,78 +55,52 @@ public class CharField implements ProtoField {
 	public int hashCode() {
 		return isPresent() ? value : 0;
 	}
-	
+
 	@Override
 	public void reset() {
-		this.isPresent = false;
-		this.value = ' ';
+		resetPresence();
+		value = ' ';
 	}
-	
+
 	@Override
 	public ProtoField newInstance() {
-		return new CharField(null, this.isOptional);
+		return new CharField(null, isOptional());
 	}
 
 	@Override
 	public final int size() {
-		if (isOptional) {
-			return isPresent ? 1 + 1 : 1;
-		} else {
-			return 1;
-		}
+		return sizeWithPresence(Byte.BYTES);
 	}
 
-	@Override
-	public final boolean isPresent() {
-		if (!isOptional) return true;
-		return isPresent;
-	}
-
-	@Override
-	public final boolean isOptional() {
-		return isOptional;
-	}
-	
-	@Override
-	public final void markAsNotPresent() {
-		if (!isOptional) throw new IllegalStateException("Cannot mark a required field as not present!");
-		this.isPresent = false;
-	}
-	
 	@Override
 	public final void readFrom(ByteBuffer buf) {
-		if (isOptional) this.isPresent = true;
-		this.value = (char) buf.get();
+		value = (char) buf.get();
+		markAsPresent();
 	}
-	
+
 	@Override
 	public final void writeTo(ByteBuffer buf) {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
+		requirePresentForWrite();
 		buf.put((byte) value);
 	}
-	
+
 	@Override
 	public final void writeAsciiTo(ByteBuffer buf) {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot write a value that is not present!");
-		buf.put((byte) value);
+		writeTo(buf);
 	}
-	
+
 	public final char get() {
-		if (isOptional && !isPresent) throw new IllegalStateException("Cannot get an optional field that is not present!");
+		requirePresent();
 		return value;
 	}
-	
+
 	public final void set(char value) {
-		if (isOptional) this.isPresent = true;
 		this.value = value;
+		markAsPresent();
 	}
-	
+
 	@Override
 	public String toString() {
-		if (isOptional) {
-			return isPresent ? String.valueOf(value) : "BLANK";
-		} else {
-			return String.valueOf(value);
-		}
+		return isPresent() ? String.valueOf(value) : "BLANK";
 	}
 }
